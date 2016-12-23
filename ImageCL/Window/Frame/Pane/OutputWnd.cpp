@@ -40,12 +40,10 @@ int COutputWnd::OnCreate( LPCREATESTRUCT lpCreateStruct )
 	CRect rcWindow;
 	GetClientRect( &rcWindow );
 
-	if( !m_wndToolBar.Create( this, AFX_DEFAULT_TOOLBAR_STYLE, IDR_OUTPUT_TOOLBAR ) )
-	{
-		return -1;
-	}
-
-	if( !m_wndToolBar.LoadToolBar( IDR_OUTPUT_TOOLBAR, 0, 0, TRUE ) )
+	if( 
+		!m_wndToolBar.Create( this, AFX_DEFAULT_TOOLBAR_STYLE, IDR_OUTPUT_TOOLBAR )  ||
+		!m_wndToolBar.LoadToolBar( IDR_OUTPUT_TOOLBAR, 0, 0, TRUE ) 
+		)
 	{
 		return -1;
 	}

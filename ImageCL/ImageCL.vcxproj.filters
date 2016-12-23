@@ -138,28 +138,7 @@
     <Image Include="res\class_view_hc.ico">
       <Filter>Common\Resource Files</Filter>
     </Image>
-    <Image Include="res\fileview.bmp">
-      <Filter>Common\Resource Files</Filter>
-    </Image>
-    <Image Include="res\fileview_hc.bmp">
-      <Filter>Common\Resource Files</Filter>
-    </Image>
-    <Image Include="res\classview.bmp">
-      <Filter>Common\Resource Files</Filter>
-    </Image>
     <Image Include="res\classview_hc.bmp">
-      <Filter>Common\Resource Files</Filter>
-    </Image>
-    <Image Include="res\explorer.bmp">
-      <Filter>Common\Resource Files</Filter>
-    </Image>
-    <Image Include="res\explorer_hc.bmp">
-      <Filter>Common\Resource Files</Filter>
-    </Image>
-    <Image Include="res\sort.bmp">
-      <Filter>Common\Resource Files</Filter>
-    </Image>
-    <Image Include="res\sort_hc.bmp">
       <Filter>Common\Resource Files</Filter>
     </Image>
     <Image Include="res\menuimages.bmp">
@@ -174,22 +153,22 @@
     <Image Include="res\output_wnd_hc.ico">
       <Filter>Common\Resource Files</Filter>
     </Image>
-    <Image Include="UserImages.bmp">
-      <Filter>Common\Resource Files</Filter>
-    </Image>
     <Image Include="res\ImageCLDoc.ico">
       <Filter>Common\Resource Files</Filter>
     </Image>
     <Image Include="res\ImageCL.ico">
       <Filter>Common\Resource Files</Filter>
     </Image>
-    <Image Include="res\Toolbar.bmp">
-      <Filter>Common\Resource Files</Filter>
-    </Image>
     <Image Include="res\Toolbar256.bmp">
       <Filter>Common\Resource Files</Filter>
     </Image>
-    <Image Include="res\toolbar1.bmp">
+    <Image Include="res\output_toolbar.bmp">
+      <Filter>Common\Resource Files</Filter>
+    </Image>
+    <Image Include="res\text_edit_toolbar.bmp">
+      <Filter>Common\Resource Files</Filter>
+    </Image>
+    <Image Include="res\image_view_toolbar.bmp">
       <Filter>Common\Resource Files</Filter>
     </Image>
   </ItemGroup>

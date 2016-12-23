@@ -145,28 +145,21 @@
     <ResourceCompile Include="ImageCL.rc" />
   </ItemGroup>
   <ItemGroup>
-    <Image Include="res\classview.bmp" />
     <Image Include="res\classview_hc.bmp" />
     <Image Include="res\class_view.ico" />
     <Image Include="res\class_view_hc.ico" />
-    <Image Include="res\explorer.bmp" />
-    <Image Include="res\explorer_hc.bmp" />
-    <Image Include="res\fileview.bmp" />
-    <Image Include="res\fileview_hc.bmp" />
     <Image Include="res\file_view.ico" />
     <Image Include="res\file_view_hc.ico" />
     <Image Include="res\ImageCL.ico" />
     <Image Include="res\ImageCLDoc.ico" />
+    <Image Include="res\image_view_toolbar.bmp" />
     <Image Include="res\menuimages.bmp" />
     <Image Include="res\menuimages_hc.bmp" />
+    <Image Include="res\output_toolbar.bmp" />
     <Image Include="res\output_wnd.ico" />
     <Image Include="res\output_wnd_hc.ico" />
-    <Image Include="res\sort.bmp" />
-    <Image Include="res\sort_hc.bmp" />
-    <Image Include="res\Toolbar.bmp" />
-    <Image Include="res\toolbar1.bmp" />
+    <Image Include="res\text_edit_toolbar.bmp" />
     <Image Include="res\Toolbar256.bmp" />
-    <Image Include="UserImages.bmp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="res\ImageCL.rc2" />

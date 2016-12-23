@@ -14,12 +14,10 @@ IMPLEMENT_DYNCREATE( CMainFrame, CFrameWndEx )
 
 BEGIN_MESSAGE_MAP( CMainFrame, CFrameWndEx )
 	ON_WM_CREATE( )
-	ON_WM_SETTINGCHANGE( )
 	ON_WM_SIZE( )
+	ON_WM_SETTINGCHANGE( )
 
-	ON_COMMAND( ID_VIEW_CUSTOMIZE, &CMainFrame::OnViewCustomize )
-
-	ON_REGISTERED_MESSAGE( AFX_WM_CREATETOOLBAR, &CMainFrame::OnToolbarCreateNew )
+	ON_COMMAND( ID_VIEW_OUTPUTPANE, &CMainFrame::OnShowOutputPane )
 
 END_MESSAGE_MAP( )
 
@@ -40,16 +38,11 @@ int CMainFrame::OnCreate( LPCREATESTRUCT lpCreateStruct )
 		return -1;
 	}
 
-	if( !m_wndMenuBar.Create( this ) )
+	if( !m_wndMenuBar.Create( this ) || 
+		!m_wndMenuBar.LoadToolBar( IDR_MAINFRAME ) 
+		)
 	{
 		TRACE0( "Failed to create menubar\n" );
-		return -1;
-	}
-
-	if( !m_wndMenuBar.LoadToolBar( IDR_MAINFRAME_256 ) )
-	{
-		TRACE0( "Failed to LoadToolBar\n" );
-
 		return -1;
 	}
 
@@ -64,8 +57,6 @@ int CMainFrame::OnCreate( LPCREATESTRUCT lpCreateStruct )
 	CDockingManager::SetDockingMode( DT_SMART );
 
 	EnableAutoHidePanes( CBRS_ALIGN_ANY );
-
-	CMFCToolBar::AddToolBarForImageCollection( IDR_MENU_IMAGES, IDB_MENU_IMAGES_24 );
 
 
 	if( !CreateDockingWindows( ) )
@@ -124,11 +115,9 @@ BOOL CMainFrame::PreCreateWindow( CREATESTRUCT& cs )
 	return TRUE;
 }
 
-
 //> Mfc style message reflector(so that our panes get command messages too)
 BOOL CMainFrame::OnCmdMsg( UINT nID, int nCode, void* pExtra, AFX_CMDHANDLERINFO* pHandlerInfo )
 {
-	//> only reflect CN_COMMAND messages
 	if( nCode == CN_COMMAND )
 	{
 		auto pDockingMng = afxGlobalUtils.GetDockingManager( this );
@@ -136,7 +125,7 @@ BOOL CMainFrame::OnCmdMsg( UINT nID, int nCode, void* pExtra, AFX_CMDHANDLERINFO
 		CObList list;
 		pDockingMng->GetPaneList( list );
 
-		for( POSITION pos = list.GetHeadPosition( ); pos != nullptr; )
+		for( auto pos = list.GetHeadPosition( ); pos != nullptr; )
 		{
 			auto pPane = DYNAMIC_DOWNCAST( CBasePane, list.GetNext( pos ) );
 			ASSERT_VALID( pPane );
@@ -151,17 +140,25 @@ BOOL CMainFrame::OnCmdMsg( UINT nID, int nCode, void* pExtra, AFX_CMDHANDLERINFO
 	return CFrameWndEx::OnCmdMsg( nID, nCode, pExtra, pHandlerInfo );
 }
 
+#ifdef _DEBUG
+void CMainFrame::AssertValid( ) const
+{
+	CFrameWndEx::AssertValid( );
+}
+
+void CMainFrame::Dump( CDumpContext& dc ) const
+{
+	CFrameWndEx::Dump( dc );
+}
+#endif //_DEBUG
+
 BOOL CMainFrame::CreateDockingWindows( )
 {
-	CString strOutputWnd;
-	BOOL bNameValid = strOutputWnd.LoadString( IDS_OUTPUT_WND );
-	ASSERT( bNameValid );
-
 	CSize outputPaneHeight = { 100, 300 };
 	ScaleDpi( outputPaneHeight );
 
 	if( !m_wndOutput.Create(
-		strOutputWnd,
+		L"Output",
 		this,
 		{ 0, 0, outputPaneHeight.cx, outputPaneHeight.cy },
 		TRUE,
@@ -187,49 +184,18 @@ BOOL CMainFrame::CreateDockingWindows( )
 	return TRUE;
 }
 
-#ifdef _DEBUG
-void CMainFrame::AssertValid( ) const
-{
-	CFrameWndEx::AssertValid( );
-}
-
-void CMainFrame::Dump( CDumpContext& dc ) const
-{
-	CFrameWndEx::Dump( dc );
-}
-#endif //_DEBUG
-
-void CMainFrame::OnViewCustomize( )
-{
-	CMFCToolBarsCustomizeDialog* pDlgCust = new CMFCToolBarsCustomizeDialog( this, TRUE );
-	pDlgCust->Create( );
-}
-
-LRESULT CMainFrame::OnToolbarCreateNew( WPARAM wp, LPARAM lp )
-{
-	LRESULT lres = CFrameWndEx::OnToolbarCreateNew( wp, lp );
-	if( lres == 0 )
-	{
-		return 0;
-	}
-
-	CMFCToolBar* pUserToolbar = ( CMFCToolBar* )lres;
-	ASSERT_VALID( pUserToolbar );
-
-	BOOL bNameValid;
-	CString strCustomize;
-	bNameValid = strCustomize.LoadString( IDS_TOOLBAR_CUSTOMIZE );
-	ASSERT( bNameValid );
-
-	pUserToolbar->EnableCustomizeButton( TRUE, ID_VIEW_CUSTOMIZE, strCustomize );
-	return lres;
-}
-
-
 void CMainFrame::OnSettingChange( UINT uFlags, LPCTSTR lpszSection )
 {
 	CFrameWndEx::OnSettingChange( uFlags, lpszSection );
 	//m_wndOutput.UpdateFonts( );
+}
+
+void CMainFrame::OnShowOutputPane( )
+{
+	if( !m_wndOutput.IsWindowVisible( ) )
+	{
+		m_wndOutput.ShowPane( TRUE, FALSE, FALSE );
+	}
 }
 
 void CMainFrame::OnSize( UINT nType, int cx, int cy )
@@ -248,4 +214,3 @@ void CMainFrame::OnSize( UINT nType, int cx, int cy )
 		m_wndSplitter.RecalcLayout( );
 	}
 }
-

@@ -41,6 +41,12 @@ BOOL CApp::InitInstance( )
 	CWinAppEx::InitInstance( );
 
 
+	if( !EnableD2DSupport( D2D1_FACTORY_TYPE::D2D1_FACTORY_TYPE_MULTI_THREADED ) )
+	{
+		AfxMessageBox( L"Failed to enable d2d!" );
+		return FALSE;
+	}
+
 	Gdiplus::GdiplusStartupInput input;
 	Gdiplus::GdiplusStartupOutput output;
 	if( Gdiplus::GdiplusStartup( &m_gdiToken, &input, &output ) != Gdiplus::Status::Ok )
@@ -62,6 +68,7 @@ BOOL CApp::InitInstance( )
 		AfxMessageBox( L"Failed to initialize richedit!" );
 		return FALSE;
 	}
+
 
 	SetRegistryKey( L"Local AppWizard-Generated Applications" );
 	LoadStdProfileSettings( 0 );

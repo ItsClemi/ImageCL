@@ -36,7 +36,6 @@
 #define IDS_CLASS_VIEW                  156
 #define IDS_OUTPUT_WND                  157
 #define IDI_FILE_VIEW_HC                162
-#define IDI_CLASS_VIEW_HC               164
 #define IDI_OUTPUT_WND_HC               166
 #define IDR_EXPLORER                    169
 #define IDB_EXPLORER_24                 170
@@ -56,18 +55,33 @@
 #define IDS_EXPLORER                    305
 #define IDS_EDIT_MENU                   306
 #define IDR_OUTPUT_TOOLBAR              310
+#define IDR_TEXT_EDIT_TOOLBAR           315
+#define IDR_IMAGE_VIEW_TOOLBAR          319
 #define IDC_RICHEDIT21                  1000
 #define IDC_MFCLINK2                    1003
 #define ID_CLEAR_OUTPUT                 32771
 #define ID_BUTTON32772                  32772
 #define ID_BUTTON32773                  32773
+#define ID_BUTTON32774                  32774
+#define ID_BUTTON32776                  32776
+#define ID_BUTTON32777                  32777
+#define ID_RUN_CODE                     32777
+#define ID_BUTTON32778                  32778
+#define ID_BUTTON32779                  32779
+#define ID_BUTTON32780                  32780
+#define ID_VIEW_OUTPUTPANE              32781
+#define ID_BUTTON32782                  32782
+#define ID_BUTTON32783                  32783
+#define	ID_IMAGE_OPEN					32784
+#define ID_IMAGE_SAVE					32785
+#define ID_IMAGE_SWITCH					32786
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        314
-#define _APS_NEXT_COMMAND_VALUE         32774
+#define _APS_NEXT_RESOURCE_VALUE        321
+#define _APS_NEXT_COMMAND_VALUE         32784
 #define _APS_NEXT_CONTROL_VALUE         1005
 #define _APS_NEXT_SYMED_VALUE           310
 #endif

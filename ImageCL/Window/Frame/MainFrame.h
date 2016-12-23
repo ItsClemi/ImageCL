@@ -29,10 +29,12 @@ private:
 
 protected:
 	afx_msg int OnCreate( LPCREATESTRUCT lpCreateStruct );
-	afx_msg void OnViewCustomize( );
-	afx_msg LRESULT OnToolbarCreateNew( WPARAM wp, LPARAM lp );
-	afx_msg void OnSettingChange( UINT uFlags, LPCTSTR lpszSection );
 	afx_msg void OnSize( UINT nType, int cx, int cy );
+
+	afx_msg void OnSettingChange( UINT uFlags, LPCTSTR lpszSection );
+
+	afx_msg void OnShowOutputPane( );
+
 
 	DECLARE_MESSAGE_MAP( )
 

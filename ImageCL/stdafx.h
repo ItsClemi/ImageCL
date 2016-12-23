@@ -21,9 +21,15 @@
 #include <afxcmn.h>             
 #include <afxcontrolbars.h>   
 
+#include <memory>
+#include <string>
 
 #include <gdiplus.h>
 #include <Scintilla.h>
+
+#include <ppl.h>
+#include <ppltasks.h>
+
 
 #include <Common/Helper/CommonHelper.h>
 #include <Common/Helper/DpiHelper.h>
@@ -52,3 +58,4 @@
 //=> Messages
 
 #define WM_ADD_OUTPUT		( WM_USER + 1 )
+#define WM_UPDATE_IMAGE		( WM_USER + 2 )

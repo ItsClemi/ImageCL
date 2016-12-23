@@ -78,8 +78,6 @@ IDR_ImageCLTYPE         ICON                    "res\\ImageCLDoc.ico"
 
 IDI_FILE_VIEW_HC        ICON                    "res\\file_view_hc.ico"
 
-IDI_CLASS_VIEW_HC       ICON                    "res\\class_view_hc.ico"
-
 IDI_OUTPUT_WND_HC       ICON                    "res\\output_wnd_hc.ico"
 
 
@@ -88,27 +86,13 @@ IDI_OUTPUT_WND_HC       ICON                    "res\\output_wnd_hc.ico"
 // Bitmap
 //
 
-IDR_MAINFRAME           BITMAP                  "res\\Toolbar.bmp"
+IDR_MAINFRAME           BITMAP                  "res\\Toolbar256.bmp"
 
-IDR_MAINFRAME_256       BITMAP                  "res\\Toolbar256.bmp"
+IDR_OUTPUT_TOOLBAR      BITMAP                  "res\\output_toolbar.bmp"
 
-IDR_SORT                BITMAP                  "res\\sort.bmp"
+IDR_TEXT_EDIT_TOOLBAR   BITMAP                  "res\\text_edit_toolbar.bmp"
 
-IDB_SORT_24             BITMAP                  "res\\sort_hc.bmp"
-
-IDB_FILE_VIEW_24        BITMAP                  "res\\fileview_hc.bmp"
-
-IDB_CLASS_VIEW_24       BITMAP                  "res\\classview_hc.bmp"
-
-IDR_EXPLORER            BITMAP                  "res\\explorer.bmp"
-
-IDB_EXPLORER_24         BITMAP                  "res\\explorer_hc.bmp"
-
-IDR_MENU_IMAGES         BITMAP                  "res\\menuimages.bmp"
-
-IDB_MENU_IMAGES_24      BITMAP                  "res\\menuimages_hc.bmp"
-
-IDR_OUTPUT_TOOLBAR      BITMAP                  "res\\toolbar1.bmp"
+IDR_IMAGE_VIEW_TOOLBAR  BITMAP                  "res\\image_view_toolbar.bmp"
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -130,48 +114,25 @@ BEGIN
     BUTTON      ID_APP_ABOUT
 END
 
-IDR_MAINFRAME_256 TOOLBAR 16, 15
+IDR_OUTPUT_TOOLBAR TOOLBAR 16, 16
 BEGIN
-    BUTTON      ID_FILE_NEW
+    BUTTON      ID_CLEAR_OUTPUT
+END
+
+IDR_TEXT_EDIT_TOOLBAR TOOLBAR 16, 16
+BEGIN
     BUTTON      ID_FILE_OPEN
     BUTTON      ID_FILE_SAVE
     SEPARATOR
-    BUTTON      ID_EDIT_CUT
-    BUTTON      ID_EDIT_COPY
-    BUTTON      ID_EDIT_PASTE
+    BUTTON      ID_RUN_CODE
+END
+
+IDR_IMAGE_VIEW_TOOLBAR TOOLBAR 16, 16
+BEGIN
+    BUTTON      ID_IMAGE_OPEN
+    BUTTON      ID_IMAGE_SAVE
     SEPARATOR
-    BUTTON      ID_FILE_PRINT
-    BUTTON      ID_APP_ABOUT
-END
-
-IDR_SORT TOOLBAR 16, 15
-BEGIN
-    BUTTON      ID_SORT_MENU
-    BUTTON      ID_NEW_FOLDER
-END
-
-IDR_EXPLORER TOOLBAR 16, 15
-BEGIN
-    BUTTON      ID_PROPERTIES
-END
-
-IDR_MENU_IMAGES TOOLBAR 16, 15
-BEGIN
-    BUTTON      ID_WINDOW_MANAGER
-    SEPARATOR
-    BUTTON      ID_WINDOW_CASCADE
-    BUTTON      ID_WINDOW_TILE_HORZ
-    BUTTON      ID_TOOLS_MACRO
-    BUTTON      ID_SORTING_SORTALPHABETIC
-    BUTTON      ID_SORTING_SORTBYTYPE
-    BUTTON      ID_SORTING_SORTBYACCESS
-    BUTTON      ID_SORTING_GROUPBYTYPE
-END
-
-IDR_OUTPUT_TOOLBAR TOOLBAR 16, 15
-BEGIN
-    BUTTON      ID_CLEAR_OUTPUT
-    BUTTON      ID_BUTTON32772
+    BUTTON      ID_IMAGE_SWITCH
 END
 
 
@@ -201,11 +162,9 @@ BEGIN
     END
     POPUP "&View"
     BEGIN
-        POPUP "&Toolbars and Docking Windows"
-        BEGIN
-            MENUITEM "<placeholder>",               ID_VIEW_TOOLBAR
-        END
         MENUITEM "S&plit",                      ID_WINDOW_SPLIT
+        MENUITEM SEPARATOR
+        MENUITEM "Output Pane",                 ID_VIEW_OUTPUTPANE
     END
     POPUP "&Help"
     BEGIN
@@ -296,17 +255,17 @@ END
 // Dialog
 //
 
-IDD_ABOUTBOX DIALOGEX 0, 0, 287, 129
+IDD_ABOUTBOX DIALOGEX 0, 0, 287, 171
 STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | DS_CENTER | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "About ImageCL"
 FONT 8, "MS Shell Dlg", 0, 0, 0x1
 BEGIN
-    ICON            IDR_MAINFRAME,IDC_STATIC,14,14,20,20
-    DEFPUSHBUTTON   "OK",IDOK,228,108,50,14,WS_GROUP
-    CONTROL         "",IDC_RICHEDIT21,"RichEdit20W",WS_BORDER | WS_TABSTOP | 0x80,48,48,228,54
-    LTEXT           "Thanks to:",IDC_STATIC,48,36,35,8
-    LTEXT           "ImageCL 1.0",IDC_STATIC,48,12,41,8
-    CONTROL         "www.github.com",IDC_MFCLINK2,"MfcLink",WS_TABSTOP,48,108,60,14
+    ICON            IDR_MAINFRAME,IDC_STATIC,258,12,20,20
+    DEFPUSHBUTTON   "OK",IDOK,228,150,50,14,WS_GROUP
+    CONTROL         "",IDC_RICHEDIT21,"RichEdit20W",WS_BORDER | WS_VSCROLL | WS_HSCROLL | WS_TABSTOP | 0x884,6,48,270,96
+    LTEXT           "Third-party Software",IDC_STATIC,7,35,66,8
+    LTEXT           "ImageCL",IDC_STATIC,7,12,29,8
+    CONTROL         "github.com",IDC_MFCLINK2,"MfcLink",WS_TABSTOP,7,150,177,14
 END
 
 
@@ -334,7 +293,7 @@ BEGIN
         BEGIN
             VALUE "CompanyName", "TODO: <Company name>"
             VALUE "FileDescription", "ImageCL"
-            VALUE "FileVersion", "1.0.0.1"
+            VALUE "FileVersion", "0.0.0.1"
             VALUE "InternalName", "ImageCL.exe"
             VALUE "LegalCopyright", "TODO: (c) <Company name>.  All rights reserved."
             VALUE "OriginalFilename", "ImageCL.exe"
@@ -362,7 +321,7 @@ BEGIN
         LEFTMARGIN, 7
         RIGHTMARGIN, 280
         TOPMARGIN, 7
-        BOTTOMMARGIN, 122
+        BOTTOMMARGIN, 164
     END
 END
 #endif    // APSTUDIO_INVOKED
@@ -386,17 +345,18 @@ END
 
 IDD_ABOUTBOX DLGINIT
 BEGIN
-    IDC_MFCLINK2, 0x37c, 171, 0
-0x4d3c, 0x4346, 0x694c, 0x6b6e, 0x555f, 0x6c72, 0x773e, 0x7777, 0x672e, 
-0x7469, 0x7568, 0x2e62, 0x6f63, 0x3c6d, 0x4d2f, 0x4346, 0x694c, 0x6b6e, 
-0x555f, 0x6c72, 0x3c3e, 0x464d, 0x4c43, 0x6e69, 0x5f6b, 0x7255, 0x506c, 
-0x6572, 0x6966, 0x3e78, 0x2f3c, 0x464d, 0x4c43, 0x6e69, 0x5f6b, 0x7255, 
-0x506c, 0x6572, 0x6966, 0x3e78, 0x4d3c, 0x4346, 0x694c, 0x6b6e, 0x545f, 
-0x6f6f, 0x746c, 0x7069, 0x3c3e, 0x4d2f, 0x4346, 0x694c, 0x6b6e, 0x545f, 
-0x6f6f, 0x746c, 0x7069, 0x3c3e, 0x464d, 0x4c43, 0x6e69, 0x5f6b, 0x7546, 
-0x6c6c, 0x6554, 0x7478, 0x6f54, 0x6c6f, 0x6974, 0x3e70, 0x4146, 0x534c, 
-0x3c45, 0x4d2f, 0x4346, 0x694c, 0x6b6e, 0x465f, 0x6c75, 0x546c, 0x7865, 
-0x5474, 0x6f6f, 0x746c, 0x7069, "\076" 
+    IDC_MFCLINK2, 0x37c, 192, 0
+0x4d3c, 0x4346, 0x694c, 0x6b6e, 0x555f, 0x6c72, 0x683e, 0x7474, 0x7370, 
+0x2f3a, 0x672f, 0x7469, 0x7568, 0x2e62, 0x6f63, 0x2f6d, 0x7449, 0x4373, 
+0x656c, 0x696d, 0x492f, 0x616d, 0x6567, 0x4c43, 0x2f3c, 0x464d, 0x4c43, 
+0x6e69, 0x5f6b, 0x7255, 0x3e6c, 0x4d3c, 0x4346, 0x694c, 0x6b6e, 0x555f, 
+0x6c72, 0x7250, 0x6665, 0x7869, 0x3c3e, 0x4d2f, 0x4346, 0x694c, 0x6b6e, 
+0x555f, 0x6c72, 0x7250, 0x6665, 0x7869, 0x3c3e, 0x464d, 0x4c43, 0x6e69, 
+0x5f6b, 0x6f54, 0x6c6f, 0x6974, 0x3e70, 0x2f3c, 0x464d, 0x4c43, 0x6e69, 
+0x5f6b, 0x6f54, 0x6c6f, 0x6974, 0x3e70, 0x4d3c, 0x4346, 0x694c, 0x6b6e, 
+0x465f, 0x6c75, 0x546c, 0x7865, 0x5474, 0x6f6f, 0x746c, 0x7069, 0x463e, 
+0x4c41, 0x4553, 0x2f3c, 0x464d, 0x4c43, 0x6e69, 0x5f6b, 0x7546, 0x6c6c, 
+0x6554, 0x7478, 0x6f54, 0x6c6f, 0x6974, 0x3e70, 
     0
 END
 
@@ -531,6 +491,13 @@ BEGIN
     IDS_BUILD_TAB           "Build"
     IDS_DEBUG_TAB           "Debug"
     IDS_FIND_TAB            "Find"
+END
+
+STRINGTABLE
+BEGIN
+    ID_IMAGE_OPEN           "Open Image"
+    ID_IMAGE_SAVE           "Save Image"
+    ID_IMAGE_SWITCH         "Switch to Image"
 END
 
 #endif    // English (United States) resources

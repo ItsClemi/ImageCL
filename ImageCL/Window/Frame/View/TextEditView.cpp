@@ -2,6 +2,7 @@
 #include "TextEditView.h"
 
 #include <SciLexer.h>
+#include <resource.h>
 
 IMPLEMENT_DYNCREATE( CTextEditView, CView );
 
@@ -43,9 +44,9 @@ L"__virtual_inheritance "
 
 //OpenCL
 L"__kernel __local __global "
-L" get_global_id get_local_id get_group_id barrier "
-L" CLK_LOCAL_MEM_FENCE CLK_GLOBAL_MEM_FENCE "
-L" double2 double4 double8 double16 half2 half4 half8 half16 "
+L"get_global_id get_local_id get_group_id barrier "
+L"CLK_LOCAL_MEM_FENCE CLK_GLOBAL_MEM_FENCE "
+L"double2 double4 double8 double16 half2 half4 half8 half16 "
 ;
 
 
@@ -79,6 +80,11 @@ int CTextEditView::OnCreate( LPCREATESTRUCT lpcs )
 		return -1;
 	}
 
+	if( !m_wndToolBar.LoadToolBar( IDR_TEXT_EDIT_TOOLBAR, 0, 0, TRUE ) )
+	{
+		return -1;
+	}
+
 	if( !m_wndEdit.Create( WS_CHILD | WS_VISIBLE | WS_TABSTOP, CRect( 0, 0, 300, 400 ), this, 0 ) )
 	{
 		return -1;
@@ -88,7 +94,7 @@ int CTextEditView::OnCreate( LPCREATESTRUCT lpcs )
 
 	m_wndEdit.SetKeyWords( 0, cppKeyWords );
 
-	SetAStyle( STYLE_DEFAULT, RGB( 189, 183, 107 ), RGB( 30, 30, 30 ), 10, "Verdana" );
+	SetAStyle( STYLE_DEFAULT, RGB( 189, 183, 107 ), RGB( 30, 30, 30 ), 10, "Consolas" );
 
 	SetAStyle( SCE_C_DEFAULT, RGB( 160, 0, 0 ) );
 	SetAStyle( SCE_C_COMMENT, RGB( 87, 166, 74 ) );
@@ -97,7 +103,7 @@ int CTextEditView::OnCreate( LPCREATESTRUCT lpcs )
 	SetAStyle( SCE_C_COMMENTLINEDOC, RGB( 87, 166, 74 ) );
 	SetAStyle( SCE_C_COMMENTDOCKEYWORD, RGB( 87, 166, 74 ) );
 	SetAStyle( SCE_C_COMMENTDOCKEYWORDERROR, RGB( 87, 166, 74 ) );
-	
+
 	SetAStyle( SCE_C_NUMBER, RGB( 181, 206, 168 ) );
 
 	SetAStyle( SCE_C_WORD, RGB( 86, 156, 214 ) );
@@ -180,6 +186,5 @@ void CTextEditView::OnEditRepeat( )
 { }
 
 void CTextEditView::OnDraw( CDC* pDC )
-{
-}
+{ }
 
