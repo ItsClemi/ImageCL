@@ -1,11 +1,7 @@
 #include "stdafx.h"
-#include <afxwinappex.h>
-#include <afxdialogex.h>
 #include "App.h"
-#include "Window/Frame/MainFrame.h"
 
-#include "Window/Frame/Doc/ImageDoc.h"
-#include "Window/Frame/View/ImageView.h"
+#include "Window/Frame/MainFrame.h"
 #include "Window/Dialog/AboutDialog.h"
 
 
@@ -30,13 +26,16 @@ CApp::CApp( )
 	SetAppID( L"ImageCL.AppID.NoVersion" );
 }
 
-
 BOOL CApp::InitInstance( )
 {
 	INITCOMMONCONTROLSEX InitCtrls;
 	InitCtrls.dwSize = sizeof( InitCtrls );
 	InitCtrls.dwICC = ICC_WIN95_CLASSES;
 	InitCommonControlsEx( &InitCtrls );
+
+#ifdef _DEBUG
+	AfxEnableMemoryTracking( TRUE );
+#endif
 
 	CWinAppEx::InitInstance( );
 
@@ -81,13 +80,14 @@ BOOL CApp::InitInstance( )
 	ttParams.m_bVislManagerTheme = TRUE;
 	theApp.GetTooltipManager( )->SetTooltipParams( AFX_TOOLTIP_TYPE_ALL, RUNTIME_CLASS( CMFCToolTipCtrl ), &ttParams );
 
-	CSingleDocTemplate* pDocTemplate = new CSingleDocTemplate( IDR_MAINFRAME, RUNTIME_CLASS( CImageDoc ), RUNTIME_CLASS( CMainFrame ), RUNTIME_CLASS( CImageView ) );
-	if( !pDocTemplate )
+
+	CMainFrame* pFrame = new CMainFrame;
+	m_pMainWnd = pFrame;
+
+	if( !pFrame->LoadFrame( IDR_MAINFRAME, WS_OVERLAPPEDWINDOW | FWS_ADDTOTITLE, NULL, NULL ) )
 	{
 		return FALSE;
 	}
-
-	AddDocTemplate( pDocTemplate );
 
 
 	CCommandLineInfo cmdInfo;
@@ -112,9 +112,6 @@ int CApp::ExitInstance( )
 
 	return CWinAppEx::ExitInstance( );
 }
-
-
-
 
 
 void CApp::PreLoadState( )

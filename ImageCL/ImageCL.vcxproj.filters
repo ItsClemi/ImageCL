@@ -62,12 +62,6 @@
     <ClInclude Include="Window\Frame\View\TextEditView.h">
       <Filter>Window\Frame\View</Filter>
     </ClInclude>
-    <ClInclude Include="Window\Frame\Doc\ImageDoc.h">
-      <Filter>Window\Frame\Doc</Filter>
-    </ClInclude>
-    <ClInclude Include="Window\Frame\View\ImageView.h">
-      <Filter>Window\Frame\View</Filter>
-    </ClInclude>
     <ClInclude Include="Window\Frame\Pane\OutputWnd.h">
       <Filter>Window\Frame\Pane</Filter>
     </ClInclude>
@@ -80,11 +74,14 @@
     <ClInclude Include="Common\Helper\CommonHelper.h">
       <Filter>Common\Helper</Filter>
     </ClInclude>
-    <ClInclude Include="Common\Helper\MfcHelper.h">
-      <Filter>Common\Helper</Filter>
-    </ClInclude>
     <ClInclude Include="Core\Log\Log.h">
       <Filter>Core\Log</Filter>
+    </ClInclude>
+    <ClInclude Include="Window\Ctrl\ImageCtrl.h">
+      <Filter>Window\Ctrl</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\Helper\MFCHelper.h">
+      <Filter>Common\Helper</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -104,12 +101,6 @@
     <ClCompile Include="Window\Frame\View\TextEditView.cpp">
       <Filter>Window\Frame\View</Filter>
     </ClCompile>
-    <ClCompile Include="Window\Frame\Doc\ImageDoc.cpp">
-      <Filter>Window\Frame\Doc</Filter>
-    </ClCompile>
-    <ClCompile Include="Window\Frame\View\ImageView.cpp">
-      <Filter>Window\Frame\View</Filter>
-    </ClCompile>
     <ClCompile Include="Window\Frame\Pane\OutputWnd.cpp">
       <Filter>Window\Frame\Pane</Filter>
     </ClCompile>
@@ -118,6 +109,9 @@
     </ClCompile>
     <ClCompile Include="Core\Log\Log.cpp">
       <Filter>Core\Log</Filter>
+    </ClCompile>
+    <ClCompile Include="Window\Ctrl\ImageCtrl.cpp">
+      <Filter>Window\Ctrl</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

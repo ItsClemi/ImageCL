@@ -6,22 +6,22 @@
 
 class CMainFrame : public CFrameWndEx
 {
-protected:
-	CMainFrame( );
 	DECLARE_DYNCREATE( CMainFrame )
+
 public:
+	CMainFrame( );
 	virtual ~CMainFrame( );
 
 private:
-	virtual BOOL OnCreateClient( LPCREATESTRUCT lpcs, CCreateContext* pContext );
-	virtual BOOL PreCreateWindow( CREATESTRUCT& cs );
+	virtual BOOL OnCreateClient( LPCREATESTRUCT lpcs, CCreateContext* pContext ) override;
+	virtual BOOL PreCreateWindow( CREATESTRUCT& cs ) override;
 
-	virtual BOOL OnCmdMsg( UINT nID, int nCode, void* pExtra, AFX_CMDHANDLERINFO* pHandlerInfo );
+	virtual BOOL OnWndMsg( UINT message, WPARAM wParam, LPARAM lParam, LRESULT* pResult ) override;
 
 public:
 #ifdef _DEBUG
-	virtual void AssertValid( ) const;
-	virtual void Dump( CDumpContext& dc ) const;
+	virtual void AssertValid( ) const override;
+	virtual void Dump( CDumpContext& dc ) const override;
 #endif
 
 private:
@@ -34,7 +34,6 @@ protected:
 	afx_msg void OnSettingChange( UINT uFlags, LPCTSTR lpszSection );
 
 	afx_msg void OnShowOutputPane( );
-
 
 	DECLARE_MESSAGE_MAP( )
 

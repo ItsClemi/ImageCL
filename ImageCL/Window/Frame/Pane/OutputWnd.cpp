@@ -17,9 +17,10 @@ BEGIN_MESSAGE_MAP( COutputWnd, CDockablePane )
 	ON_WM_CONTEXTMENU( )
 	ON_WM_ERASEBKGND( )
 
+	ON_COMMAND_PTR( WM_ADD_OUTPUT, &COutputWnd::OnAddOutput )
+
 	ON_COMMAND( ID_CLEAR_OUTPUT, &COutputWnd::OnClearOutput )
 
-	ON_COMMAND_PTR( WM_ADD_OUTPUT, &COutputWnd::OnAddOutput )
 END_MESSAGE_MAP( )
 
 

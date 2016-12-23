@@ -115,11 +115,14 @@ BOOL CMainFrame::PreCreateWindow( CREATESTRUCT& cs )
 	return TRUE;
 }
 
-//> Mfc style message reflector(so that our panes get command messages too)
-BOOL CMainFrame::OnCmdMsg( UINT nID, int nCode, void* pExtra, AFX_CMDHANDLERINFO* pHandlerInfo )
+BOOL CMainFrame::OnWndMsg( UINT message, WPARAM wParam, LPARAM lParam, LRESULT* pResult )
 {
-	if( nCode == CN_COMMAND )
+	//> Forwards messages to panes
+	if( message == WM_COMMAND_REFLECT )
 	{
+		UINT nCode = static_cast< UINT >( wParam );
+		void* pExtra = reinterpret_cast< void* >( lParam );
+
 		auto pDockingMng = afxGlobalUtils.GetDockingManager( this );
 
 		CObList list;
@@ -130,14 +133,23 @@ BOOL CMainFrame::OnCmdMsg( UINT nID, int nCode, void* pExtra, AFX_CMDHANDLERINFO
 			auto pPane = DYNAMIC_DOWNCAST( CBasePane, list.GetNext( pos ) );
 			ASSERT_VALID( pPane );
 
-			if( ::IsWindow( *pPane ) && pPane->IsVisible( ) && pPane->OnCmdMsg( nID, nCode, pExtra, pHandlerInfo ) )
+			if( ::IsWindow( *pPane ) && 
+				pPane->IsVisible( ) && 
+				pPane->OnCmdMsg( nCode, CN_COMMAND, pExtra, nullptr ) 
+				)
 			{
+				*pResult = 0;
 				return TRUE;
 			}
 		}
+
+		TRACE( "Message not handled! %d\n", message );
+
+		*pResult = 0;
+		return FALSE;
 	}
 
-	return CFrameWndEx::OnCmdMsg( nID, nCode, pExtra, pHandlerInfo );
+	return CFrameWndEx::OnWndMsg( message, wParam, lParam, pResult );
 }
 
 #ifdef _DEBUG

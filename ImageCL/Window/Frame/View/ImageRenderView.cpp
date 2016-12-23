@@ -3,16 +3,20 @@
 
 #include <Resource.h>
 
+
+#ifdef _DEBUG
+#define new DEBUG_NEW
+#endif
+
 IMPLEMENT_DYNCREATE( CImageRenderView, CView );
 
 BEGIN_MESSAGE_MAP( CImageRenderView, CView )
 	ON_WM_CREATE( )
-	ON_WM_ERASEBKGND( )
 	ON_WM_SIZE( )
 
+	//ON_COMMAND( WM_UPDATE_IMAGE,  )
 	ON_COMMAND( ID_IMAGE_OPEN, &CImageRenderView::OnImageOpen )
 
-	//ON_COMMAND( WM_UPDATE_IMAGE,  )
 END_MESSAGE_MAP( );
 
 
@@ -24,11 +28,9 @@ CImageRenderView::~CImageRenderView( )
 
 void CImageRenderView::OnDraw( CDC* pDC )
 {
-	Gdiplus::Graphics g( pDC->GetSafeHdc( ) );
-
-	g.Clear( Gdiplus::Color::MakeARGB( 255, 30, 30, 30 ) );
-
-	
+	// 	Gdiplus::Graphics g( pDC->GetSafeHdc( ) );
+	// 
+	// 	g.Clear( Gdiplus::Color::MakeARGB( 255, 30, 30, 30 ) );
 
 }
 
@@ -39,10 +41,15 @@ int CImageRenderView::OnCreate( LPCREATESTRUCT lpcs )
 		return -1;
 	}
 
-	if( 
+	if(
 		!m_wndToolBar.Create( this, AFX_DEFAULT_TOOLBAR_STYLE ) ||
 		!m_wndToolBar.LoadToolBar( IDR_IMAGE_VIEW_TOOLBAR, 0, 0, TRUE )
 		)
+	{
+		return -1;
+	}
+
+	if( !m_wndImage.Create( NULL, _T( "" ), WS_VISIBLE, CRect( 0, 0, 100, 100 ), this, 1 ) )
 	{
 		return -1;
 	}
@@ -58,12 +65,8 @@ void CImageRenderView::OnSize( UINT nType, int cx, int cy )
 	GetClientRect( rectClient );
 	int cyTlb = m_wndToolBar.CalcFixedLayout( FALSE, TRUE ).cy;
 
-	m_wndToolBar.SetWindowPos( NULL, 0, 0, cx, cyTlb, SWP_NOACTIVATE | SWP_NOZORDER );
-}
-
-BOOL CImageRenderView::OnEraseBkgnd( CDC* pDC )
-{
-	return FALSE;
+	m_wndToolBar.SetWindowPos( nullptr, 0, 0, cx, cyTlb, SWP_NOACTIVATE | SWP_NOZORDER );
+	m_wndImage.SetWindowPos( nullptr, 0, cyTlb, cx, cy - cyTlb, SWP_NOACTIVATE | SWP_NOZORDER );
 }
 
 void CImageRenderView::OnImageOpen( )
@@ -76,26 +79,42 @@ void CImageRenderView::OnImageOpen( )
 		L"Image Files|*.bmp; *.gif; *.jpeg; *.jpg; *.png; *.tiff||"
 	);
 
-	
-
 	if( dlg.DoModal( ) == IDOK )
 	{
-		auto szPath = std::make_shared< std::wstring >( dlg.GetFileName( ) );
+		auto szPath = std::make_shared< std::wstring >( dlg.GetPathName( ) );
 		auto pCursor = std::make_shared< CWaitCursor >( );
 
-		Concurrency::create_task( [ szPath, pCursor ] {
-			auto bmp = Gdiplus::Image::FromFile( szPath->c_str( ), FALSE );
 
-			if( bmp->GetLastStatus( ) == Gdiplus::Status::Ok )
-			{
-				//this->SendMessage( 0, 0, 0 );
-			}
-			else
-			{
-				AfxMessageBox( L"Failed to load image file!" );
-			}
+		Concurrency::create_task( [ & ] {
+			auto pState = AfxGetD2DState( );
+
+			IWICBitmapDecoder* pDecoder = nullptr;
+			pState->GetWICFactory( )->CreateDecoderFromFilename(
+				szPath->c_str( ),
+				nullptr,
+				GENERIC_READ,
+				WICDecodeMetadataCacheOnLoad,
+				&pDecoder 
+			);
+
+			IWICBitmap* pBmp;
+
+			CD2DBitmap;
+
+
+// 			CD2DBitmap* pBitmap = new CD2DBitmap( pTarget, szPath->c_str( ) );
+// 			if( SUCCEEDED( pBitmap->Create( pTarget ) ) )
+// 			{
+// 				AddSuccess( L"Successfully loaded image %s", szPath->c_str( ) );
+// 			}
+// 			else
+// 			{
+// 				AddError( L"Failed to load image %s", szPath->c_str( ) );
+// 			}
+
 
 			pCursor->Restore( );
 		} );
 	}
 }
+

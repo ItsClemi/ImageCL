@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Window/Ctrl/ImageCtrl.h"
+
 class CImageRenderViewToolbar : public CMFCToolBar
 {
 public:
@@ -29,10 +31,8 @@ protected:
 private:
 	afx_msg	int OnCreate( LPCREATESTRUCT lpcs );
 	afx_msg void OnSize( UINT nType, int cx, int cy );
-	afx_msg BOOL OnEraseBkgnd( CDC* pDC );
 	
 	afx_msg void OnImageOpen( );
-
 
 	DECLARE_MESSAGE_MAP( );
 
@@ -41,9 +41,5 @@ private:
 private:
 	CImageRenderViewToolbar		m_wndToolBar;
 
-	CScrollBar					m_wndVertical;
-	CScrollBar					m_wndHorizontal;
-
-	Gdiplus::Image*				m_pImage = nullptr;
-
+	CImageCtrl					m_wndImage;
 };

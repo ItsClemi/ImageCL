@@ -21,6 +21,7 @@
 #include <afxcmn.h>             
 #include <afxcontrolbars.h>   
 
+
 #include <memory>
 #include <string>
 
@@ -30,10 +31,10 @@
 #include <ppl.h>
 #include <ppltasks.h>
 
-
+ 
 #include <Common/Helper/CommonHelper.h>
 #include <Common/Helper/DpiHelper.h>
-#include <Common/Helper/MfcHelper.h>
+#include <Common/Helper/MFCHelper.h>
 
 
 #include <Core/Log/Log.h>
@@ -56,6 +57,9 @@
 
 //////////////////////////////////////////////////////////////////////////
 //=> Messages
+
+#define WM_COMMAND_REFLECT	( WM_APP + 1 )
+
 
 #define WM_ADD_OUTPUT		( WM_USER + 1 )
 #define WM_UPDATE_IMAGE		( WM_USER + 2 )

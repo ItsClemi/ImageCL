@@ -1,6 +1,20 @@
 #pragma once
 
 
+inline HICON LoadResourceIcon( WORD nId )
+{
+	return reinterpret_cast< HICON >(
+		::LoadImageW(
+			AfxGetResourceHandle( ),
+			MAKEINTRESOURCEW( nId ),
+			IMAGE_ICON,
+			GetSystemMetrics( SM_CXSMICON ),
+			GetSystemMetrics( SM_CYSMICON ),
+			0
+		) );
+}
+
+
 inline int RichEditGetVisibleLines( CRichEditCtrl* pCtrl )
 {
 	CRect rcEdit;

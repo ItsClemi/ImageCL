@@ -12,7 +12,11 @@ void AddLog( eLogType eType, const wchar_t* szFormat, va_list args )
 
 	pEntry->m_eType = eType;
 	pEntry->m_tm = _time64( nullptr );
-	
 
-	AfxGetMainWnd( )->OnCmdMsg( WM_ADD_OUTPUT, CN_COMMAND, pEntry, nullptr );
+
+	AfxGetApp( )->GetMainWnd( )->PostMessageW(  
+		WM_COMMAND_REFLECT,
+		WM_ADD_OUTPUT,
+		reinterpret_cast< LRESULT >( pEntry )
+	);
 }
