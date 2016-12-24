@@ -53,7 +53,8 @@ int CMainFrame::OnCreate( LPCREATESTRUCT lpCreateStruct )
 	EnableDocking( CBRS_ALIGN_ANY );
 	DockPane( &m_wndMenuBar );
 
-
+	CMFCVisualManager::SetDefaultManager( RUNTIME_CLASS( CMFCVisualManagerOffice2007 ) );
+	CMFCVisualManagerOffice2007::SetStyle( CMFCVisualManagerOffice2007::Office2007_ObsidianBlack );
 	CDockingManager::SetDockingMode( DT_SMART );
 
 	EnableAutoHidePanes( CBRS_ALIGN_ANY );
@@ -67,9 +68,6 @@ int CMainFrame::OnCreate( LPCREATESTRUCT lpCreateStruct )
 
 	m_wndOutput.EnableDocking( CBRS_ALIGN_ANY );
 	DockPane( &m_wndOutput );
-
-	CMFCVisualManager::SetDefaultManager( RUNTIME_CLASS( CMFCVisualManagerOffice2007 ) );
-	CMFCVisualManagerOffice2007::SetStyle( CMFCVisualManagerOffice2007::Office2007_ObsidianBlack );
 
 
 	return 0;

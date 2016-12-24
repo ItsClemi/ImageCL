@@ -35,6 +35,7 @@
 #include <Common/Helper/CommonHelper.h>
 #include <Common/Helper/DpiHelper.h>
 #include <Common/Helper/MFCHelper.h>
+#include <Common/Helper/GDIHelper.h>
 
 
 #include <Core/Log/Log.h>

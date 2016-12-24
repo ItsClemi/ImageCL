@@ -83,6 +83,9 @@
     <ClInclude Include="Common\Helper\MFCHelper.h">
       <Filter>Common\Helper</Filter>
     </ClInclude>
+    <ClInclude Include="Common\Helper\GDIHelper.h">
+      <Filter>Common\Helper</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">

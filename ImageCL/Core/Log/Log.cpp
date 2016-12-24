@@ -5,6 +5,8 @@ void AddLog( eLogType eType, const wchar_t* szFormat, va_list args )
 {
 	SLogEntry* pEntry = new SLogEntry;
 
+	size_t s = ARRAYSIZE( pEntry->m_szMessage );
+
 	if( _vsnwprintf_s( pEntry->m_szMessage, ARRAYSIZE( pEntry->m_szMessage ), szFormat, args ) == _TRUNCATE )
 	{
 		wcscat_s( pEntry->m_szMessage, L"<failed to print message>" );

@@ -145,7 +145,7 @@ IDR_MAINFRAME MENU
 BEGIN
     POPUP "&File"
     BEGIN
-        MENUITEM "&New CL\tCtrl+N",             ID_FILE_NEW
+        MENUITEM "&New\tCtrl+N",                ID_FILE_NEW
         MENUITEM "&Open...\tCtrl+O",            ID_FILE_OPEN
         MENUITEM "&Save\tCtrl+S",               ID_FILE_SAVE
         MENUITEM "Save &As...",                 ID_FILE_SAVE_AS
@@ -182,34 +182,6 @@ BEGIN
     END
 END
 
-IDR_POPUP_SORT MENU
-BEGIN
-    POPUP "Sorting"
-    BEGIN
-        MENUITEM "&Sort Alphabeticaly",         ID_SORTING_SORTALPHABETIC
-        MENUITEM "Sort by &Type",               ID_SORTING_SORTBYTYPE
-        MENUITEM "Sort by Acc&ess",             ID_SORTING_SORTBYACCESS
-        MENUITEM "Group by t&ype",              ID_SORTING_GROUPBYTYPE
-    END
-END
-
-IDR_POPUP_EXPLORER MENU
-BEGIN
-    POPUP "Explorer"
-    BEGIN
-        MENUITEM "&Open",                       ID_OPEN
-        MENUITEM "Open &With....",              ID_OPEN_WITH
-        MENUITEM SEPARATOR
-        MENUITEM "&Compile",                    ID_DUMMY_COMPILE
-        MENUITEM SEPARATOR
-        MENUITEM "Cu&t\tCtrl+X",                ID_EDIT_CUT
-        MENUITEM "&Copy\tCtrl+C",               ID_EDIT_COPY
-        MENUITEM "&Remove",                     ID_EDIT_CLEAR
-        MENUITEM SEPARATOR
-        MENUITEM "&Properties...",              ID_PROPERTIES
-    END
-END
-
 IDR_OUTPUT_POPUP MENU
 BEGIN
     POPUP "Popup"
@@ -224,6 +196,19 @@ END
 IDR_HELP_MENU MENU
 BEGIN
     MENUITEM "&About ImageCL...",           ID_APP_ABOUT
+END
+
+IDR_IMAGE_VIEW MENU
+BEGIN
+    POPUP "Image"
+    BEGIN
+        MENUITEM "Load Image",                  ID_IMAGE_LOADIMAGE
+        MENUITEM "Save Image",                  ID_IMAGE_SAVEIMAGE
+    END
+    POPUP "View"
+    BEGIN
+        MENUITEM "View Rendered",               ID_VIEW_VIEWRENDERED, CHECKED
+    END
 END
 
 

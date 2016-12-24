@@ -9,6 +9,8 @@ IMPLEMENT_DYNCREATE( CTextEditView, CView );
 BEGIN_MESSAGE_MAP( CTextEditView, CView )
 	ON_WM_CREATE( )
 	ON_WM_SIZE( )
+	ON_WM_ERASEBKGND( )
+	
 
 	ON_COMMAND( ID_EDIT_COPY, &CTextEditView::OnEditCopy )
 	ON_COMMAND( ID_EDIT_CUT, &CTextEditView::OnEditCut )
@@ -56,6 +58,13 @@ CTextEditView::CTextEditView( )
 CTextEditView::~CTextEditView( )
 { }
 
+void CTextEditView::OnDraw( CDC* pDC )
+{ 
+	Gdiplus::Graphics g( pDC->GetSafeHdc( ) );
+
+	g.Clear( Gdiplus::Color::MakeARGB( 255, 30, 30, 30 ) );
+}
+
 void CTextEditView::SetAStyle( int style, COLORREF fore, COLORREF back, int size, const char* face )
 {
 	m_wndEdit.StyleSetFore( style, fore );
@@ -75,20 +84,33 @@ int CTextEditView::OnCreate( LPCREATESTRUCT lpcs )
 		return -1;
 	}
 
-	if( !m_wndToolBar.Create( this, AFX_DEFAULT_TOOLBAR_STYLE ) )
+	if( !m_wndToolBar.Create( this, AFX_DEFAULT_TOOLBAR_STYLE ) ||
+		!m_wndToolBar.LoadToolBar( IDR_TEXT_EDIT_TOOLBAR, 0, 0, TRUE ) 
+		)
 	{
 		return -1;
 	}
 
-	if( !m_wndToolBar.LoadToolBar( IDR_TEXT_EDIT_TOOLBAR, 0, 0, TRUE ) )
+	if( !m_wndEdit.Create( WS_CHILD /*| WS_VISIBLE*/ | WS_TABSTOP, CRect( 0, 0, 300, 400 ), this, 0 ) )
 	{
 		return -1;
 	}
 
-	if( !m_wndEdit.Create( WS_CHILD | WS_VISIBLE | WS_TABSTOP, CRect( 0, 0, 300, 400 ), this, 0 ) )
+
+	if( !m_wndStatusBar.Create( this ) )
 	{
 		return -1;
 	}
+
+// 	if( !m_wndZoomLevel.Create( WS_CHILD | WS_VISIBLE | CBS_DROPDOWNLIST, { 0,0,0,0 }, &m_wndToolBar, 1 ) )
+// 	{
+// 		return -1;
+// 	}
+
+// 	m_wndZoomLevel.AddString( L"100%" );
+// 	m_wndZoomLevel.AddString( L"75%" );
+// 	m_wndZoomLevel.AddString( L"50%" );
+
 
 	m_wndEdit.SetLexer( SCLEX_CPP );
 
@@ -132,13 +154,24 @@ void CTextEditView::OnSize( UINT nType, int cx, int cy )
 {
 	CView::OnSize( nType, cx, cy );
 
-	CRect rectClient;
-	GetClientRect( rectClient );
-	int cyTlb = m_wndToolBar.CalcFixedLayout( FALSE, TRUE ).cy;
+	int cyToolbar = m_wndToolBar.CalcFixedLayout( FALSE, TRUE ).cy;
 
-	m_wndToolBar.SetWindowPos( NULL, 0, 0, cx, cyTlb, SWP_NOACTIVATE | SWP_NOZORDER );
-	m_wndEdit.SetWindowPos( NULL, 0, cyTlb, cx, cy - ( cyTlb ), SWP_NOACTIVATE | SWP_NOZORDER );
+	int cyStatus = m_wndStatusBar.CalcFixedLayout( FALSE, TRUE ).cy;
 
+	m_wndToolBar.SetWindowPos( NULL, 0, 0, cx, cyToolbar, SWP_NOACTIVATE | SWP_NOZORDER );
+	m_wndEdit.SetWindowPos( NULL, 0, cyToolbar, cx, cy - ( cyToolbar + cyStatus ), SWP_NOACTIVATE | SWP_NOZORDER );
+	m_wndStatusBar.SetWindowPos( nullptr, 0, 500 - ( cyToolbar  ), cx, 500 + ( cyStatus ), SWP_NOACTIVATE | SWP_NOZORDER );
+
+// 	CRect rc;
+// 	m_wndStatusBar.GetClientRect( &rc );
+// 	
+// 	m_wndZoomLevel.SetWindowPos( nullptr, cx - 150, 250 - ( cyToolbar + 5 ), cx - 5, 250 - ( cyToolbar + cyStatus  - 5 ), SWP_NOACTIVATE | SWP_NOZORDER );
+
+}
+
+BOOL CTextEditView::OnEraseBkgnd( CDC* pDC )
+{
+	return FALSE;
 }
 
 void CTextEditView::OnEditCopy( )
@@ -185,6 +218,4 @@ void CTextEditView::OnEditReplace( )
 void CTextEditView::OnEditRepeat( )
 { }
 
-void CTextEditView::OnDraw( CDC* pDC )
-{ }
 

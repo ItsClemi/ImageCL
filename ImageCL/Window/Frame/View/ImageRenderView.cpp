@@ -84,34 +84,23 @@ void CImageRenderView::OnImageOpen( )
 		auto szPath = std::make_shared< std::wstring >( dlg.GetPathName( ) );
 		auto pCursor = std::make_shared< CWaitCursor >( );
 
+		Concurrency::create_task( [ szPath, pCursor ] {
+			auto pBmp = Gdiplus::Bitmap::FromFile( szPath->c_str( ), FALSE );
 
-		Concurrency::create_task( [ & ] {
-			auto pState = AfxGetD2DState( );
+			auto status = pBmp->GetLastStatus( );
 
-			IWICBitmapDecoder* pDecoder = nullptr;
-			pState->GetWICFactory( )->CreateDecoderFromFilename(
-				szPath->c_str( ),
-				nullptr,
-				GENERIC_READ,
-				WICDecodeMetadataCacheOnLoad,
-				&pDecoder 
-			);
-
-			IWICBitmap* pBmp;
-
-			CD2DBitmap;
-
-
-// 			CD2DBitmap* pBitmap = new CD2DBitmap( pTarget, szPath->c_str( ) );
-// 			if( SUCCEEDED( pBitmap->Create( pTarget ) ) )
-// 			{
-// 				AddSuccess( L"Successfully loaded image %s", szPath->c_str( ) );
-// 			}
-// 			else
-// 			{
-// 				AddError( L"Failed to load image %s", szPath->c_str( ) );
-// 			}
-
+			if( status == Gdiplus::Status::Ok )
+			{
+				AddSuccess( L"Successfully loaded image %s", szPath->c_str( ) );
+			}
+			else
+			{
+				AddError( L"Failed to load image %s GdiResult: %s(%d)", 
+					szPath->c_str( ), 
+					Gdiplus::GdiStatusToString( status ),
+					status
+				);
+			}
 
 			pCursor->Restore( );
 		} );

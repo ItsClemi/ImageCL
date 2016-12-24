@@ -16,8 +16,8 @@
 BEGIN_MESSAGE_MAP( CApp, CWinAppEx )
 	ON_COMMAND( ID_APP_ABOUT, &CApp::OnAppAbout )
 
-	ON_COMMAND( ID_FILE_NEW, &CWinAppEx::OnFileNew )
-	ON_COMMAND( ID_FILE_OPEN, &CWinAppEx::OnFileOpen )
+	ON_COMMAND( ID_FILE_NEW, &CApp::OnFileNew )
+	ON_COMMAND( ID_FILE_OPEN, &CApp::OnFileOpen )
 END_MESSAGE_MAP( )
 
 
@@ -38,13 +38,6 @@ BOOL CApp::InitInstance( )
 #endif
 
 	CWinAppEx::InitInstance( );
-
-
-	if( !EnableD2DSupport( D2D1_FACTORY_TYPE::D2D1_FACTORY_TYPE_MULTI_THREADED ) )
-	{
-		AfxMessageBox( L"Failed to enable d2d!" );
-		return FALSE;
-	}
 
 	Gdiplus::GdiplusStartupInput input;
 	Gdiplus::GdiplusStartupOutput output;
@@ -116,14 +109,6 @@ int CApp::ExitInstance( )
 
 void CApp::PreLoadState( )
 {
-	BOOL bNameValid;
-	CString strName;
-	bNameValid = strName.LoadString( IDS_EDIT_MENU );
-	ASSERT( bNameValid );
-	GetContextMenuManager( )->AddMenu( strName, IDR_POPUP_EDIT );
-	bNameValid = strName.LoadString( IDS_EXPLORER );
-	ASSERT( bNameValid );
-	GetContextMenuManager( )->AddMenu( strName, IDR_POPUP_EXPLORER );
 }
 
 void CApp::LoadCustomState( )
@@ -132,6 +117,16 @@ void CApp::LoadCustomState( )
 void CApp::SaveCustomState( )
 { }
 
+
+void CApp::OnFileNew( )
+{
+
+}
+
+void CApp::OnFileOpen( )
+{
+
+}
 
 void CApp::OnAppAbout( )
 {

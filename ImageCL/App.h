@@ -14,14 +14,18 @@ public:
 	CApp( );
 
 private:
-	virtual BOOL InitInstance( );
-	virtual int ExitInstance( );
+	virtual BOOL InitInstance( ) override;
+	virtual int ExitInstance( ) override;
 
-	virtual void PreLoadState( );
-	virtual void LoadCustomState( );
-	virtual void SaveCustomState( );
+	virtual void PreLoadState( ) override;
+	virtual void LoadCustomState( ) override;
+	virtual void SaveCustomState( ) override;
+
 
 private:
+	afx_msg void OnFileNew( );
+	afx_msg void OnFileOpen( );
+
 	afx_msg void OnAppAbout( );
 
 	DECLARE_MESSAGE_MAP( )

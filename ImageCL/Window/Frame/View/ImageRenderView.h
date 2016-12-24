@@ -39,6 +39,7 @@ private:
 
 
 private:
+	
 	CImageRenderViewToolbar		m_wndToolBar;
 
 	CImageCtrl					m_wndImage;

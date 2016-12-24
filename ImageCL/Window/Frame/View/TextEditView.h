@@ -30,12 +30,13 @@ protected:
 
 
 private:
-
 	void SetAStyle( int style, COLORREF fore, COLORREF back = RGB( 30, 30, 30 ), int size = -1, const char *face = '\0' );
 
 private:
 	afx_msg	int OnCreate( LPCREATESTRUCT lpcs );
 	afx_msg void OnSize( UINT nType, int cx, int cy );
+	
+	afx_msg BOOL OnEraseBkgnd( CDC* pDC );
 
 
 	afx_msg void OnEditCopy( );
@@ -55,4 +56,7 @@ private:
 private:
 	CTextEditToolBar		m_wndToolBar;
 	CScintillaCtrl			m_wndEdit;
+	CStatusBar				m_wndStatusBar;
+	CComboBox				m_wndZoomLevel;
+
 };

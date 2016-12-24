@@ -17,20 +17,12 @@
 #define ID_WINDOW_MANAGER               131
 #define ID_VIEW_FILEVIEW                133
 #define ID_VIEW_CLASSVIEW               134
-#define ID_PROPERTIES                   135
-#define ID_OPEN                         136
-#define ID_OPEN_WITH                    137
-#define ID_DUMMY_COMPILE                138
 #define ID_CLASS_ADD_MEMBER_FUNCTION    139
 #define ID_CLASS_ADD_MEMBER_VARIABLE    140
 #define ID_CLASS_DEFINITION             141
 #define ID_CLASS_PROPERTIES             142
 #define ID_NEW_FOLDER                   143
 #define ID_SORT_MENU                    144
-#define ID_SORTING_GROUPBYTYPE          145
-#define ID_SORTING_SORTALPHABETIC       146
-#define ID_SORTING_SORTBYTYPE           147
-#define ID_SORTING_SORTBYACCESS         148
 #define ID_VIEW_OUTPUTWND               149
 #define IDS_FILE_VIEW                   155
 #define IDS_CLASS_VIEW                  156
@@ -41,8 +33,6 @@
 #define IDB_EXPLORER_24                 170
 #define IDR_SORT                        171
 #define IDB_SORT_24                     172
-#define IDR_POPUP_SORT                  173
-#define IDR_POPUP_EXPLORER              174
 #define IDB_FILE_VIEW_24                176
 #define IDB_CLASS_VIEW_24               178
 #define IDR_MENU_IMAGES                 179
@@ -57,6 +47,7 @@
 #define IDR_OUTPUT_TOOLBAR              310
 #define IDR_TEXT_EDIT_TOOLBAR           315
 #define IDR_IMAGE_VIEW_TOOLBAR          319
+#define IDR_IMAGE_VIEW                  321
 #define IDC_RICHEDIT21                  1000
 #define IDC_MFCLINK2                    1003
 #define ID_CLEAR_OUTPUT                 32771
@@ -72,16 +63,21 @@
 #define ID_VIEW_OUTPUTPANE              32781
 #define ID_BUTTON32782                  32782
 #define ID_BUTTON32783                  32783
-#define	ID_IMAGE_OPEN					32784
-#define ID_IMAGE_SAVE					32785
-#define ID_IMAGE_SWITCH					32786
+#define ID_IMAGE_OPEN                   32784
+#define ID_IMAGE_LOADIMAGE              32784
+#define ID_IMAGE_SAVE                   32785
+#define ID_IMAGE_SAVEIMAGE              32785
+#define ID_IMAGE_SWITCH                 32786
+#define ID_VIEW_VIEWRENDERED            32786
+#define ID_IMAGE_LOADIMAGE32787         32787
+#define ID_IMAGE_SAVEIMAGE32788         32788
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        321
-#define _APS_NEXT_COMMAND_VALUE         32784
+#define _APS_NEXT_RESOURCE_VALUE        322
+#define _APS_NEXT_COMMAND_VALUE         32789
 #define _APS_NEXT_CONTROL_VALUE         1005
 #define _APS_NEXT_SYMED_VALUE           310
 #endif

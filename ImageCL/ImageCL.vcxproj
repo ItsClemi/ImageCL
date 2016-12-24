@@ -111,6 +111,7 @@
     <ClInclude Include="App.h" />
     <ClInclude Include="Common\Helper\CommonHelper.h" />
     <ClInclude Include="Common\Helper\DpiHelper.h" />
+    <ClInclude Include="Common\Helper\GDIHelper.h" />
     <ClInclude Include="Common\Helper\MFCHelper.h" />
     <ClInclude Include="Core\Log\Log.h" />
     <ClInclude Include="Resource.h" />
