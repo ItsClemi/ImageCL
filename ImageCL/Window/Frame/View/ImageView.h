@@ -1,7 +1,5 @@
 #pragma once
 
-#include "Window/Ctrl/ImageCtrl.h"
-
 class CImageRenderViewToolbar : public CMFCToolBar
 {
 public:
@@ -17,13 +15,14 @@ public:
 };
 
 
-class CImageRenderView : public CView
+class CImageView : public CView
 {
-	DECLARE_DYNCREATE( CImageRenderView );
-
 protected:
-	CImageRenderView( );
-	virtual ~CImageRenderView( );
+	DECLARE_DYNCREATE( CImageView );
+	CImageView( );
+
+public:
+	virtual ~CImageView( );
 
 
 	virtual void OnDraw( CDC* pDC ) override;
@@ -31,16 +30,18 @@ protected:
 private:
 	afx_msg	int OnCreate( LPCREATESTRUCT lpcs );
 	afx_msg void OnSize( UINT nType, int cx, int cy );
-	
+	afx_msg BOOL OnEraseBkgnd( CDC* pDC );
+
+
+
 	afx_msg void OnImageOpen( );
 
 	DECLARE_MESSAGE_MAP( );
 
 
 
-private:
-	
+private:	
 	CImageRenderViewToolbar		m_wndToolBar;
 
-	CImageCtrl					m_wndImage;
+
 };

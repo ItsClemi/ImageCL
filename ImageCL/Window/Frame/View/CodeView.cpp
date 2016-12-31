@@ -1,27 +1,25 @@
 #include "stdafx.h"
-#include "TextEditView.h"
+#include "CodeView.h"
 
 #include <SciLexer.h>
 #include <resource.h>
 
-IMPLEMENT_DYNCREATE( CTextEditView, CView );
+IMPLEMENT_DYNCREATE( CCodeView, CView );
 
-BEGIN_MESSAGE_MAP( CTextEditView, CView )
+BEGIN_MESSAGE_MAP( CCodeView, CView )
 	ON_WM_CREATE( )
 	ON_WM_SIZE( )
-	ON_WM_ERASEBKGND( )
-	
 
-	ON_COMMAND( ID_EDIT_COPY, &CTextEditView::OnEditCopy )
-	ON_COMMAND( ID_EDIT_CUT, &CTextEditView::OnEditCut )
-	ON_COMMAND( ID_EDIT_PASTE, &CTextEditView::OnEditPaste )
-	ON_COMMAND( ID_EDIT_CLEAR, &CTextEditView::OnEditClear )
-	ON_COMMAND( ID_EDIT_UNDO, &CTextEditView::OnEditUndo )
-	ON_COMMAND( ID_EDIT_REDO, &CTextEditView::OnEditRedo )
-	ON_COMMAND( ID_EDIT_SELECT_ALL, &CTextEditView::OnEditSelectAll )
-	ON_COMMAND( ID_EDIT_FIND, &CTextEditView::OnEditFind )
-	ON_COMMAND( ID_EDIT_REPLACE, &CTextEditView::OnEditReplace )
-	ON_COMMAND( ID_EDIT_REPEAT, &CTextEditView::OnEditRepeat )
+	ON_COMMAND( ID_EDIT_COPY, &CCodeView::OnEditCopy )
+	ON_COMMAND( ID_EDIT_CUT, &CCodeView::OnEditCut )
+	ON_COMMAND( ID_EDIT_PASTE, &CCodeView::OnEditPaste )
+	ON_COMMAND( ID_EDIT_CLEAR, &CCodeView::OnEditClear )
+	ON_COMMAND( ID_EDIT_UNDO, &CCodeView::OnEditUndo )
+	ON_COMMAND( ID_EDIT_REDO, &CCodeView::OnEditRedo )
+	ON_COMMAND( ID_EDIT_SELECT_ALL, &CCodeView::OnEditSelectAll )
+	ON_COMMAND( ID_EDIT_FIND, &CCodeView::OnEditFind )
+	ON_COMMAND( ID_EDIT_REPLACE, &CCodeView::OnEditReplace )
+	ON_COMMAND( ID_EDIT_REPEAT, &CCodeView::OnEditRepeat )
 END_MESSAGE_MAP( )
 
 static const wchar_t cppKeyWords[ ] =
@@ -52,64 +50,46 @@ L"double2 double4 double8 double16 half2 half4 half8 half16 "
 ;
 
 
-CTextEditView::CTextEditView( )
+CCodeView::CCodeView( )
 { }
 
-CTextEditView::~CTextEditView( )
+CCodeView::~CCodeView( )
 { }
 
-void CTextEditView::OnDraw( CDC* pDC )
-{ 
+void CCodeView::OnDraw( CDC* pDC )
+{
 	Gdiplus::Graphics g( pDC->GetSafeHdc( ) );
 
 	g.Clear( Gdiplus::Color::MakeARGB( 255, 30, 30, 30 ) );
 }
 
-void CTextEditView::SetAStyle( int style, COLORREF fore, COLORREF back, int size, const char* face )
+void CCodeView::SetAStyle( int style, COLORREF fore, COLORREF back, int size, const char* face )
 {
 	m_wndEdit.StyleSetFore( style, fore );
 	m_wndEdit.StyleSetBack( style, back );
 
 	if( size >= 1 )
+	{
 		m_wndEdit.StyleSetSize( style, size );
+	}
 
 	if( face )
+	{
 		m_wndEdit.StyleSetFont( style, face );
+	}
 }
 
-int CTextEditView::OnCreate( LPCREATESTRUCT lpcs )
+int CCodeView::OnCreate( LPCREATESTRUCT lpcs )
 {
 	if( CView::OnCreate( lpcs ) == -1 )
 	{
 		return -1;
 	}
 
-	if( !m_wndToolBar.Create( this, AFX_DEFAULT_TOOLBAR_STYLE ) ||
-		!m_wndToolBar.LoadToolBar( IDR_TEXT_EDIT_TOOLBAR, 0, 0, TRUE ) 
-		)
+	if( !m_wndEdit.Create( WS_CHILD | WS_VISIBLE | WS_TABSTOP, CRect( 0, 0, 300, 400 ), this, 0 ) )
 	{
 		return -1;
 	}
-
-	if( !m_wndEdit.Create( WS_CHILD /*| WS_VISIBLE*/ | WS_TABSTOP, CRect( 0, 0, 300, 400 ), this, 0 ) )
-	{
-		return -1;
-	}
-
-
-	if( !m_wndStatusBar.Create( this ) )
-	{
-		return -1;
-	}
-
-// 	if( !m_wndZoomLevel.Create( WS_CHILD | WS_VISIBLE | CBS_DROPDOWNLIST, { 0,0,0,0 }, &m_wndToolBar, 1 ) )
-// 	{
-// 		return -1;
-// 	}
-
-// 	m_wndZoomLevel.AddString( L"100%" );
-// 	m_wndZoomLevel.AddString( L"75%" );
-// 	m_wndZoomLevel.AddString( L"50%" );
 
 
 	m_wndEdit.SetLexer( SCLEX_CPP );
@@ -147,75 +127,82 @@ int CTextEditView::OnCreate( LPCREATESTRUCT lpcs )
 	m_wndEdit.StyleSetItalic( SCE_C_IDENTIFIER, TRUE );
 
 
+
 	return 0;
 }
 
-void CTextEditView::OnSize( UINT nType, int cx, int cy )
+void CCodeView::OnSize( UINT nType, int cx, int cy )
 {
 	CView::OnSize( nType, cx, cy );
 
-	int cyToolbar = m_wndToolBar.CalcFixedLayout( FALSE, TRUE ).cy;
-
-	int cyStatus = m_wndStatusBar.CalcFixedLayout( FALSE, TRUE ).cy;
-
-	m_wndToolBar.SetWindowPos( NULL, 0, 0, cx, cyToolbar, SWP_NOACTIVATE | SWP_NOZORDER );
-	m_wndEdit.SetWindowPos( NULL, 0, cyToolbar, cx, cy - ( cyToolbar + cyStatus ), SWP_NOACTIVATE | SWP_NOZORDER );
-	m_wndStatusBar.SetWindowPos( nullptr, 0, 500 - ( cyToolbar  ), cx, 500 + ( cyStatus ), SWP_NOACTIVATE | SWP_NOZORDER );
-
-// 	CRect rc;
-// 	m_wndStatusBar.GetClientRect( &rc );
-// 	
-// 	m_wndZoomLevel.SetWindowPos( nullptr, cx - 150, 250 - ( cyToolbar + 5 ), cx - 5, 250 - ( cyToolbar + cyStatus  - 5 ), SWP_NOACTIVATE | SWP_NOZORDER );
-
+	m_wndEdit.SetWindowPos( nullptr, 0, 0, cx, cy, SWP_NOACTIVATE | SWP_NOZORDER );
 }
 
-BOOL CTextEditView::OnEraseBkgnd( CDC* pDC )
-{
-	return FALSE;
-}
-
-void CTextEditView::OnEditCopy( )
+void CCodeView::OnEditCopy( )
 {
 	m_wndEdit.Copy( );
 }
 
-void CTextEditView::OnEditCut( )
+void CCodeView::OnEditCut( )
 {
 	m_wndEdit.Cut( );
 }
 
-void CTextEditView::OnEditPaste( )
+void CCodeView::OnEditPaste( )
 {
 	m_wndEdit.Paste( );
 }
 
-void CTextEditView::OnEditClear( )
+void CCodeView::OnEditClear( )
 {
 	m_wndEdit.Clear( );
 }
 
-void CTextEditView::OnEditUndo( )
+void CCodeView::OnEditUndo( )
 {
 	m_wndEdit.Undo( );
 }
 
-void CTextEditView::OnEditRedo( )
+void CCodeView::OnEditRedo( )
 {
 	m_wndEdit.Redo( );
 }
 
-void CTextEditView::OnEditSelectAll( )
+void CCodeView::OnEditSelectAll( )
 {
 	m_wndEdit.SelectAll( );
 }
 
-void CTextEditView::OnEditFind( )
+void CCodeView::OnEditFind( )
 { }
 
-void CTextEditView::OnEditReplace( )
+void CCodeView::OnEditReplace( )
 { }
 
-void CTextEditView::OnEditRepeat( )
+void CCodeView::OnEditRepeat( )
 { }
 
 
+// 	CStatusBar				m_wndStatusBar;
+// 	CComboBox				m_wndZoomLevel;
+// 	CSize csZoomLevel( 50 );
+// 	ScaleDpi( csZoomLevel );
+// 
+// 	if( !m_wndStatusBar.Create( this ) ||
+// 		!m_wndZoomLevel.Create( WS_CHILD | WS_VISIBLE | CBS_DROPDOWNLIST | CBS_HASSTRINGS | CBS_SORT, { 0, 0, csZoomLevel.cx, 0 }, &m_wndStatusBar, 1 ) )
+// 	{
+// 		return -1;
+// 	}
+// 
+// 	m_wndZoomLevel.AddString( L"100%" );
+// 	m_wndZoomLevel.AddString( L"75%" );
+// 	m_wndZoomLevel.AddString( L"50%" );
+// 	
+//int cyStatus = m_wndStatusBar.CalcFixedLayout( FALSE, TRUE ).cy;
+
+//m_wndStatusBar.SetWindowPos( nullptr, 0, cy - ( cyStatus ), cx, cyStatus, SWP_NOACTIVATE | SWP_NOZORDER );
+
+// 	CRect rcZoomLevel;
+// 	m_wndZoomLevel.GetClientRect( rcZoomLevel );
+// 
+// 	m_wndZoomLevel.SetWindowPos( nullptr, 0, 1, rcZoomLevel.Width( ), cyStatus, SWP_NOACTIVATE | SWP_NOZORDER );

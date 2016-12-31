@@ -24,12 +24,19 @@
 
 #include <memory>
 #include <string>
+#include <vector>
+#include <array>
+#include <codecvt>	
+#include <fstream>
 
 #include <gdiplus.h>
 #include <Scintilla.h>
 
 #include <ppl.h>
 #include <ppltasks.h>
+
+
+#include <CL/cl.hpp>
 
  
 #include <Common/Helper/CommonHelper.h>
@@ -43,6 +50,8 @@
 
 //////////////////////////////////////////////////////////////////////////
 //=> Lib
+
+#pragma comment( lib, "OpenCL.lib" )
 
 
 #if defined _M_IX86
@@ -64,3 +73,4 @@
 
 #define WM_ADD_OUTPUT		( WM_USER + 1 )
 #define WM_UPDATE_IMAGE		( WM_USER + 2 )
+#define WM_SET_CL_PROGRAM	( WM_USER + 3 )

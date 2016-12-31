@@ -1,5 +1,5 @@
 #include "stdafx.h"
-#include "ImageRenderView.h"
+#include "ImageView.h"
 
 #include <Resource.h>
 
@@ -8,68 +8,67 @@
 #define new DEBUG_NEW
 #endif
 
-IMPLEMENT_DYNCREATE( CImageRenderView, CView );
+IMPLEMENT_DYNCREATE( CImageView, CView );
 
-BEGIN_MESSAGE_MAP( CImageRenderView, CView )
+BEGIN_MESSAGE_MAP( CImageView, CView )
 	ON_WM_CREATE( )
 	ON_WM_SIZE( )
+	ON_WM_ERASEBKGND( )
 
-	//ON_COMMAND( WM_UPDATE_IMAGE,  )
-	ON_COMMAND( ID_IMAGE_OPEN, &CImageRenderView::OnImageOpen )
+
+	ON_COMMAND( ID_IMAGE_OPEN, &CImageView::OnImageOpen )
 
 END_MESSAGE_MAP( );
 
 
-CImageRenderView::CImageRenderView( )
+CImageView::CImageView( )
 { }
 
-CImageRenderView::~CImageRenderView( )
+CImageView::~CImageView( )
 { }
 
-void CImageRenderView::OnDraw( CDC* pDC )
+void CImageView::OnDraw( CDC* pDC )
 {
-	// 	Gdiplus::Graphics g( pDC->GetSafeHdc( ) );
-	// 
-	// 	g.Clear( Gdiplus::Color::MakeARGB( 255, 30, 30, 30 ) );
+	Gdiplus::Graphics g( pDC->GetSafeHdc( ) );
+
+	g.Clear( Gdiplus::Color::MakeARGB( 255, 30, 30, 30 ) );
 
 }
 
-int CImageRenderView::OnCreate( LPCREATESTRUCT lpcs )
+int CImageView::OnCreate( LPCREATESTRUCT lpcs )
 {
 	if( CView::OnCreate( lpcs ) == -1 )
 	{
 		return -1;
 	}
 
-	if(
-		!m_wndToolBar.Create( this, AFX_DEFAULT_TOOLBAR_STYLE ) ||
+	if( !m_wndToolBar.Create( this, AFX_DEFAULT_TOOLBAR_STYLE ) ||
 		!m_wndToolBar.LoadToolBar( IDR_IMAGE_VIEW_TOOLBAR, 0, 0, TRUE )
 		)
 	{
 		return -1;
 	}
 
-	if( !m_wndImage.Create( NULL, _T( "" ), WS_VISIBLE, CRect( 0, 0, 100, 100 ), this, 1 ) )
-	{
-		return -1;
-	}
+ 	
 
 	return 0;
 }
 
-void CImageRenderView::OnSize( UINT nType, int cx, int cy )
+void CImageView::OnSize( UINT nType, int cx, int cy )
 {
 	CView::OnSize( nType, cx, cy );
 
-	CRect rectClient;
-	GetClientRect( rectClient );
 	int cyTlb = m_wndToolBar.CalcFixedLayout( FALSE, TRUE ).cy;
 
 	m_wndToolBar.SetWindowPos( nullptr, 0, 0, cx, cyTlb, SWP_NOACTIVATE | SWP_NOZORDER );
-	m_wndImage.SetWindowPos( nullptr, 0, cyTlb, cx, cy - cyTlb, SWP_NOACTIVATE | SWP_NOZORDER );
 }
 
-void CImageRenderView::OnImageOpen( )
+BOOL CImageView::OnEraseBkgnd( CDC* pDC )
+{
+	return TRUE;
+}
+
+void CImageView::OnImageOpen( )
 {
 	CFileDialog	dlg(
 		TRUE,
@@ -91,11 +90,11 @@ void CImageRenderView::OnImageOpen( )
 
 			if( status == Gdiplus::Status::Ok )
 			{
-				AddSuccess( L"Successfully loaded image %s", szPath->c_str( ) );
+				LogSuccess( L"Successfully loaded image %s", szPath->c_str( ) );
 			}
 			else
 			{
-				AddError( L"Failed to load image %s GdiResult: %s(%d)", 
+				LogError( L"Failed to load image %s GdiResult: %s(%d)", 
 					szPath->c_str( ), 
 					Gdiplus::GdiStatusToString( status ),
 					status

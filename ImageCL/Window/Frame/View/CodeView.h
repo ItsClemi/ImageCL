@@ -3,27 +3,14 @@
 #include <Window/Ctrl/ScintillaCtrl.h>
 
 
-class CTextEditToolBar : public CMFCToolBar
+class CCodeDoc;
+class CCodeView : public CView
 {
-public:
-	virtual void OnUpdateCmdUI( CFrameWnd*, BOOL bDisableIfNoHndler )
-	{
-		CMFCToolBar::OnUpdateCmdUI( ( CFrameWnd* )GetOwner( ), bDisableIfNoHndler );
-	}
-
-	virtual BOOL AllowShowOnList( ) const
-	{
-		return FALSE;
-	}
-};
-
-class CTextEditView : public CView
-{
-	DECLARE_DYNCREATE( CTextEditView );
+	DECLARE_DYNCREATE( CCodeView );
 
 public:
-	CTextEditView( );
-	virtual ~CTextEditView( );
+	CCodeView( );
+	virtual ~CCodeView( );
 
 protected:
 	virtual void OnDraw( CDC* pDC ) override;
@@ -35,8 +22,6 @@ private:
 private:
 	afx_msg	int OnCreate( LPCREATESTRUCT lpcs );
 	afx_msg void OnSize( UINT nType, int cx, int cy );
-	
-	afx_msg BOOL OnEraseBkgnd( CDC* pDC );
 
 
 	afx_msg void OnEditCopy( );
@@ -52,11 +37,13 @@ private:
 
 	DECLARE_MESSAGE_MAP( );
 
+public:
+	inline CCodeDoc* GetDocument( )
+	{
+		return reinterpret_cast< CCodeDoc* >( m_pDocument );
+	}
 
 private:
-	CTextEditToolBar		m_wndToolBar;
 	CScintillaCtrl			m_wndEdit;
-	CStatusBar				m_wndStatusBar;
-	CComboBox				m_wndZoomLevel;
 
 };

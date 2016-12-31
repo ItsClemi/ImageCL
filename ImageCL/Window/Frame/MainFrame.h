@@ -1,6 +1,8 @@
 #pragma once
 
-#include "Window/Frame/Pane/OutputWnd.h"
+#include "Window/Frame/Pane/OutputPane.h"
+#include "Window/Frame/Pane/ImagePane.h"
+
 
 
 
@@ -13,7 +15,6 @@ public:
 	virtual ~CMainFrame( );
 
 private:
-	virtual BOOL OnCreateClient( LPCREATESTRUCT lpcs, CCreateContext* pContext ) override;
 	virtual BOOL PreCreateWindow( CREATESTRUCT& cs ) override;
 
 	virtual BOOL OnWndMsg( UINT message, WPARAM wParam, LPARAM lParam, LRESULT* pResult ) override;
@@ -40,10 +41,14 @@ protected:
 
 protected:
 	CMFCMenuBar			m_wndMenuBar;
-	COutputWnd			m_wndOutput;
-		
-	CSplitterWnd		m_wndSplitter;
+	CMFCToolBar			m_wndCodeBar;
+	
+	
+	CSplitterWndEx		m_wndSplitter;
 	bool				m_bSplitterInitialized = false;
+
+	COutputPane			m_wndOutput;
+	CImagePane			m_wndImage;
 
 
 };

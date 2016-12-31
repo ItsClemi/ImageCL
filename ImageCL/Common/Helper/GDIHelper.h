@@ -32,5 +32,14 @@ namespace Gdiplus
 		return L"<Invalid Status>";
 	}
 
+	inline auto RectToRectF( CRect& rc )
+	{
+		return RectF( 
+			static_cast< REAL >( rc.left ), 
+			static_cast< REAL >( rc.top ), 
+			static_cast< REAL >( rc.Width( ) ), 
+			static_cast< REAL >( rc.Height( ) )
+ 		);
+	}
 
 }

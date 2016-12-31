@@ -1,6 +1,6 @@
 #include "stdafx.h"
+#include "OutputPane.h"
 
-#include "OutputWnd.h"
 #include <Resource.h>
 
 #ifdef _DEBUG
@@ -11,38 +11,35 @@ static char THIS_FILE[ ] = __FILE__;
 #endif
 
 
-BEGIN_MESSAGE_MAP( COutputWnd, CDockablePane )
+BEGIN_MESSAGE_MAP( COutputPane, CDockablePane )
 	ON_WM_CREATE( )
 	ON_WM_SIZE( )
 	ON_WM_CONTEXTMENU( )
-	ON_WM_ERASEBKGND( )
 
-	ON_COMMAND_PTR( WM_ADD_OUTPUT, &COutputWnd::OnAddOutput )
+	ON_COMMAND_PTR( WM_ADD_OUTPUT, &COutputPane::OnAddOutput )
 
-	ON_COMMAND( ID_CLEAR_OUTPUT, &COutputWnd::OnClearOutput )
+	ON_COMMAND( ID_CLEAR_OUTPUT, &COutputPane::OnClearOutput )
 
 END_MESSAGE_MAP( )
 
 
-COutputWnd::COutputWnd( )
+COutputPane::COutputPane( )
 { }
 
-COutputWnd::~COutputWnd( )
+COutputPane::~COutputPane( )
 { }
 
-int COutputWnd::OnCreate( LPCREATESTRUCT lpCreateStruct )
+int COutputPane::OnCreate( LPCREATESTRUCT lpCreateStruct )
 {
 	if( CDockablePane::OnCreate( lpCreateStruct ) == -1 )
 	{
 		return -1;
 	}
 
-
 	CRect rcWindow;
 	GetClientRect( &rcWindow );
 
-	if( 
-		!m_wndToolBar.Create( this, AFX_DEFAULT_TOOLBAR_STYLE, IDR_OUTPUT_TOOLBAR )  ||
+	if( !m_wndToolBar.Create( this, AFX_DEFAULT_TOOLBAR_STYLE, IDR_OUTPUT_TOOLBAR )  ||
 		!m_wndToolBar.LoadToolBar( IDR_OUTPUT_TOOLBAR, 0, 0, TRUE ) 
 		)
 	{
@@ -54,7 +51,7 @@ int COutputWnd::OnCreate( LPCREATESTRUCT lpCreateStruct )
 	int cyToolbar = m_wndToolBar.CalcFixedLayout( FALSE, TRUE ).cy;
 	if( !m_wndOutput.Create(
 		WS_CHILD | WS_VISIBLE | ES_MULTILINE | WS_HSCROLL | WS_VSCROLL | ES_NOOLEDRAGDROP | ES_READONLY,
-		{ cyToolbar + 5, cyToolbar + 5, 100, 200 },
+		{ 0, cyToolbar + 5, rcWindow.Width(), rcWindow.Height() - cyToolbar },
 		this,
 		AFX_IDW_PANE_FIRST
 	) )
@@ -68,7 +65,7 @@ int COutputWnd::OnCreate( LPCREATESTRUCT lpCreateStruct )
 	return 0;
 }
 
-void COutputWnd::OnSize( UINT nType, int cx, int cy )
+void COutputPane::OnSize( UINT nType, int cx, int cy )
 {
 	CDockablePane::OnSize( nType, cx, cy );
 
@@ -78,23 +75,10 @@ void COutputWnd::OnSize( UINT nType, int cx, int cy )
 	int cyToolbar = m_wndToolBar.CalcFixedLayout( FALSE, TRUE ).cy;
 
 	m_wndToolBar.SetWindowPos( nullptr, 0, 0, cx, cyToolbar, SWP_NOACTIVATE | SWP_NOZORDER );
-	m_wndOutput.SetWindowPos( nullptr, 0, cyToolbar + 5, cx, cy - ( cyToolbar + 5 ), SWP_NOACTIVATE | SWP_NOZORDER );
+	m_wndOutput.SetWindowPos( nullptr, 0, cyToolbar, cx, cy - cyToolbar, SWP_NOACTIVATE | SWP_NOZORDER );
 }
 
-BOOL COutputWnd::OnEraseBkgnd( CDC* pDC )
-{
-	CRect rcWindow;
-	GetClientRect( &rcWindow );
-
-	auto pStyle = DYNAMIC_DOWNCAST( CMFCVisualManagerOffice2007, CMFCVisualManager::GetInstance( ) );
-	{
-		pStyle->OnFillBarBackground( pDC, this, rcWindow, { 0, 0, 0, 0 } );
-	}
-
-	return FALSE;
-}
-
-void COutputWnd::OnContextMenu( CWnd* pWnd, CPoint point )
+void COutputPane::OnContextMenu( CWnd* pWnd, CPoint point )
 {
 	CMenu menu;
 	menu.LoadMenu( IDR_OUTPUT_POPUP );
@@ -122,7 +106,7 @@ void COutputWnd::OnContextMenu( CWnd* pWnd, CPoint point )
 	}
 }
 
-void COutputWnd::OnClearOutput( )
+void COutputPane::OnClearOutput( )
 {
 	m_wndOutput.SetReadOnly( FALSE );
 	{
@@ -132,7 +116,7 @@ void COutputWnd::OnClearOutput( )
 	m_wndOutput.SetReadOnly( TRUE );
 }
 
-void COutputWnd::OnAddOutput( void* ptr )
+void COutputPane::OnAddOutput( void* ptr )
 {
 	auto pInfo = reinterpret_cast< SLogEntry* >( ptr );
 	{

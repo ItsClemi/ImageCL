@@ -38,6 +38,15 @@
     <Filter Include="Core\Log">
       <UniqueIdentifier>{ac8ec2e2-c9e7-4a6f-8ac0-ba759c572785}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Window\Style">
+      <UniqueIdentifier>{e6b421bd-aae6-4cdf-a935-f63cdbc61a88}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Core\OpenCL">
+      <UniqueIdentifier>{808f647a-cb4e-4000-ba35-bd515791409d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Common\Resource Files\Kernel Templates">
+      <UniqueIdentifier>{c4c5883b-a5a1-4148-a05f-62edd94bd1e7}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
@@ -56,15 +65,6 @@
     <ClInclude Include="Window\Frame\MainFrame.h">
       <Filter>Window\Frame</Filter>
     </ClInclude>
-    <ClInclude Include="Window\Frame\View\ImageRenderView.h">
-      <Filter>Window\Frame\View</Filter>
-    </ClInclude>
-    <ClInclude Include="Window\Frame\View\TextEditView.h">
-      <Filter>Window\Frame\View</Filter>
-    </ClInclude>
-    <ClInclude Include="Window\Frame\Pane\OutputWnd.h">
-      <Filter>Window\Frame\Pane</Filter>
-    </ClInclude>
     <ClInclude Include="Window\Ctrl\ScintillaCtrl.h">
       <Filter>Window\Ctrl</Filter>
     </ClInclude>
@@ -77,14 +77,35 @@
     <ClInclude Include="Core\Log\Log.h">
       <Filter>Core\Log</Filter>
     </ClInclude>
-    <ClInclude Include="Window\Ctrl\ImageCtrl.h">
-      <Filter>Window\Ctrl</Filter>
-    </ClInclude>
     <ClInclude Include="Common\Helper\MFCHelper.h">
       <Filter>Common\Helper</Filter>
     </ClInclude>
     <ClInclude Include="Common\Helper\GDIHelper.h">
       <Filter>Common\Helper</Filter>
+    </ClInclude>
+    <ClInclude Include="Window\Style\VisualStyle.h">
+      <Filter>Window\Style</Filter>
+    </ClInclude>
+    <ClInclude Include="Window\Frame\View\ImageView.h">
+      <Filter>Window\Frame\View</Filter>
+    </ClInclude>
+    <ClInclude Include="Window\Frame\View\CodeView.h">
+      <Filter>Window\Frame\View</Filter>
+    </ClInclude>
+    <ClInclude Include="Window\Frame\Pane\OutputPane.h">
+      <Filter>Window\Frame\Pane</Filter>
+    </ClInclude>
+    <ClInclude Include="Window\Frame\Pane\ImagePane.h">
+      <Filter>Window\Frame\Pane</Filter>
+    </ClInclude>
+    <ClInclude Include="Window\Frame\Doc\CodeDoc.h">
+      <Filter>Window\Frame\Doc</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\OpenCL\CLManager.h">
+      <Filter>Core\OpenCL</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\OpenCL\CLProgram.h">
+      <Filter>Core\OpenCL</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -98,23 +119,35 @@
     <ClCompile Include="Window\Frame\MainFrame.cpp">
       <Filter>Window\Frame</Filter>
     </ClCompile>
-    <ClCompile Include="Window\Frame\View\ImageRenderView.cpp">
-      <Filter>Window\Frame\View</Filter>
-    </ClCompile>
-    <ClCompile Include="Window\Frame\View\TextEditView.cpp">
-      <Filter>Window\Frame\View</Filter>
-    </ClCompile>
-    <ClCompile Include="Window\Frame\Pane\OutputWnd.cpp">
-      <Filter>Window\Frame\Pane</Filter>
-    </ClCompile>
     <ClCompile Include="Window\Ctrl\ScintillaCtrl.cpp">
       <Filter>Window\Ctrl</Filter>
     </ClCompile>
     <ClCompile Include="Core\Log\Log.cpp">
       <Filter>Core\Log</Filter>
     </ClCompile>
-    <ClCompile Include="Window\Ctrl\ImageCtrl.cpp">
-      <Filter>Window\Ctrl</Filter>
+    <ClCompile Include="Window\Style\VisualStyle.cpp">
+      <Filter>Window\Style</Filter>
+    </ClCompile>
+    <ClCompile Include="Window\Frame\View\ImageView.cpp">
+      <Filter>Window\Frame\View</Filter>
+    </ClCompile>
+    <ClCompile Include="Window\Frame\View\CodeView.cpp">
+      <Filter>Window\Frame\View</Filter>
+    </ClCompile>
+    <ClCompile Include="Window\Frame\Pane\OutputPane.cpp">
+      <Filter>Window\Frame\Pane</Filter>
+    </ClCompile>
+    <ClCompile Include="Window\Frame\Pane\ImagePane.cpp">
+      <Filter>Window\Frame\Pane</Filter>
+    </ClCompile>
+    <ClCompile Include="Window\Frame\Doc\CodeDoc.cpp">
+      <Filter>Window\Frame\Doc</Filter>
+    </ClCompile>
+    <ClCompile Include="Core\OpenCL\CLManager.cpp">
+      <Filter>Core\OpenCL</Filter>
+    </ClCompile>
+    <ClCompile Include="Core\OpenCL\CLProgram.cpp">
+      <Filter>Core\OpenCL</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -173,5 +206,10 @@
     <None Include="res\ImageCL.rc2">
       <Filter>Common\Resource Files</Filter>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="res\tpl_empty.txt">
+      <Filter>Common\Resource Files\Kernel Templates</Filter>
+    </Text>
   </ItemGroup>
 </Project>

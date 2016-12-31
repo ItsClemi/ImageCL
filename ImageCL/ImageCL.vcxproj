@@ -67,6 +67,7 @@
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
+      <AdditionalLibraryDirectories>$(CUDA_PATH)\lib\x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
     <Midl>
       <MkTypLibCompatible>false</MkTypLibCompatible>
@@ -114,31 +115,39 @@
     <ClInclude Include="Common\Helper\GDIHelper.h" />
     <ClInclude Include="Common\Helper\MFCHelper.h" />
     <ClInclude Include="Core\Log\Log.h" />
+    <ClInclude Include="Core\OpenCL\CLManager.h" />
+    <ClInclude Include="Core\OpenCL\CLProgram.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
-    <ClInclude Include="Window\Ctrl\ImageCtrl.h" />
     <ClInclude Include="Window\Ctrl\ScintillaCtrl.h" />
     <ClInclude Include="Window\Dialog\AboutDialog.h" />
+    <ClInclude Include="Window\Frame\Doc\CodeDoc.h" />
     <ClInclude Include="Window\Frame\MainFrame.h" />
-    <ClInclude Include="Window\Frame\Pane\OutputWnd.h" />
-    <ClInclude Include="Window\Frame\View\ImageRenderView.h" />
-    <ClInclude Include="Window\Frame\View\TextEditView.h" />
+    <ClInclude Include="Window\Frame\Pane\ImagePane.h" />
+    <ClInclude Include="Window\Frame\Pane\OutputPane.h" />
+    <ClInclude Include="Window\Frame\View\ImageView.h" />
+    <ClInclude Include="Window\Frame\View\CodeView.h" />
+    <ClInclude Include="Window\Style\VisualStyle.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="App.cpp" />
     <ClCompile Include="Core\Log\Log.cpp" />
+    <ClCompile Include="Core\OpenCL\CLManager.cpp" />
+    <ClCompile Include="Core\OpenCL\CLProgram.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="Window\Ctrl\ImageCtrl.cpp" />
     <ClCompile Include="Window\Ctrl\ScintillaCtrl.cpp" />
     <ClCompile Include="Window\Dialog\AboutDialog.cpp" />
+    <ClCompile Include="Window\Frame\Doc\CodeDoc.cpp" />
     <ClCompile Include="Window\Frame\MainFrame.cpp" />
-    <ClCompile Include="Window\Frame\Pane\OutputWnd.cpp" />
-    <ClCompile Include="Window\Frame\View\ImageRenderView.cpp" />
-    <ClCompile Include="Window\Frame\View\TextEditView.cpp" />
+    <ClCompile Include="Window\Frame\Pane\ImagePane.cpp" />
+    <ClCompile Include="Window\Frame\Pane\OutputPane.cpp" />
+    <ClCompile Include="Window\Frame\View\ImageView.cpp" />
+    <ClCompile Include="Window\Frame\View\CodeView.cpp" />
+    <ClCompile Include="Window\Style\VisualStyle.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="ImageCL.rc" />
@@ -167,6 +176,9 @@
     <ProjectReference Include="..\Scintilla\win32\SciLexer.vcxproj">
       <Project>{fbe04237-9c7b-4973-9c60-505975998b39}</Project>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="res\tpl_empty.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

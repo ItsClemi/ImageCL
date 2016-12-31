@@ -1,0 +1,6 @@
+
+
+__kernel void image_kernel( __global char4* in, __global float2* pos, __global char4* out )
+{
+	//add code :)
+}

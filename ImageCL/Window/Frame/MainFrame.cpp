@@ -3,8 +3,9 @@
 
 #include "MainFrame.h"
 
-#include <Window/Frame/View/TextEditView.h>
-#include <Window/Frame/View/ImageRenderView.h>
+#include <Window/Frame/View/CodeView.h>
+#include <Window/Frame/View/ImageView.h>
+#include <Window/Style/VisualStyle.h>
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -18,6 +19,7 @@ BEGIN_MESSAGE_MAP( CMainFrame, CFrameWndEx )
 	ON_WM_SETTINGCHANGE( )
 
 	ON_COMMAND( ID_VIEW_OUTPUTPANE, &CMainFrame::OnShowOutputPane )
+
 
 END_MESSAGE_MAP( )
 
@@ -38,22 +40,36 @@ int CMainFrame::OnCreate( LPCREATESTRUCT lpCreateStruct )
 		return -1;
 	}
 
-	if( !m_wndMenuBar.Create( this ) || 
-		!m_wndMenuBar.LoadToolBar( IDR_MAINFRAME ) 
+	if( !m_wndMenuBar.Create( this, AFX_DEFAULT_TOOLBAR_STYLE | CBRS_SIZE_DYNAMIC | CBRS_TOOLTIPS | CBRS_FLYBY ) ||
+		!m_wndMenuBar.LoadToolBar( IDR_MAINFRAME )
 		)
 	{
 		TRACE0( "Failed to create menubar\n" );
 		return -1;
 	}
 
-	m_wndMenuBar.SetPaneStyle( m_wndMenuBar.GetPaneStyle( ) | CBRS_SIZE_DYNAMIC | CBRS_TOOLTIPS | CBRS_FLYBY );
-
 	CMFCPopupMenu::SetForceMenuFocus( FALSE );
 
-	EnableDocking( CBRS_ALIGN_ANY );
-	DockPane( &m_wndMenuBar );
+	if( !m_wndCodeBar.CreateEx( this, TBSTYLE_FLAT, WS_CHILD | WS_VISIBLE | CBRS_TOP | CBRS_TOOLTIPS | CBRS_FLYBY | CBRS_SIZE_DYNAMIC ) ||
+		!m_wndCodeBar.LoadToolBar( IDR_CODE_VIEW )
+		)
+	{
+		TRACE0( "Failed to create toolbar\n" );
+		return -1;
+	}
 
-	CMFCVisualManager::SetDefaultManager( RUNTIME_CLASS( CMFCVisualManagerOffice2007 ) );
+
+
+	EnableDocking( CBRS_ALIGN_ANY );
+
+	m_wndMenuBar.EnableDocking( CBRS_ALIGN_TOP );
+	m_wndCodeBar.EnableDocking( CBRS_ALIGN_ANY );
+
+	DockPane( &m_wndMenuBar );
+	DockPane( &m_wndCodeBar );
+
+
+	CMFCVisualManager::SetDefaultManager( RUNTIME_CLASS( CVisualStyle ) );
 	CMFCVisualManagerOffice2007::SetStyle( CMFCVisualManagerOffice2007::Office2007_ObsidianBlack );
 	CDockingManager::SetDockingMode( DT_SMART );
 
@@ -66,39 +82,9 @@ int CMainFrame::OnCreate( LPCREATESTRUCT lpCreateStruct )
 		return -1;
 	}
 
-	m_wndOutput.EnableDocking( CBRS_ALIGN_ANY );
-	DockPane( &m_wndOutput );
 
 
 	return 0;
-}
-
-BOOL CMainFrame::OnCreateClient( LPCREATESTRUCT lpcs, CCreateContext* pContext )
-{
-	CRect rcWindow;
-	GetWindowRect( &rcWindow );
-
-	if( !m_wndSplitter.CreateStatic( this, 1, 2 ) )
-	{
-		AfxMessageBox( L"Failed to create splitter!", IDOK | MB_ICONERROR );
-		return FALSE;
-	}
-
-	if( !m_wndSplitter.CreateView( 0, 0, RUNTIME_CLASS( CTextEditView ), { rcWindow.Width( ) / 2, rcWindow.Height( ) }, pContext ) )
-	{
-		AfxMessageBox( L"Failed to create TextEditView!", IDOK | MB_ICONERROR );
-		return FALSE;
-	}
-
-	if( !m_wndSplitter.CreateView( 0, 1, RUNTIME_CLASS( CImageRenderView ), { rcWindow.Width( ) / 2, rcWindow.Height( ) }, pContext ) )
-	{
-		AfxMessageBox( L"Failed to create ImageRenderView!", IDOK | MB_ICONERROR );
-		return FALSE;
-	}
-
-	m_bSplitterInitialized = true;
-
-	return TRUE;
 }
 
 BOOL CMainFrame::PreCreateWindow( CREATESTRUCT& cs )
@@ -131,9 +117,9 @@ BOOL CMainFrame::OnWndMsg( UINT message, WPARAM wParam, LPARAM lParam, LRESULT* 
 			auto pPane = DYNAMIC_DOWNCAST( CBasePane, list.GetNext( pos ) );
 			ASSERT_VALID( pPane );
 
-			if( ::IsWindow( *pPane ) && 
-				pPane->IsVisible( ) && 
-				pPane->OnCmdMsg( nCode, CN_COMMAND, pExtra, nullptr ) 
+			if( ::IsWindow( *pPane ) &&
+				pPane->IsVisible( ) &&
+				pPane->OnCmdMsg( nCode, CN_COMMAND, pExtra, nullptr )
 				)
 			{
 				*pResult = 0;
@@ -164,7 +150,7 @@ void CMainFrame::Dump( CDumpContext& dc ) const
 
 BOOL CMainFrame::CreateDockingWindows( )
 {
-	CSize outputPaneHeight = { 100, 300 };
+	CSize outputPaneHeight = { 100, 150 };
 	ScaleDpi( outputPaneHeight );
 
 	if( !m_wndOutput.Create(
@@ -180,16 +166,34 @@ BOOL CMainFrame::CreateDockingWindows( )
 		return FALSE;
 	}
 
-	HICON hOutputBarIcon = reinterpret_cast< HICON >( ::LoadImageW(
-		::AfxGetResourceHandle( ),
-		MAKEINTRESOURCE( IDI_OUTPUT_WND_HC ),
-		IMAGE_ICON,
-		::GetSystemMetrics( SM_CXSMICON ),
-		::GetSystemMetrics( SM_CYSMICON ),
-		0
-	) );
+	CRect rcWindow;
+	GetClientRect( rcWindow );
+
+	if( !m_wndImage.Create(
+		L"Image",
+		this,
+		{ 0, 0, rcWindow.Width( ) / 2, rcWindow.Height( ) - outputPaneHeight.cy },
+		TRUE,
+		160,
+		WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | CBRS_RIGHT | CBRS_FLOAT_MULTI
+	) )
+	{
+		TRACE0( "Failed to create image window\n" );
+		
+	
+		return FALSE;
+	}
+
+	HICON hOutputBarIcon = LoadResourceIcon( IDI_OUTPUT_WND_HC );
 
 	m_wndOutput.SetIcon( hOutputBarIcon, FALSE );
+
+
+	m_wndOutput.EnableDocking( CBRS_ALIGN_ANY );
+	DockPane( &m_wndOutput );
+
+	m_wndImage.EnableDocking( CBRS_ALIGN_ANY );
+	DockPane( &m_wndImage );
 
 	return TRUE;
 }
@@ -212,15 +216,14 @@ void CMainFrame::OnSize( UINT nType, int cx, int cy )
 {
 	CFrameWndEx::OnSize( nType, cx, cy );
 
-	CRect rcWindow;
-	GetWindowRect( &rcWindow );
+	
 
-	if( m_bSplitterInitialized && nType != SIZE_MINIMIZED )
-	{
-		m_wndSplitter.SetRowInfo( 0, cy, 0 );
-		m_wndSplitter.SetColumnInfo( 0, rcWindow.Width( ) / 2, 50 );
-		m_wndSplitter.SetColumnInfo( 1, rcWindow.Width( ) / 2, 50 );
-
-		m_wndSplitter.RecalcLayout( );
-	}
+// 	if( m_bSplitterInitialized && nType != SIZE_MINIMIZED )
+// 	{
+// 		m_wndSplitter.SetRowInfo( 0, cy, 0 );
+// 		m_wndSplitter.SetColumnInfo( 0, cx / 2, 50 );
+// 		m_wndSplitter.SetColumnInfo( 1, cx / 2, 50 );
+// 
+// 		m_wndSplitter.RecalcLayout( );
+// 	}
 }

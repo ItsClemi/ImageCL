@@ -4,6 +4,8 @@
 #include "Window/Frame/MainFrame.h"
 #include "Window/Dialog/AboutDialog.h"
 
+#include "Window/Frame/Doc/CodeDoc.h"
+#include "Window/Frame/View/CodeView.h"
 
 
 #ifdef _DEBUG
@@ -23,7 +25,9 @@ END_MESSAGE_MAP( )
 
 CApp::CApp( )
 {
-	SetAppID( L"ImageCL.AppID.NoVersion" );
+	m_bSaveState = FALSE;
+
+	SetAppID( L"ImageCL" );
 }
 
 BOOL CApp::InitInstance( )
@@ -33,37 +37,31 @@ BOOL CApp::InitInstance( )
 	InitCtrls.dwICC = ICC_WIN95_CLASSES;
 	InitCommonControlsEx( &InitCtrls );
 
-#ifdef _DEBUG
-	AfxEnableMemoryTracking( TRUE );
-#endif
-
 	CWinAppEx::InitInstance( );
 
 	Gdiplus::GdiplusStartupInput input;
 	Gdiplus::GdiplusStartupOutput output;
 	if( Gdiplus::GdiplusStartup( &m_gdiToken, &input, &output ) != Gdiplus::Status::Ok )
 	{
-		AfxMessageBox( L"Failed to init GDIP!" );
+		AfxMessageBox( L"Failed to init GDI+!" );
 		return FALSE;
 	}
 
-	if( !Scintilla_RegisterClasses( AfxGetApp( )->m_hInstance ) )
+	if( !Scintilla_RegisterClasses( m_hInstance ) )
 	{
 		AfxMessageBox( L"Failed to register scintilla" );
 		return FALSE;
 	}
 
-	EnableTaskbarInteraction( FALSE );
-
 	if( !AfxInitRichEdit2( ) )
 	{
-		AfxMessageBox( L"Failed to initialize richedit!" );
+		AfxMessageBox( L"Failed to load RichEdit2" );
 		return FALSE;
 	}
 
+	EnableTaskbarInteraction( FALSE );
 
-	SetRegistryKey( L"Local AppWizard-Generated Applications" );
-	LoadStdProfileSettings( 0 );
+	SetRegistryKey( L"ImageCL" );
 
 	InitContextMenuManager( );
 	InitKeyboardManager( );
@@ -71,17 +69,19 @@ BOOL CApp::InitInstance( )
 
 	CMFCToolTipInfo ttParams;
 	ttParams.m_bVislManagerTheme = TRUE;
-	theApp.GetTooltipManager( )->SetTooltipParams( AFX_TOOLTIP_TYPE_ALL, RUNTIME_CLASS( CMFCToolTipCtrl ), &ttParams );
+	gApp.GetTooltipManager( )->SetTooltipParams( AFX_TOOLTIP_TYPE_ALL, RUNTIME_CLASS( CMFCToolTipCtrl ), &ttParams );
 
 
-	CMainFrame* pFrame = new CMainFrame;
-	m_pMainWnd = pFrame;
+	CSingleDocTemplate* pDocTemplate = new CSingleDocTemplate( 
+		IDR_MAINFRAME, 
+		RUNTIME_CLASS( CCodeDoc ), 
+		RUNTIME_CLASS( CMainFrame ), 
+		RUNTIME_CLASS( CCodeView ) 
+	);
 
-	if( !pFrame->LoadFrame( IDR_MAINFRAME, WS_OVERLAPPEDWINDOW | FWS_ADDTOTITLE, NULL, NULL ) )
-	{
-		return FALSE;
-	}
+	AddDocTemplate( pDocTemplate );
 
+	m_pClManager->Initialize( );
 
 	CCommandLineInfo cmdInfo;
 	ParseCommandLine( cmdInfo );
@@ -92,10 +92,10 @@ BOOL CApp::InitInstance( )
 
 	m_pMainWnd->ShowWindow( SW_SHOWMAXIMIZED );
 	m_pMainWnd->UpdateWindow( );
+	m_pMainWnd->DragAcceptFiles( );
 
 	return TRUE;
 }
-
 
 int CApp::ExitInstance( )
 {
@@ -106,10 +106,8 @@ int CApp::ExitInstance( )
 	return CWinAppEx::ExitInstance( );
 }
 
-
 void CApp::PreLoadState( )
-{
-}
+{ }
 
 void CApp::LoadCustomState( )
 { }
@@ -120,12 +118,34 @@ void CApp::SaveCustomState( )
 
 void CApp::OnFileNew( )
 {
+	//auto pFrame = DYNAMIC_DOWNCAST( CMainFrame, m_pMainWnd );
+	
+	CWinAppEx::OnFileNew( );
 
 }
 
 void CApp::OnFileOpen( )
 {
+	CFileDialog	dlg(
+		TRUE,
+		L"OpenCL Files",
+		L"",
+		OFN_FILEMUSTEXIST | OFN_PATHMUSTEXIST,
+		L"OpenCL Kernel|*.cl||"
+	);
 
+	if( dlg.DoModal( ) == IDOK )
+	{
+		auto szPath = std::make_shared< std::wstring >( dlg.GetPathName( ) );
+
+
+
+		AfxGetMainWnd( )->PostMessage( );
+
+
+
+		//AfxGetMainWnd()->SendMessage()
+	}
 }
 
 void CApp::OnAppAbout( )
@@ -135,7 +155,7 @@ void CApp::OnAppAbout( )
 }
 
 
-CApp theApp;
+CApp gApp;
 
 
 

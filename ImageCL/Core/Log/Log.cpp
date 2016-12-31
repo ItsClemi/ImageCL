@@ -1,11 +1,17 @@
 #include "stdafx.h"
 #include "Log.h"
 
+#ifdef _DEBUG
+#define new DEBUG_NEW
+#undef THIS_FILE
+
+static char THIS_FILE[ ] = __FILE__;
+#endif
+
+
 void AddLog( eLogType eType, const wchar_t* szFormat, va_list args )
 {
 	SLogEntry* pEntry = new SLogEntry;
-
-	size_t s = ARRAYSIZE( pEntry->m_szMessage );
 
 	if( _vsnwprintf_s( pEntry->m_szMessage, ARRAYSIZE( pEntry->m_szMessage ), szFormat, args ) == _TRUNCATE )
 	{

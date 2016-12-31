@@ -46,8 +46,10 @@
 #define IDS_EDIT_MENU                   306
 #define IDR_OUTPUT_TOOLBAR              310
 #define IDR_TEXT_EDIT_TOOLBAR           315
+#define IDR_CODE_VIEW                   315
 #define IDR_IMAGE_VIEW_TOOLBAR          319
 #define IDR_IMAGE_VIEW                  321
+#define IDR_CODE_TEMPLATE_EMPTY         326
 #define IDC_RICHEDIT21                  1000
 #define IDC_MFCLINK2                    1003
 #define ID_CLEAR_OUTPUT                 32771
@@ -71,13 +73,17 @@
 #define ID_VIEW_VIEWRENDERED            32786
 #define ID_IMAGE_LOADIMAGE32787         32787
 #define ID_IMAGE_SAVEIMAGE32788         32788
+#define ID_VIEW_HISTOGRAM               32789
+#define ID_CL_RUNCODE                   32790
+#define ID_IMAGE_LOADIMAGE32791         32791
+#define ID_IMAGE_SAVEIMAGE32792         32792
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        322
-#define _APS_NEXT_COMMAND_VALUE         32789
+#define _APS_NEXT_RESOURCE_VALUE        328
+#define _APS_NEXT_COMMAND_VALUE         32793
 #define _APS_NEXT_CONTROL_VALUE         1005
 #define _APS_NEXT_SYMED_VALUE           310
 #endif

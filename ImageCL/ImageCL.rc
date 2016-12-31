@@ -17,6 +17,24 @@
 #undef APSTUDIO_READONLY_SYMBOLS
 
 /////////////////////////////////////////////////////////////////////////////
+// German (Germany) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_DEU)
+LANGUAGE LANG_GERMAN, SUBLANG_GERMAN
+#pragma code_page(1252)
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// TEXT
+//
+
+IDR_CODE_TEMPLATE_EMPTY TEXT                    "res\\tpl_empty.txt"
+
+#endif    // German (Germany) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+/////////////////////////////////////////////////////////////////////////////
 // English (United States) resources
 
 #if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
@@ -90,7 +108,7 @@ IDR_MAINFRAME           BITMAP                  "res\\Toolbar256.bmp"
 
 IDR_OUTPUT_TOOLBAR      BITMAP                  "res\\output_toolbar.bmp"
 
-IDR_TEXT_EDIT_TOOLBAR   BITMAP                  "res\\text_edit_toolbar.bmp"
+IDR_CODE_VIEW           BITMAP                  "res\\text_edit_toolbar.bmp"
 
 IDR_IMAGE_VIEW_TOOLBAR  BITMAP                  "res\\image_view_toolbar.bmp"
 
@@ -119,7 +137,7 @@ BEGIN
     BUTTON      ID_CLEAR_OUTPUT
 END
 
-IDR_TEXT_EDIT_TOOLBAR TOOLBAR 16, 16
+IDR_CODE_VIEW TOOLBAR 16, 16
 BEGIN
     BUTTON      ID_FILE_OPEN
     BUTTON      ID_FILE_SAVE
@@ -160,11 +178,21 @@ BEGIN
         MENUITEM "&Copy\tCtrl+C",               ID_EDIT_COPY
         MENUITEM "&Paste\tCtrl+V",              ID_EDIT_PASTE
     END
+    POPUP "CL"
+    BEGIN
+        MENUITEM "Run Code",                    ID_CL_RUNCODE
+    END
+    POPUP "Image"
+    BEGIN
+        MENUITEM "Load Image",                  ID_IMAGE_LOADIMAGE32791
+        MENUITEM "Save Image",                  ID_IMAGE_SAVEIMAGE32792
+    END
     POPUP "&View"
     BEGIN
         MENUITEM "S&plit",                      ID_WINDOW_SPLIT
         MENUITEM SEPARATOR
         MENUITEM "Output Pane",                 ID_VIEW_OUTPUTPANE
+        MENUITEM "Histogram",                   ID_VIEW_HISTOGRAM
     END
     POPUP "&Help"
     BEGIN

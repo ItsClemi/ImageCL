@@ -16,7 +16,7 @@ struct SLogEntry
 void AddLog( eLogType eType, const wchar_t* szFormat, va_list args );
 
 
-inline void AddError( const wchar_t* szFormat, ... )
+inline void LogError( const wchar_t* szFormat, ... )
 {
 	va_list args;
 	va_start( args, szFormat );
@@ -26,7 +26,7 @@ inline void AddError( const wchar_t* szFormat, ... )
 	va_end( args );
 }
 
-inline void AddInfo( const wchar_t* szFormat, ... )
+inline void LogInfo( const wchar_t* szFormat, ... )
 {
 	va_list args;
 	va_start( args, szFormat );
@@ -36,7 +36,7 @@ inline void AddInfo( const wchar_t* szFormat, ... )
 	va_end( args );
 }
 
-inline void AddSuccess( const wchar_t* szFormat, ... )
+inline void LogSuccess( const wchar_t* szFormat, ... )
 {
 	va_list args;
 	va_start( args, szFormat );
