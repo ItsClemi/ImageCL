@@ -86,9 +86,6 @@
     <ClInclude Include="Window\Style\VisualStyle.h">
       <Filter>Window\Style</Filter>
     </ClInclude>
-    <ClInclude Include="Window\Frame\View\ImageView.h">
-      <Filter>Window\Frame\View</Filter>
-    </ClInclude>
     <ClInclude Include="Window\Frame\View\CodeView.h">
       <Filter>Window\Frame\View</Filter>
     </ClInclude>
@@ -106,6 +103,12 @@
     </ClInclude>
     <ClInclude Include="Core\OpenCL\CLProgram.h">
       <Filter>Core\OpenCL</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\TaskWorker.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Window\Frame\ChildFrame.h">
+      <Filter>Window\Frame</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -128,9 +131,6 @@
     <ClCompile Include="Window\Style\VisualStyle.cpp">
       <Filter>Window\Style</Filter>
     </ClCompile>
-    <ClCompile Include="Window\Frame\View\ImageView.cpp">
-      <Filter>Window\Frame\View</Filter>
-    </ClCompile>
     <ClCompile Include="Window\Frame\View\CodeView.cpp">
       <Filter>Window\Frame\View</Filter>
     </ClCompile>
@@ -148,6 +148,12 @@
     </ClCompile>
     <ClCompile Include="Core\OpenCL\CLProgram.cpp">
       <Filter>Core\OpenCL</Filter>
+    </ClCompile>
+    <ClCompile Include="Core\TaskWorker.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Window\Frame\ChildFrame.cpp">
+      <Filter>Window\Frame</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -11,6 +11,12 @@ public:
 
 
 
+
+	virtual void OnDrawMiniFrameBorder( CDC* pDC, CPaneFrameWnd* pFrameWnd, CRect rectBorder, CRect rectBorderSize ) override;
+
+
+
+
 public:
 	virtual void OnFillHighlightedArea( CDC* pDC, CRect rect, CBrush* pBrush, CMFCToolBarButton* pButton ) override;
 
@@ -23,6 +29,11 @@ public:
 	virtual void OnDrawSplitterBorder( CDC* pDC, CSplitterWndEx* pSplitterWnd, CRect rect ) override;
 
 	virtual void OnDrawFloatingToolbarBorder( CDC* pDC, CMFCBaseToolBar* pToolBar, CRect rectBorder, CRect rectBorderSize ) override;
+
+public:
+
+	virtual void OnDrawTab( CDC* pDC, CRect rectTab, int iTab, BOOL bIsActive, const CMFCBaseTabCtrl* pTabWnd ) override;
+
 
 public:
 	virtual COLORREF GetMenuItemTextColor( CMFCToolBarMenuButton* pButton, BOOL bHighlighted, BOOL bDisabled ) override;

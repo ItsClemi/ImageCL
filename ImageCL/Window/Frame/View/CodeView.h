@@ -19,10 +19,12 @@ protected:
 private:
 	void SetAStyle( int style, COLORREF fore, COLORREF back = RGB( 30, 30, 30 ), int size = -1, const char *face = '\0' );
 
+	void SetEditColor( int nStyle, COLORREF clrForeground, COLORREF clrBackground = RGB( 30, 30, 30 ) );
+
 private:
 	afx_msg	int OnCreate( LPCREATESTRUCT lpcs );
 	afx_msg void OnSize( UINT nType, int cx, int cy );
-
+	afx_msg BOOL OnEraseBkgnd( CDC* pDC );
 
 	afx_msg void OnEditCopy( );
 	afx_msg void OnEditCut( );

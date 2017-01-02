@@ -6,7 +6,7 @@
 
 
 
-class CMainFrame : public CFrameWndEx
+class CMainFrame : public CMDIFrameWndEx
 {
 	DECLARE_DYNCREATE( CMainFrame )
 
@@ -35,6 +35,7 @@ protected:
 	afx_msg void OnSettingChange( UINT uFlags, LPCTSTR lpszSection );
 
 	afx_msg void OnShowOutputPane( );
+	afx_msg void OnStatusBarUpdate( void* ptr );
 
 	DECLARE_MESSAGE_MAP( )
 
@@ -42,10 +43,13 @@ protected:
 protected:
 	CMFCMenuBar			m_wndMenuBar;
 	CMFCToolBar			m_wndCodeBar;
+	CComboBox			m_comboBox;
 	
+
+	CMFCStatusBar		m_wndStatusBar;
+
+
 	
-	CSplitterWndEx		m_wndSplitter;
-	bool				m_bSplitterInitialized = false;
 
 	COutputPane			m_wndOutput;
 	CImagePane			m_wndImage;

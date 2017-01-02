@@ -9,6 +9,7 @@ IMPLEMENT_DYNCREATE( CCodeView, CView );
 BEGIN_MESSAGE_MAP( CCodeView, CView )
 	ON_WM_CREATE( )
 	ON_WM_SIZE( )
+	ON_WM_ERASEBKGND( )
 
 	ON_COMMAND( ID_EDIT_COPY, &CCodeView::OnEditCopy )
 	ON_COMMAND( ID_EDIT_CUT, &CCodeView::OnEditCut )
@@ -47,6 +48,7 @@ L"__kernel __local __global "
 L"get_global_id get_local_id get_group_id barrier "
 L"CLK_LOCAL_MEM_FENCE CLK_GLOBAL_MEM_FENCE "
 L"double2 double4 double8 double16 half2 half4 half8 half16 "
+L"char2 char4 char8 float2 float4 float8 "
 ;
 
 
@@ -58,9 +60,6 @@ CCodeView::~CCodeView( )
 
 void CCodeView::OnDraw( CDC* pDC )
 {
-	Gdiplus::Graphics g( pDC->GetSafeHdc( ) );
-
-	g.Clear( Gdiplus::Color::MakeARGB( 255, 30, 30, 30 ) );
 }
 
 void CCodeView::SetAStyle( int style, COLORREF fore, COLORREF back, int size, const char* face )
@@ -79,6 +78,12 @@ void CCodeView::SetAStyle( int style, COLORREF fore, COLORREF back, int size, co
 	}
 }
 
+void CCodeView::SetEditColor( int nStyle, COLORREF clrForeground, COLORREF clrBackground )
+{
+	m_wndEdit.StyleSetFore( nStyle, clrForeground );
+	m_wndEdit.StyleSetBack( nStyle, clrBackground );
+}
+
 int CCodeView::OnCreate( LPCREATESTRUCT lpcs )
 {
 	if( CView::OnCreate( lpcs ) == -1 )
@@ -86,7 +91,7 @@ int CCodeView::OnCreate( LPCREATESTRUCT lpcs )
 		return -1;
 	}
 
-	if( !m_wndEdit.Create( WS_CHILD | WS_VISIBLE | WS_TABSTOP, CRect( 0, 0, 300, 400 ), this, 0 ) )
+	if( !m_wndEdit.Create( WS_CHILD | WS_VISIBLE | WS_TABSTOP, CRect( ), this, 0 ) )
 	{
 		return -1;
 	}
@@ -98,24 +103,25 @@ int CCodeView::OnCreate( LPCREATESTRUCT lpcs )
 
 	SetAStyle( STYLE_DEFAULT, RGB( 189, 183, 107 ), RGB( 30, 30, 30 ), 10, "Consolas" );
 
-	SetAStyle( SCE_C_DEFAULT, RGB( 160, 0, 0 ) );
-	SetAStyle( SCE_C_COMMENT, RGB( 87, 166, 74 ) );
-	SetAStyle( SCE_C_COMMENTLINE, RGB( 87, 166, 74 ) );
-	SetAStyle( SCE_C_COMMENTDOC, RGB( 87, 166, 74 ) );
-	SetAStyle( SCE_C_COMMENTLINEDOC, RGB( 87, 166, 74 ) );
-	SetAStyle( SCE_C_COMMENTDOCKEYWORD, RGB( 87, 166, 74 ) );
-	SetAStyle( SCE_C_COMMENTDOCKEYWORDERROR, RGB( 87, 166, 74 ) );
+	SetEditColor( SCE_C_DEFAULT, RGB( 160, 0, 0 ) );
+	SetEditColor( SCE_C_COMMENT, RGB( 87, 166, 74 ) );
+	SetEditColor( SCE_C_COMMENTLINE, RGB( 87, 166, 74 ) );
+	SetEditColor( SCE_C_COMMENTDOC, RGB( 87, 166, 74 ) );
+	SetEditColor( SCE_C_COMMENTLINEDOC, RGB( 87, 166, 74 ) );
+	SetEditColor( SCE_C_COMMENTDOCKEYWORD, RGB( 87, 166, 74 ) );
+	SetEditColor( SCE_C_COMMENTDOCKEYWORDERROR, RGB( 87, 166, 74 ) );
 
-	SetAStyle( SCE_C_NUMBER, RGB( 181, 206, 168 ) );
+	SetEditColor( SCE_C_NUMBER, RGB( 181, 206, 168 ) );
 
-	SetAStyle( SCE_C_WORD, RGB( 86, 156, 214 ) );
+	SetEditColor( SCE_C_WORD, RGB( 86, 156, 214 ) );
 
-	SetAStyle( SCE_C_STRING, RGB( 214, 157, 133 ) );
-	SetAStyle( SCE_C_CHARACTER, RGB( 214, 157, 133 ) );
+	SetEditColor( SCE_C_STRING, RGB( 214, 157, 133 ) );
+	SetEditColor( SCE_C_CHARACTER, RGB( 214, 157, 133 ) );
 
-	SetAStyle( SCE_C_IDENTIFIER, RGB( 181, 206, 168 ) );
+	SetEditColor( SCE_C_IDENTIFIER, RGB( 181, 206, 168 ) );
 
-	SetAStyle( SCE_C_OPERATOR, RGB( 180, 180, 180 ) );
+	SetEditColor( SCE_C_OPERATOR, RGB( 180, 180, 180 ) );
+
 
 
 	m_wndEdit.SetSelBack( TRUE, RGB( 38, 79, 120 ) );
@@ -126,6 +132,13 @@ int CCodeView::OnCreate( LPCREATESTRUCT lpcs )
 	m_wndEdit.StyleSetBold( SCE_C_WORD, TRUE );
 	m_wndEdit.StyleSetItalic( SCE_C_IDENTIFIER, TRUE );
 
+	m_wndEdit.SetTabWidth( 4 );
+
+	m_wndEdit.SetProperty( "fold", "1" );
+	m_wndEdit.SetProperty( "fold.compact", "0" );
+	m_wndEdit.SetProperty( "fold.comment", "1" );
+	m_wndEdit.SetProperty( "fold.preprocessor", "1" );
+	m_wndEdit.SetProperty( "lexer.cpp.track.preprocessor", "0" );
 
 
 	return 0;
@@ -136,6 +149,11 @@ void CCodeView::OnSize( UINT nType, int cx, int cy )
 	CView::OnSize( nType, cx, cy );
 
 	m_wndEdit.SetWindowPos( nullptr, 0, 0, cx, cy, SWP_NOACTIVATE | SWP_NOZORDER );
+}
+
+BOOL CCodeView::OnEraseBkgnd( CDC* pDC )
+{
+	return TRUE;
 }
 
 void CCodeView::OnEditCopy( )

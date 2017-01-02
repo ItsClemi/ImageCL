@@ -4,22 +4,22 @@
 #include "MainFrame.h"
 
 #include <Window/Frame/View/CodeView.h>
-#include <Window/Frame/View/ImageView.h>
 #include <Window/Style/VisualStyle.h>
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #endif
 
-IMPLEMENT_DYNCREATE( CMainFrame, CFrameWndEx )
+IMPLEMENT_DYNCREATE( CMainFrame, CMDIFrameWndEx )
 
-BEGIN_MESSAGE_MAP( CMainFrame, CFrameWndEx )
+BEGIN_MESSAGE_MAP( CMainFrame, CMDIFrameWndEx )
 	ON_WM_CREATE( )
 	ON_WM_SIZE( )
 	ON_WM_SETTINGCHANGE( )
 
 	ON_COMMAND( ID_VIEW_OUTPUTPANE, &CMainFrame::OnShowOutputPane )
 
+	ON_COMMAND_PTR( WM_STATUS_BAR_UPDATE, &CMainFrame::OnStatusBarUpdate )
 
 END_MESSAGE_MAP( )
 
@@ -35,10 +35,18 @@ CMainFrame::~CMainFrame( )
 
 int CMainFrame::OnCreate( LPCREATESTRUCT lpCreateStruct )
 {
-	if( CFrameWndEx::OnCreate( lpCreateStruct ) == -1 )
+	if( CMDIFrameWndEx::OnCreate( lpCreateStruct ) == -1 )
 	{
 		return -1;
 	}
+
+	CMDITabInfo mdiTabParams;
+	mdiTabParams.m_style = CMFCTabCtrl::Style::STYLE_3D_VS2005;
+	mdiTabParams.m_bActiveTabCloseButton = TRUE;      
+	mdiTabParams.m_bTabIcons = FALSE;   
+	mdiTabParams.m_bAutoColor = FALSE;   
+	mdiTabParams.m_bDocumentMenu = TRUE;
+	EnableMDITabbedGroups( TRUE, mdiTabParams );
 
 	if( !m_wndMenuBar.Create( this, AFX_DEFAULT_TOOLBAR_STYLE | CBRS_SIZE_DYNAMIC | CBRS_TOOLTIPS | CBRS_FLYBY ) ||
 		!m_wndMenuBar.LoadToolBar( IDR_MAINFRAME )
@@ -58,6 +66,31 @@ int CMainFrame::OnCreate( LPCREATESTRUCT lpCreateStruct )
 		return -1;
 	}
 
+	int nIndex = m_wndCodeBar.CommandToIndex( ID_SELECT_PROCESSOR );
+	m_wndCodeBar.SetButtonInfo( nIndex, ID_SELECT_PROCESSOR, TBBS_SEPARATOR, 205 );
+
+	CRect rect;
+	m_wndCodeBar.GetItemRect( nIndex, &rect );
+	rect.top = 1;
+	rect.bottom = rect.top + 250;
+	if( !m_comboBox.Create( CBS_DROPDOWNLIST | CBS_SORT | WS_VISIBLE |
+		WS_TABSTOP | WS_VSCROLL | WS_CHILD, rect, &m_wndCodeBar, ID_SELECT_PROCESSOR ) )
+	{
+		TRACE( _T( "Failed to create combo-box\n" ) );
+		return FALSE;
+	}
+	m_comboBox.AddString( L"CPU - Fx 8150" );
+	m_comboBox.AddString( L"GPU - GTX 980ti" );
+
+
+	if( !m_wndStatusBar.Create( this ) )
+	{
+		TRACE0( "Failed to create status bar\n" );
+		return -1;
+	}
+
+	static const UINT indicators[ ] = { ID_SEPARATOR, };
+	m_wndStatusBar.SetIndicators( indicators, ARRAYSIZE( indicators ) );
 
 
 	EnableDocking( CBRS_ALIGN_ANY );
@@ -66,7 +99,7 @@ int CMainFrame::OnCreate( LPCREATESTRUCT lpCreateStruct )
 	m_wndCodeBar.EnableDocking( CBRS_ALIGN_ANY );
 
 	DockPane( &m_wndMenuBar );
-	DockPane( &m_wndCodeBar );
+	DockPane( &m_wndCodeBar  );
 
 
 	CMFCVisualManager::SetDefaultManager( RUNTIME_CLASS( CVisualStyle ) );
@@ -89,7 +122,7 @@ int CMainFrame::OnCreate( LPCREATESTRUCT lpCreateStruct )
 
 BOOL CMainFrame::PreCreateWindow( CREATESTRUCT& cs )
 {
-	if( !CFrameWndEx::PreCreateWindow( cs ) )
+	if( !CMDIFrameWndEx::PreCreateWindow( cs ) )
 	{
 		return FALSE;
 	}
@@ -127,24 +160,22 @@ BOOL CMainFrame::OnWndMsg( UINT message, WPARAM wParam, LPARAM lParam, LRESULT* 
 			}
 		}
 
-		TRACE( "Message not handled! %d\n", message );
-
 		*pResult = 0;
-		return FALSE;
+		return OnCmdMsg( nCode, CN_COMMAND, pExtra, nullptr );
 	}
 
-	return CFrameWndEx::OnWndMsg( message, wParam, lParam, pResult );
+	return CMDIFrameWndEx::OnWndMsg( message, wParam, lParam, pResult );
 }
 
 #ifdef _DEBUG
 void CMainFrame::AssertValid( ) const
 {
-	CFrameWndEx::AssertValid( );
+	CMDIFrameWndEx::AssertValid( );
 }
 
 void CMainFrame::Dump( CDumpContext& dc ) const
 {
-	CFrameWndEx::Dump( dc );
+	CMDIFrameWndEx::Dump( dc );
 }
 #endif //_DEBUG
 
@@ -179,8 +210,6 @@ BOOL CMainFrame::CreateDockingWindows( )
 	) )
 	{
 		TRACE0( "Failed to create image window\n" );
-		
-	
 		return FALSE;
 	}
 
@@ -200,7 +229,7 @@ BOOL CMainFrame::CreateDockingWindows( )
 
 void CMainFrame::OnSettingChange( UINT uFlags, LPCTSTR lpszSection )
 {
-	CFrameWndEx::OnSettingChange( uFlags, lpszSection );
+	CMDIFrameWndEx::OnSettingChange( uFlags, lpszSection );
 	//m_wndOutput.UpdateFonts( );
 }
 
@@ -212,9 +241,16 @@ void CMainFrame::OnShowOutputPane( )
 	}
 }
 
+void CMainFrame::OnStatusBarUpdate( void* ptr )
+{
+	const auto szText = reinterpret_cast< wchar_t* >( ptr );
+
+	m_wndStatusBar.SetPaneText( 0, szText, TRUE );
+}
+
 void CMainFrame::OnSize( UINT nType, int cx, int cy )
 {
-	CFrameWndEx::OnSize( nType, cx, cy );
+	CMDIFrameWndEx::OnSize( nType, cx, cy );
 
 	
 

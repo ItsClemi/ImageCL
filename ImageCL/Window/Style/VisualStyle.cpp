@@ -24,6 +24,14 @@ CVisualStyle::CVisualStyle( )
 CVisualStyle::~CVisualStyle( )
 { }
 
+void CVisualStyle::OnDrawMiniFrameBorder( CDC* pDC, CPaneFrameWnd* pFrameWnd, CRect rectBorder, CRect rectBorderSize )
+{
+	//pDC->FillSolidRect( rectBorder, RGB( 128, 128, 128 ) );
+	CMFCVisualManagerOffice2007::OnDrawMiniFrameBorder( pDC, pFrameWnd, rectBorder, rectBorderSize );
+}
+
+
+
 void CVisualStyle::OnFillHighlightedArea( CDC* pDC, CRect rect, CBrush* pBrush, CMFCToolBarButton* pButton )
 {
 	CMFCVisualManagerOffice2007::OnFillHighlightedArea( pDC, rect, pBrush, pButton );
@@ -44,7 +52,6 @@ void CVisualStyle::OnDrawMenuBorder( CDC* pDC, CMFCPopupMenu* pMenu, CRect rect 
 
 void CVisualStyle::OnFillBarBackground( CDC* pDC, CBasePane* pBar, CRect rectClient, CRect rectClip, BOOL bNCArea )
 {
-
 	if( pBar->IsKindOf( RUNTIME_CLASS( CMFCMenuBar ) ) ||
 		pBar->IsKindOf( RUNTIME_CLASS( CMFCToolBar ) )
 		)
@@ -52,6 +59,8 @@ void CVisualStyle::OnFillBarBackground( CDC* pDC, CBasePane* pBar, CRect rectCli
 		pDC->FillRect( rectClient, &m_brLightBkgn );
 		return;
 	}
+
+	auto cls = pBar->GetRuntimeClass( );
 
 	CMFCVisualManagerOffice2007::OnFillBarBackground( pDC, pBar, rectClient, rectClip, bNCArea );
 }
@@ -78,6 +87,41 @@ void CVisualStyle::OnDrawFloatingToolbarBorder( CDC* pDC, CMFCBaseToolBar* pTool
 
 	pDC->FillRect( rectBorder, &br );
 }
+
+
+void CVisualStyle::OnDrawTab( CDC* pDC, CRect rectTab, int iTab, BOOL bIsActive, const CMFCBaseTabCtrl* pTabWnd )
+{
+	if( pTabWnd->IsActiveTabCloseButton( ) && bIsActive )
+	{
+		CRect rectClose = pTabWnd->GetTabCloseButton( );
+		rectTab.right = rectClose.left;
+
+		OnDrawTabCloseButton( pDC, rectClose, pTabWnd, pTabWnd->IsTabCloseButtonHighlighted( ), pTabWnd->IsTabCloseButtonPressed( ), FALSE /* Disabled */ );
+	}
+
+
+	if( pTabWnd->IsFlatTab( ) )
+	{
+		pDC->FillSolidRect( rectTab, RGB( 0, 0, 255 ) );
+
+	}
+	else
+	{
+		pDC->FillSolidRect( rectTab, RGB( 255, 0, 0 ) );
+
+	}
+
+	CString strText;
+	pTabWnd->GetTabLabel( iTab, strText );
+
+
+	CRect rcText = rectTab;
+	pDC->SetTextColor( GetTabTextColor( pTabWnd, iTab, bIsActive ) );
+
+	pDC->DrawText( strText, rcText, DT_CENTER );
+
+}
+
 
 
 

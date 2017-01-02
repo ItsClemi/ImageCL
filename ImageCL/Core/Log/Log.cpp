@@ -1,6 +1,9 @@
 #include "stdafx.h"
 #include "Log.h"
 
+#include "Core/TaskWorker.h"
+
+
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #undef THIS_FILE
@@ -21,10 +24,5 @@ void AddLog( eLogType eType, const wchar_t* szFormat, va_list args )
 	pEntry->m_eType = eType;
 	pEntry->m_tm = _time64( nullptr );
 
-
-	AfxGetApp( )->GetMainWnd( )->PostMessageW(  
-		WM_COMMAND_REFLECT,
-		WM_ADD_OUTPUT,
-		reinterpret_cast< LRESULT >( pEntry )
-	);
+	PostCommandMessage( WM_ADD_OUTPUT, pEntry );
 }

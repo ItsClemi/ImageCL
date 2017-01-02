@@ -38,7 +38,6 @@ public:
 private:
 	ULONG_PTR	m_gdiToken;
 
-
 	std::unique_ptr< CCLManager >		m_pClManager = std::make_unique< CCLManager >( );
 
 };

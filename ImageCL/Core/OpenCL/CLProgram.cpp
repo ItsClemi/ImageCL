@@ -15,6 +15,6 @@ CCLProgram::~CCLProgram( )
 
 bool CCLProgram::LoadFile( std::shared_ptr< std::wstring >&& szPath )
 {
-
+	return true;
 }
 

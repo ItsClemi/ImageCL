@@ -11,6 +11,10 @@ public:
 public:
 	bool Initialize( );
 
+public:
+	
+	void InitializeOpenCLAsync( );
+
 
 };
 

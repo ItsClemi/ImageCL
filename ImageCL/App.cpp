@@ -2,11 +2,14 @@
 #include "App.h"
 
 #include "Window/Frame/MainFrame.h"
-#include "Window/Dialog/AboutDialog.h"
+#include "Window/Frame/ChildFrame.h"
 
 #include "Window/Frame/Doc/CodeDoc.h"
 #include "Window/Frame/View/CodeView.h"
 
+#include "Window/Dialog/AboutDialog.h"
+
+#include "Core/TaskWorker.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -59,6 +62,12 @@ BOOL CApp::InitInstance( )
 		return FALSE;
 	}
 
+	if( !EnableD2DSupport( D2D1_FACTORY_TYPE::D2D1_FACTORY_TYPE_MULTI_THREADED ) )
+	{
+		AfxMessageBox( L"Failed to enable d2d" );
+		return FALSE;
+	}
+
 	EnableTaskbarInteraction( FALSE );
 
 	SetRegistryKey( L"ImageCL" );
@@ -70,18 +79,25 @@ BOOL CApp::InitInstance( )
 	CMFCToolTipInfo ttParams;
 	ttParams.m_bVislManagerTheme = TRUE;
 	gApp.GetTooltipManager( )->SetTooltipParams( AFX_TOOLTIP_TYPE_ALL, RUNTIME_CLASS( CMFCToolTipCtrl ), &ttParams );
-
-
-	CSingleDocTemplate* pDocTemplate = new CSingleDocTemplate( 
+	
+	auto pDocTemplate = new CMultiDocTemplate(
 		IDR_MAINFRAME, 
 		RUNTIME_CLASS( CCodeDoc ), 
-		RUNTIME_CLASS( CMainFrame ), 
+		RUNTIME_CLASS( CChildFrame ),
 		RUNTIME_CLASS( CCodeView ) 
 	);
 
 	AddDocTemplate( pDocTemplate );
 
-	m_pClManager->Initialize( );
+
+	auto pMainFrame = new CMainFrame;
+	if( !pMainFrame->LoadFrame( IDR_MAINFRAME ) )
+	{
+		SafeDelete( pMainFrame );
+		return FALSE;
+	}
+	m_pMainWnd = pMainFrame;
+
 
 	CCommandLineInfo cmdInfo;
 	ParseCommandLine( cmdInfo );
@@ -93,6 +109,8 @@ BOOL CApp::InitInstance( )
 	m_pMainWnd->ShowWindow( SW_SHOWMAXIMIZED );
 	m_pMainWnd->UpdateWindow( );
 	m_pMainWnd->DragAcceptFiles( );
+
+	m_pClManager->InitializeOpenCLAsync( );	
 
 	return TRUE;
 }
@@ -140,7 +158,7 @@ void CApp::OnFileOpen( )
 
 
 
-		AfxGetMainWnd( )->PostMessage( );
+		//AfxGetMainWnd( )->PostMessage( );
 
 
 

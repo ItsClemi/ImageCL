@@ -44,14 +44,17 @@
 #include <Common/Helper/MFCHelper.h>
 #include <Common/Helper/GDIHelper.h>
 
-
 #include <Core/Log/Log.h>
+
+
+#include "Resource.h"
 
 
 //////////////////////////////////////////////////////////////////////////
 //=> Lib
 
 #pragma comment( lib, "OpenCL.lib" )
+#pragma comment( lib, "Imm32.lib" )
 
 
 #if defined _M_IX86
@@ -62,15 +65,16 @@
 
 
 
-#pragma comment( lib, "Imm32.lib" )
 
 
 //////////////////////////////////////////////////////////////////////////
 //=> Messages
 
-#define WM_COMMAND_REFLECT	( WM_APP + 1 )
+#define WM_COMMAND_REFLECT		( WM_APP + 1 )
 
 
-#define WM_ADD_OUTPUT		( WM_USER + 1 )
-#define WM_UPDATE_IMAGE		( WM_USER + 2 )
-#define WM_SET_CL_PROGRAM	( WM_USER + 3 )
+#define WM_ADD_OUTPUT			( WM_USER + 1 )
+#define WM_UPDATE_IMAGE			( WM_USER + 2 )
+#define WM_SET_CL_PROGRAM		( WM_USER + 3 )
+#define WM_STATUS_BAR_UPDATE	( WM_USER + 4 )
+#define WM_ENQUEU_TASK			( WM_USER + 5 )

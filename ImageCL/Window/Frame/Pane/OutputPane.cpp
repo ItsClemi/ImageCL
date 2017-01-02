@@ -16,9 +16,9 @@ BEGIN_MESSAGE_MAP( COutputPane, CDockablePane )
 	ON_WM_SIZE( )
 	ON_WM_CONTEXTMENU( )
 
-	ON_COMMAND_PTR( WM_ADD_OUTPUT, &COutputPane::OnAddOutput )
-
 	ON_COMMAND( ID_CLEAR_OUTPUT, &COutputPane::OnClearOutput )
+
+	ON_COMMAND_PTR( WM_ADD_OUTPUT, &COutputPane::OnAddOutput )
 
 END_MESSAGE_MAP( )
 
