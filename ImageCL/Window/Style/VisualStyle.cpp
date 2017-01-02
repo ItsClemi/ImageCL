@@ -122,7 +122,7 @@ void CVisualStyle::OnDrawTab( CDC* pDC, CRect rectTab, int iTab, BOOL bIsActive,
 
 }
 
-
+//>
 
 
 
