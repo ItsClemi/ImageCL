@@ -31,7 +31,6 @@ public:
 	virtual void OnDrawFloatingToolbarBorder( CDC* pDC, CMFCBaseToolBar* pToolBar, CRect rectBorder, CRect rectBorderSize ) override;
 
 public:
-
 	virtual void OnDrawTab( CDC* pDC, CRect rectTab, int iTab, BOOL bIsActive, const CMFCBaseTabCtrl* pTabWnd ) override;
 
 

@@ -88,7 +88,6 @@ void CVisualStyle::OnDrawFloatingToolbarBorder( CDC* pDC, CMFCBaseToolBar* pTool
 	pDC->FillRect( rectBorder, &br );
 }
 
-
 void CVisualStyle::OnDrawTab( CDC* pDC, CRect rectTab, int iTab, BOOL bIsActive, const CMFCBaseTabCtrl* pTabWnd )
 {
 	if( pTabWnd->IsActiveTabCloseButton( ) && bIsActive )
