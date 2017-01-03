@@ -129,6 +129,7 @@
     <ClInclude Include="Window\Frame\Pane\ImagePane.h" />
     <ClInclude Include="Window\Frame\Pane\OutputPane.h" />
     <ClInclude Include="Window\Frame\View\CodeView.h" />
+    <ClInclude Include="Window\Frame\View\ImageView.h" />
     <ClInclude Include="Window\Style\VisualStyle.h" />
   </ItemGroup>
   <ItemGroup>
@@ -149,6 +150,7 @@
     <ClCompile Include="Window\Frame\Pane\ImagePane.cpp" />
     <ClCompile Include="Window\Frame\Pane\OutputPane.cpp" />
     <ClCompile Include="Window\Frame\View\CodeView.cpp" />
+    <ClCompile Include="Window\Frame\View\ImageView.cpp" />
     <ClCompile Include="Window\Style\VisualStyle.cpp" />
   </ItemGroup>
   <ItemGroup>

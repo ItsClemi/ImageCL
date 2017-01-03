@@ -7,12 +7,17 @@
 using namespace Gdiplus;
 
 
+#ifdef _DEBUG
+#define new DEBUG_NEW
+#undef THIS_FILE
+
+static char THIS_FILE[ ] = __FILE__;
+#endif
+
+
 BEGIN_MESSAGE_MAP( CImagePane, CDockablePane )
 	ON_WM_CREATE( )
 	ON_WM_SIZE( )
-	ON_WM_PAINT( )
-	ON_WM_ERASEBKGND( )
-
 	ON_WM_CONTEXTMENU( )
 
 	ON_COMMAND( ID_IMAGE_OPEN, &CImagePane::OnImageOpen )
@@ -20,14 +25,14 @@ BEGIN_MESSAGE_MAP( CImagePane, CDockablePane )
 	ON_COMMAND_PTR( WM_UPDATE_IMAGE, &CImagePane::OnUpdateImage )
 END_MESSAGE_MAP( );
 
+
+
 CImagePane::CImagePane( )
 {
-
 }
 
 CImagePane::~CImagePane( )
 {
-
 }
 
 int CImagePane::OnCreate( LPCREATESTRUCT lpCreateStruct )
@@ -46,9 +51,12 @@ int CImagePane::OnCreate( LPCREATESTRUCT lpCreateStruct )
 
 	m_wndToolBar.SetRouteCommandsViaFrame( FALSE );
 
-	//m_wndScrollBarHorz.Create( SBS_HORZ | SBS_BOTTOMALIGN | WS_CHILD | WS_VISIBLE, CRect( 5, 5, 100, 30 ), this, 0 );
-	//m_wndScrollBarVert.Create( SBS_VERT | SBS_LEFTALIGN | WS_CHILD | WS_VISIBLE, CRect( 5, 30, 30, 130 ), this, 1 );
-
+	m_pImageView = new CImageView( );
+	if( !m_pImageView->Create( nullptr, nullptr, AFX_WS_DEFAULT_VIEW, CRect( ), this, AFX_IDW_PANE_FIRST ) )
+	{
+		return -1;
+	}
+	
 	return 0;
 }
 
@@ -59,103 +67,35 @@ void CImagePane::OnSize( UINT nType, int cx, int cy )
 	int cyTlb = m_wndToolBar.CalcFixedLayout( FALSE, TRUE ).cy;
 
 	m_wndToolBar.SetWindowPos( nullptr, 0, 0, cx, cyTlb, SWP_NOACTIVATE | SWP_NOZORDER );
-
-
-	// 	CRect rcHorzBar;
-	// 	m_wndScrollBarHorz.GetClientRect( rcHorzBar );
-	// 	
-	// 	int n = rcHorzBar.Height( );
-	// 	m_wndScrollBarHorz.SetWindowPos( nullptr, 0, cy - n, cx, cy, SWP_NOACTIVATE | SWP_NOZORDER );
-
-	m_rcDrawArea = RectF(
-		0.0f,
-		static_cast< REAL >( cyTlb ),
-		static_cast< REAL >( cx ),
-		static_cast< REAL >( cy - cyTlb )
-	);
-
-	m_ptCenter = PointF(
-		( m_rcDrawArea.GetLeft( ) + m_rcDrawArea.GetRight( ) ) / 2.0f,
-		( m_rcDrawArea.GetTop( ) + m_rcDrawArea.GetBottom( ) ) / 2.0f
-	);
-
-	LogInfo( __FUNCTIONW__ );
-}
-
-BOOL CImagePane::OnEraseBkgnd( CDC* pDC )
-{
-	return FALSE;
-}
-
-void CImagePane::OnPaint( )
-{
-	CPaintDC dc( this );
-
-	Graphics g( dc.GetSafeHdc( ) );
-
-	g.Clear( Color::MakeARGB( 255, 30, 30, 30 ) );
-
-
-	auto pBrush = new Gdiplus::SolidBrush( Gdiplus::Color::Cyan );
-
-// 	auto pMat = new Gdiplus::Matrix( );
-// 	pMat->Scale( 2.0f, 2.0f );
-// 	pMat->Translate( -2.0f, -2.0f );
-// 
-// 	g.SetTransform( pMat );
-// 	g.TranslateTransform( 2.0f, 2.0f );
-
-
-	if( m_pImage )
-	{
-		REAL fSizeX = static_cast< REAL >( m_pImage->GetWidth( ) );
-		REAL fSizeY = static_cast< REAL >( m_pImage->GetHeight( ) );
-
-		fSizeX *= 2.0f;
-		fSizeY *= 2.0f;
-
-
-		RectF rcImage(
-			m_ptCenter.X - ( fSizeX / 2.0f ),
-			m_ptCenter.Y - ( fSizeY / 2.0f ),
-			fSizeX,
-			fSizeY
-		);
-
-		g.DrawImage( m_pImage, rcImage );
-
-		LogInfo( L"Redraw!" );
-	}
-
-
+	m_pImageView->SetWindowPos( nullptr, 0, cyTlb, cx, cy, SWP_NOACTIVATE | SWP_NOZORDER );
 }
 
 void CImagePane::OnContextMenu( CWnd* pWnd, CPoint point )
 {
-	// 	CMenu menu;
-	// 	menu.LoadMenu( IDR_OUTPUT_POPUP );
-	// 
-	// 	CMenu* pSumMenu = menu.GetSubMenu( 0 );
-	// 
-	// 	CRect rcWindow;
-	// 	m_pImageView->GetWindowRect( &rcWindow );
-	// 
-	// 	if( rcWindow.PtInRect( point ) )
-	// 	{
-	// 		CMFCPopupMenu* pPopupMenu = new CMFCPopupMenu;
-	// 
-	// 		if( !pPopupMenu->Create( this, point.x, point.y, ( HMENU )pSumMenu->m_hMenu, FALSE, TRUE ) )
-	// 		{
-	// 			return;
-	// 		}
-	// 
-	// 		reinterpret_cast< CMDIFrameWndEx* >( AfxGetMainWnd( ) )->OnShowPopupMenu( pPopupMenu );
-	// 		UpdateDialogControls( this, FALSE );
-	// 	}
-	// 	else
-	// 	{
-	// 		CDockablePane::OnContextMenu( pWnd, point );
-	// 	}
+	CMenu menu;
+	menu.LoadMenuW( IDR_OUTPUT_POPUP );
+
+	CMenu* pSumMenu = menu.GetSubMenu( 0 );
+
+	CRect rcWindow;
+	m_pImageView->GetWindowRect( &rcWindow );
+
+	if( rcWindow.PtInRect( point ) )
+	{
+		CMFCPopupMenu* pPopupMenu = new CMFCPopupMenu;
+
+		if( !pPopupMenu->Create( this, point.x, point.y, ( HMENU )pSumMenu->m_hMenu, FALSE, TRUE ) )
+		{
+			return;
+		}
+
+		reinterpret_cast< CMDIFrameWndEx* >( AfxGetMainWnd( ) )->OnShowPopupMenu( pPopupMenu );
+		UpdateDialogControls( this, FALSE );
+	}
+	else
+	{
+		CDockablePane::OnContextMenu( pWnd, point );
+	}
 }
 
 void CImagePane::OnImageOpen( )
@@ -202,6 +142,64 @@ void CImagePane::OnUpdateImage( void* ptr )
 {
 	auto pImage = reinterpret_cast< Bitmap* >( ptr );
 
-	m_pImage = pImage;
-	Invalidate( );
+	//Invalidate( );
 }
+
+
+
+/*
+m_rcDrawArea = RectF(
+0.0f,
+static_cast< REAL >( cyTlb ),
+static_cast< REAL >( cx ),
+static_cast< REAL >( cy - cyTlb )
+);
+
+m_ptCenter = PointF(
+( m_rcDrawArea.GetLeft( ) + m_rcDrawArea.GetRight( ) ) / 2.0f,
+( m_rcDrawArea.GetTop( ) + m_rcDrawArea.GetBottom( ) ) / 2.0f
+);
+
+LogInfo( __FUNCTIONW__ );
+
+
+CPaintDC dc( this );
+
+Graphics g( dc.GetSafeHdc( ) );
+
+g.Clear( Color::MakeARGB( 255, 30, 30, 30 ) );
+
+
+auto pBrush = new Gdiplus::SolidBrush( Gdiplus::Color::Cyan );
+
+// 	auto pMat = new Gdiplus::Matrix( );
+// 	pMat->Scale( 2.0f, 2.0f );
+// 	pMat->Translate( -2.0f, -2.0f );
+//
+// 	g.SetTransform( pMat );
+// 	g.TranslateTransform( 2.0f, 2.0f );
+
+
+if( m_pImage )
+{
+REAL fSizeX = static_cast< REAL >( m_pImage->GetWidth( ) );
+REAL fSizeY = static_cast< REAL >( m_pImage->GetHeight( ) );
+
+fSizeX *= 2.0f;
+fSizeY *= 2.0f;
+
+
+RectF rcImage(
+m_ptCenter.X - ( fSizeX / 2.0f ),
+m_ptCenter.Y - ( fSizeY / 2.0f ),
+fSizeX,
+fSizeY
+);
+
+g.DrawImage( m_pImage, rcImage );
+
+LogInfo( L"Redraw!" );
+}
+
+
+*/

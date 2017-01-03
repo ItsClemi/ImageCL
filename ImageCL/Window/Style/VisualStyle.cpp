@@ -26,8 +26,7 @@ CVisualStyle::~CVisualStyle( )
 
 void CVisualStyle::OnDrawMiniFrameBorder( CDC* pDC, CPaneFrameWnd* pFrameWnd, CRect rectBorder, CRect rectBorderSize )
 {
-	//pDC->FillSolidRect( rectBorder, RGB( 128, 128, 128 ) );
-	CMFCVisualManagerOffice2007::OnDrawMiniFrameBorder( pDC, pFrameWnd, rectBorder, rectBorderSize );
+	pDC->FillSolidRect( rectBorder, RGB( 200, 200, 200 ) );
 }
 
 
@@ -88,25 +87,31 @@ void CVisualStyle::OnDrawFloatingToolbarBorder( CDC* pDC, CMFCBaseToolBar* pTool
 	pDC->FillRect( rectBorder, &br );
 }
 
+
+
 void CVisualStyle::OnDrawTab( CDC* pDC, CRect rectTab, int iTab, BOOL bIsActive, const CMFCBaseTabCtrl* pTabWnd )
 {
+	ASSERT_VALID( pTabWnd );
+	ASSERT_VALID( pDC );
+
+
 	if( pTabWnd->IsActiveTabCloseButton( ) && bIsActive )
 	{
 		CRect rectClose = pTabWnd->GetTabCloseButton( );
 		rectTab.right = rectClose.left;
 
-		OnDrawTabCloseButton( pDC, rectClose, pTabWnd, pTabWnd->IsTabCloseButtonHighlighted( ), pTabWnd->IsTabCloseButtonPressed( ), FALSE /* Disabled */ );
+		OnDrawTabCloseButton( pDC, rectClose, pTabWnd, pTabWnd->IsTabCloseButtonHighlighted( ), pTabWnd->IsTabCloseButtonPressed( ), FALSE );
 	}
 
 
-	if( pTabWnd->IsFlatTab( ) )
+	if( bIsActive )
 	{
-		pDC->FillSolidRect( rectTab, RGB( 0, 0, 255 ) );
+		pDC->FillSolidRect( rectTab, RGB( 0, 122, 204 ) );
 
 	}
 	else
 	{
-		pDC->FillSolidRect( rectTab, RGB( 255, 0, 0 ) );
+		pDC->FillSolidRect( rectTab, RGB( 45, 45, 48 ) );
 
 	}
 
@@ -114,16 +119,18 @@ void CVisualStyle::OnDrawTab( CDC* pDC, CRect rectTab, int iTab, BOOL bIsActive,
 	pTabWnd->GetTabLabel( iTab, strText );
 
 
-	CRect rcText = rectTab;
-	pDC->SetTextColor( GetTabTextColor( pTabWnd, iTab, bIsActive ) );
 
-	pDC->DrawText( strText, rcText, DT_CENTER );
+	pDC->SetTextColor( RGB( 255, 255, 255 ) );
+
+	pDC->DrawTextW( strText, rectTab, DT_VCENTER );
 
 }
 
-//>
 
-
+void CVisualStyle::OnDrawTabCloseButton( CDC* pDC, CRect rect, const CMFCBaseTabCtrl* pTabWnd, BOOL bIsHighlighted, BOOL bIsPressed, BOOL bIsDisabled )
+{
+	CMFCVisualManagerOffice2007::OnDrawTabCloseButton( pDC, rect, pTabWnd, bIsHighlighted, bIsPressed, bIsDisabled );
+}
 
 COLORREF CVisualStyle::GetMenuItemTextColor( CMFCToolBarMenuButton* pButton, BOOL bHighlighted, BOOL bDisabled )
 {
@@ -134,10 +141,3 @@ COLORREF CVisualStyle::GetMenuItemTextColor( CMFCToolBarMenuButton* pButton, BOO
 	
 	return RGB( 241, 241, 241 );
 }
-
-
-BOOL CVisualStyle::IsToolbarRoundShape( CMFCToolBar* pToolBar )
-{
-	return FALSE;
-}
-

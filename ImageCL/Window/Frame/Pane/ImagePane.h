@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Window/Frame/View/ImageView.h"
 
 
 class CImageRenderViewToolbar : public CMFCToolBar
@@ -30,8 +31,6 @@ public:
 private:
 	afx_msg int OnCreate( LPCREATESTRUCT lpCreateStruct );
 	afx_msg void OnSize( UINT nType, int cx, int cy );
-	afx_msg BOOL OnEraseBkgnd( CDC* pDC );
-	afx_msg void OnPaint( );
 
 	afx_msg void OnContextMenu( CWnd* pWnd, CPoint point );
 
@@ -43,9 +42,10 @@ private:
 
 private:
 	CImageRenderViewToolbar		m_wndToolBar;
+	
+	CImageView*					m_pImageView;
 
-	CScrollBar					m_wndScrollBarHorz;
-	CScrollBar					m_wndScrollBarVert;
+
 
 
 	Gdiplus::RectF				m_rcDrawArea;

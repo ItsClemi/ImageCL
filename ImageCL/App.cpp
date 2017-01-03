@@ -112,6 +112,11 @@ BOOL CApp::InitInstance( )
 
 	m_pClManager->InitializeOpenCLAsync( );	
 
+	if( !IsWindows8OrGreater( ) )
+	{
+		LogInfo( L"Warning: Old Windows! Some things might not work!" );
+	}
+
 	return TRUE;
 }
 

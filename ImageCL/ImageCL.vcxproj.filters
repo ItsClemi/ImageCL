@@ -110,6 +110,9 @@
     <ClInclude Include="Window\Frame\ChildFrame.h">
       <Filter>Window\Frame</Filter>
     </ClInclude>
+    <ClInclude Include="Window\Frame\View\ImageView.h">
+      <Filter>Window\Frame\View</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -154,6 +157,9 @@
     </ClCompile>
     <ClCompile Include="Window\Frame\ChildFrame.cpp">
       <Filter>Window\Frame</Filter>
+    </ClCompile>
+    <ClCompile Include="Window\Frame\View\ImageView.cpp">
+      <Filter>Window\Frame\View</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

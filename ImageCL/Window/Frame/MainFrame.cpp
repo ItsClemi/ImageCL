@@ -41,11 +41,14 @@ int CMainFrame::OnCreate( LPCREATESTRUCT lpCreateStruct )
 	}
 
 	CMDITabInfo mdiTabParams;
-	mdiTabParams.m_style = CMFCTabCtrl::Style::STYLE_3D_VS2005;
-	mdiTabParams.m_bActiveTabCloseButton = TRUE;      
-	mdiTabParams.m_bTabIcons = FALSE;   
-	mdiTabParams.m_bAutoColor = FALSE;   
+	//mdiTabParams.m_style = CMFCTabCtrl::Style::STYLE_3D_VS2005;
+	mdiTabParams.m_bActiveTabCloseButton = TRUE;
+	mdiTabParams.m_bTabIcons = FALSE;
+	mdiTabParams.m_bAutoColor = FALSE;
 	mdiTabParams.m_bDocumentMenu = TRUE;
+	mdiTabParams.m_nTabBorderSize = 0;
+	mdiTabParams.m_bFlatFrame = TRUE;
+
 	EnableMDITabbedGroups( TRUE, mdiTabParams );
 
 	if( !m_wndMenuBar.Create( this, AFX_DEFAULT_TOOLBAR_STYLE | CBRS_SIZE_DYNAMIC | CBRS_TOOLTIPS | CBRS_FLYBY ) ||
@@ -99,7 +102,7 @@ int CMainFrame::OnCreate( LPCREATESTRUCT lpCreateStruct )
 	m_wndCodeBar.EnableDocking( CBRS_ALIGN_ANY );
 
 	DockPane( &m_wndMenuBar );
-	DockPane( &m_wndCodeBar  );
+	DockPane( &m_wndCodeBar );
 
 
 	CMFCVisualManager::SetDefaultManager( RUNTIME_CLASS( CVisualStyle ) );
@@ -224,6 +227,10 @@ BOOL CMainFrame::CreateDockingWindows( )
 	m_wndImage.EnableDocking( CBRS_ALIGN_ANY );
 	DockPane( &m_wndImage );
 
+
+	ModifyStyle( 0, FWS_PREFIXTITLE );
+
+
 	return TRUE;
 }
 
@@ -252,14 +259,14 @@ void CMainFrame::OnSize( UINT nType, int cx, int cy )
 {
 	CMDIFrameWndEx::OnSize( nType, cx, cy );
 
-	
 
-// 	if( m_bSplitterInitialized && nType != SIZE_MINIMIZED )
-// 	{
-// 		m_wndSplitter.SetRowInfo( 0, cy, 0 );
-// 		m_wndSplitter.SetColumnInfo( 0, cx / 2, 50 );
-// 		m_wndSplitter.SetColumnInfo( 1, cx / 2, 50 );
-// 
-// 		m_wndSplitter.RecalcLayout( );
-// 	}
+
+	// 	if( m_bSplitterInitialized && nType != SIZE_MINIMIZED )
+	// 	{
+	// 		m_wndSplitter.SetRowInfo( 0, cy, 0 );
+	// 		m_wndSplitter.SetColumnInfo( 0, cx / 2, 50 );
+	// 		m_wndSplitter.SetColumnInfo( 1, cx / 2, 50 );
+	// 
+	// 		m_wndSplitter.RecalcLayout( );
+	// 	}
 }

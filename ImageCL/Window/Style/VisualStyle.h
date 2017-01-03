@@ -33,6 +33,8 @@ public:
 public:
 	virtual void OnDrawTab( CDC* pDC, CRect rectTab, int iTab, BOOL bIsActive, const CMFCBaseTabCtrl* pTabWnd ) override;
 
+	virtual void OnDrawTabCloseButton( CDC* pDC, CRect rect, const CMFCBaseTabCtrl* pTabWnd, BOOL bIsHighlighted, BOOL bIsPressed, BOOL bIsDisabled ) override;
+
 
 public:
 	virtual COLORREF GetMenuItemTextColor( CMFCToolBarMenuButton* pButton, BOOL bHighlighted, BOOL bDisabled ) override;
@@ -45,7 +47,10 @@ public:
 	}
 
 public:
-	virtual BOOL IsToolbarRoundShape( CMFCToolBar* pToolBar ) override;
+	virtual BOOL IsToolbarRoundShape( CMFCToolBar* pToolBar ) override
+	{
+		return FALSE;
+	}
 
 
 private:

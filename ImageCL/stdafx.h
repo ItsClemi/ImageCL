@@ -20,6 +20,7 @@
 #include <afxdtctl.h>   
 #include <afxcmn.h>             
 #include <afxcontrolbars.h>   
+#include <VersionHelpers.h>
 
 
 #include <memory>
