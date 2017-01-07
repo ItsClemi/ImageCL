@@ -12,17 +12,19 @@ static char THIS_FILE[ ] = __FILE__;
 #endif
 
 
-void AddLog( eLogType eType, const wchar_t* szFormat, va_list args )
+void AddLog( eLogType eType, eOutputType eOutput, const wchar_t* szFormat, va_list args )
 {
 	SLogEntry* pEntry = new SLogEntry;
-
-	if( _vsnwprintf_s( pEntry->m_szMessage, ARRAYSIZE( pEntry->m_szMessage ), szFormat, args ) == _TRUNCATE )
 	{
-		wcscat_s( pEntry->m_szMessage, L"<failed to print message>" );
+		if( _vsnwprintf_s( pEntry->m_szMessage, ARRAYSIZE( pEntry->m_szMessage ), szFormat, args ) == _TRUNCATE )
+		{
+			wcscpy_s( pEntry->m_szMessage, L"<failed to print message>" );
+		}
+
+		pEntry->m_eType = eType;
+		pEntry->m_tm = _time64( nullptr );
+		pEntry->m_eOutputType = eOutput;
 	}
 
-	pEntry->m_eType = eType;
-	pEntry->m_tm = _time64( nullptr );
-
-	PostCommandMessage( WM_ADD_OUTPUT, pEntry );
+	gEnv->pLogQueue->EnqueueLog( pEntry );
 }

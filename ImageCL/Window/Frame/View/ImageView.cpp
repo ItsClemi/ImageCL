@@ -10,6 +10,7 @@ BEGIN_MESSAGE_MAP( CImageView, CScrollView )
 	ON_WM_ERASEBKGND( )
 	ON_WM_MOUSEACTIVATE( )
 
+
 END_MESSAGE_MAP( )
 
 
@@ -21,30 +22,6 @@ CImageView::~CImageView( )
 {
 }
 
-void CImageView::OnUpdate( CView* pSender, LPARAM lHint, CObject* pHint )
-{
-
-// 	if( nullptr != m_spBitmap )
-// 	{
-// 		m_spBitmap->Destroy( );
-// 	}
-	CSize sizeImage( 100, 100 );
-
-// 	const CString& strFile = pDoc->GetPathName( );
-// 	if( !strFile.IsEmpty( ) )
-// 	{
-// 		m_spBitmap = std::make_shared<CD2DBitmap>( &m_renderTarget, strFile );
-// 		HRESULT hr = m_spBitmap->Create( &m_renderTarget );
-// 		if( m_spBitmap->IsValid( ) )
-// 		{
-// 			CD2DSizeF size = m_spBitmap->GetSize( );
-// 			sizeImage.SetSize( static_cast< int >( size.width ), static_cast< int >( size.height ) );
-// 		}
-// 	}
-
-	SetScrollSizes( MM_TEXT, sizeImage );
-	ScrollToPosition( CPoint( 0, 0 ) );
-}
 
 void CImageView::OnDraw( CDC* pDC )
 { 
@@ -54,19 +31,28 @@ void CImageView::OnDraw( CDC* pDC )
 	{
 		m_renderTarget.BeginDraw( );
 
-		D2D1_COLOR_F color = { 1.f, 0.5f, 1.f, 0.2f }; 
-		m_renderTarget.Clear( color );
+		m_renderTarget.Clear( CHwndRenderTarget::COLORREF_TO_D2DCOLOR( RGB( 30, 30, 30 ) ) );
 
-// 		if( ( nullptr != m_spBitmap ) && m_spBitmap->IsValid( ) )
-// 		{
-// 			// apply translation transform according to view's scroll position
-// 			CPoint point = GetScrollPosition( );
-// 			D2D1_MATRIX_3X2_F matrix = D2D1::Matrix3x2F::Translation( ( float )-point.x, ( float )-point.y );
-// 			m_renderTarget.SetTransform( matrix );
-// 			// draw the bitmap
-// 			CD2DSizeF size = m_spBitmap->GetSize( );
-// 			m_renderTarget.DrawBitmap( m_spBitmap.get( ), CD2DRectF( 0, 0, size.width, size.height ) );
-// 		}
+		CPoint point = GetScrollPosition( );
+		D2D1_MATRIX_3X2_F matrix = D2D1::Matrix3x2F::Translation( ( float )-point.x, ( float )-point.y );
+
+		m_renderTarget.SetTransform( matrix );
+
+
+
+
+ 		if( m_pBitmap && m_pBitmap->IsValid( ) )
+ 		{
+			CD2DSizeF size = m_pBitmap->GetSize( );
+ 			m_renderTarget.DrawBitmap( m_pBitmap, CD2DRectF( 0, 0, size.width, size.height ) );
+ 		}
+		else
+		{
+			m_renderTarget.FillRectangle( 
+				CD2DRectF( 0.0f, 0.0f, 250.0f, 250.0f ), 
+				new CD2DSolidColorBrush( &m_renderTarget, D2D1::ColorF::Azure ) 
+			);
+		}
 
 		hr = m_renderTarget.EndDraw( );
 
@@ -77,6 +63,26 @@ void CImageView::OnDraw( CDC* pDC )
 	}
 }
 
+
+void CImageView::UpdateImage( CD2DBitmap* pBitmap )
+{
+	m_pBitmap = pBitmap;
+
+	
+	CD2DSizeF size = m_pBitmap->GetSize( );
+	CSize sizeImage( static_cast< int >( size.width ), static_cast< int >( size.height ) );
+
+	SetScrollSizes( MM_TEXT, sizeImage );
+	ScrollToPosition( CPoint( 0, 0 ) );
+
+
+	PostMessage( WM_PAINT );
+}
+
+void CImageView::SafeImageToFile( const CString& szPath )
+{
+
+}
 
 int CImageView::OnCreate( LPCREATESTRUCT lpcs )
 {
@@ -104,7 +110,7 @@ void CImageView::OnSize( UINT nType, int cx, int cy )
 
 BOOL CImageView::OnEraseBkgnd( CDC* pDC )
 {
-	if( m_renderTarget.IsValid( ) /*&& m_spBitmap->IsValid( )*/ )
+	if( m_renderTarget.IsValid( ) && m_pBitmap && m_pBitmap->IsValid( ) )
 	{
 		return TRUE;
 	}

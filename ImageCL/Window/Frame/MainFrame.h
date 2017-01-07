@@ -19,23 +19,23 @@ private:
 
 	virtual BOOL OnWndMsg( UINT message, WPARAM wParam, LPARAM lParam, LRESULT* pResult ) override;
 
-public:
-#ifdef _DEBUG
-	virtual void AssertValid( ) const override;
-	virtual void Dump( CDumpContext& dc ) const override;
-#endif
 
 private:
 	BOOL CreateDockingWindows( );
 
 protected:
 	afx_msg int OnCreate( LPCREATESTRUCT lpCreateStruct );
-	afx_msg void OnSize( UINT nType, int cx, int cy );
 
 	afx_msg void OnSettingChange( UINT uFlags, LPCTSTR lpszSection );
 
+	afx_msg void OnDeviceStats( );
 	afx_msg void OnShowOutputPane( );
+	
+	afx_msg void OnRunKernel( );
+	
 	afx_msg void OnStatusBarUpdate( void* ptr );
+	afx_msg void OnAddCLDevice( void* ptr );
+	
 
 	DECLARE_MESSAGE_MAP( )
 

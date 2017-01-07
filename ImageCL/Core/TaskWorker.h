@@ -37,3 +37,13 @@ inline void PostCommandMessage( UINT nId, T lParam )
 		}
 	}
 }
+
+template< typename T >
+inline void PostCommandMessageSync( UINT nId, T lParam )
+{
+	AfxGetMainWnd( )->PostMessageW( 
+		WM_COMMAND_REFLECT,
+		static_cast< WPARAM >( nId ),
+		reinterpret_cast< LPARAM >( lParam )
+	);
+}

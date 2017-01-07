@@ -26,7 +26,7 @@ END_MESSAGE_MAP( )
 static const wchar_t cppKeyWords[ ] =
 L"and and_eq asm auto bitand bitor bool break "
 L"case catch char class compl const const_cast continue "
-L"default delete do double dynamic_cast else enum explicit export extern false float for "
+L"default delete do double else enum explicit export extern false float for "
 L"friend goto if inline int long mutable namespace new not not_eq "
 L"operator or or_eq private protected public "
 L"register reinterpret_cast return short signed sizeof static static_cast struct switch "
@@ -34,21 +34,42 @@ L"template this throw true try typedef typeid typename union unsigned using "
 L"virtual void volatile wchar_t while xor xor_eq "
 
 //Extended
-L"__asm __asume __based __box __cdecl __declspec "
-L"__delegate delegate depreciated dllexport dllimport "
-L"event __event __except __fastcall __finally __forceinline "
-L"__int8 __int16 __int32 __int64 __int128 __interface "
-L"interface __leave naked noinline __noop noreturn "
-L"nothrow novtable nullptr safecast __stdcall "
-L"__try __except __finally __unaligned uuid __uuidof "
-L"__virtual_inheritance "
+L"__cdecl "
+L"__int8 __int16 __int32 __int64 __int128 "
+L"__stdcall "
 
 //OpenCL
 L"__kernel __local __global "
 L"get_global_id get_local_id get_group_id barrier "
 L"CLK_LOCAL_MEM_FENCE CLK_GLOBAL_MEM_FENCE "
-L"double2 double4 double8 double16 half2 half4 half8 half16 "
-L"char2 char4 char8 float2 float4 float8 "
+
+L"complex imaginary "
+
+L"char2 char4 char8 char16 "
+L"uchar2 uchar4 uchar8 uchar16 "
+L"short2 short4 short8 short16 "
+L"ushort2 ushort4 ushort8 ushort16"
+L"int2 int4 int8 int16 "
+L"uint2 uint4 uint8 uint16 "
+L"long2 long4 long8 long16 "
+L"ulong2 ulong4 ulong8 ulong16 "
+L"float2 float4 float8 float16 "
+L"double2 double4 double8 double16 "
+
+L"bool2 bool4 bool8 bool16 "
+L"half2 half4 half8 half16 "
+L"quad2 quad4 quad8 quad16 "
+
+L"float2x2 float2x4 float2x8 float2x16"
+L"float4x2 float4x4 float4x8 float4x16"
+L"float8x2 float8x4 float8x8 float8x16"
+L"float16x2 float16x4 float16x8 float16x16"
+
+L"double2x2 double2x4 double2x8 double2x16"
+L"double4x2 double4x4 double4x8 double4x16"
+L"double8x2 double8x4 double8x8 double8x16"
+L"double16x2 double16x4 double16x8 double16x16"
+
 ;
 
 
@@ -59,7 +80,68 @@ CCodeView::~CCodeView( )
 { }
 
 void CCodeView::OnDraw( CDC* pDC )
+{ }
+
+void CCodeView::Serialize( CArchive& ar )
 {
+	if( ar.IsLoading( ) )
+	{
+		m_wndEdit.Cancel( );
+		m_wndEdit.SetUndoCollection( FALSE );
+
+		CFile* pFile = ar.GetFile( );
+		char Buffer[ 4096 ];
+		int nBytesRead = 0;
+		do
+		{
+			nBytesRead = pFile->Read( Buffer, 4096 );
+
+			if( nBytesRead )
+			{
+				m_wndEdit.AddText( nBytesRead, Buffer );
+			}
+
+		} while( nBytesRead );
+
+		if( ( ( GetFileAttributes( pFile->GetFilePath( ) ) & FILE_ATTRIBUTE_READONLY ) == FILE_ATTRIBUTE_READONLY ) )
+		{
+			m_wndEdit.SetReadOnly( TRUE );
+		}
+		else
+		{
+			m_wndEdit.SetReadOnly( FALSE );
+		}
+
+		m_wndEdit.SetUndoCollection( TRUE );
+		m_wndEdit.EmptyUndoBuffer( );
+		m_wndEdit.SetSavePoint( );
+		m_wndEdit.GotoPos( 0 );
+	}
+	else
+	{
+		char Buffer[ 4096 ];
+		int nDocLength = m_wndEdit.GetLength( );
+
+		CFile* pFile = ar.GetFile( );
+		for( int i = 0; i < nDocLength; i += 4095 ) 
+		{
+			int nGrabSize = nDocLength - i;
+			if( nGrabSize > 4095 )
+			{
+				nGrabSize = 4095;
+			}
+
+			Sci_TextRange tr;
+			{
+				tr.chrg.cpMin = i;
+				tr.chrg.cpMax = i + nGrabSize;
+				tr.lpstrText = Buffer;
+			}
+			m_wndEdit.GetTextRange( &tr );
+
+			pFile->Write( Buffer, nGrabSize );
+		}
+	}
 }
 
 void CCodeView::SetAStyle( int style, COLORREF fore, COLORREF back, int size, const char* face )

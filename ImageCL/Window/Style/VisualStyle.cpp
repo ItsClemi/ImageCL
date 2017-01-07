@@ -38,9 +38,6 @@ void CVisualStyle::OnFillHighlightedArea( CDC* pDC, CRect rect, CBrush* pBrush, 
 
 void CVisualStyle::OnDrawMenuBorder( CDC* pDC, CMFCPopupMenu* pMenu, CRect rect )
 {
-	ASSERT_VALID( pDC );
-	ASSERT_VALID( pMenu );
-
 	const BOOL bRTL = pMenu->GetExStyle( ) & WS_EX_LAYOUTRTL;
 
 

@@ -1,5 +1,9 @@
 #pragma once
 
+#ifdef _M_IX86
+#pragma message( "Warning x32 build is untested!" )
+#endif
+
 //////////////////////////////////////////////////////////////////////////
 //=> Defines
 
@@ -9,6 +13,7 @@
 
 #define _ATL_CSTRING_EXPLICIT_CONSTRUCTORS    
 #define _AFX_ALL_WARNINGS
+#define __CL_ENABLE_EXCEPTIONS
 
 //////////////////////////////////////////////////////////////////////////
 //=> Includes
@@ -21,7 +26,7 @@
 #include <afxcmn.h>             
 #include <afxcontrolbars.h>   
 #include <VersionHelpers.h>
-
+#include <gdiplus.h>
 
 #include <memory>
 #include <string>
@@ -29,26 +34,34 @@
 #include <array>
 #include <codecvt>	
 #include <fstream>
-
-#include <gdiplus.h>
-#include <Scintilla.h>
+#include <atomic>
+#include <istream>
+#include <sstream>
+#include <algorithm>
+#include <iterator>
 
 #include <ppl.h>
 #include <ppltasks.h>
+#include <agents.h>
+#include <concurrent_queue.h>
 
-
+#include <Scintilla.h>
 #include <CL/cl.hpp>
 
+
+
+#include <Resource.h>
  
-#include <Common/Helper/CommonHelper.h>
-#include <Common/Helper/DpiHelper.h>
-#include <Common/Helper/MFCHelper.h>
-#include <Common/Helper/GDIHelper.h>
+#include "Common/Helper/CommonHelper.h"
+#include "Common/Helper/DpiHelper.h"
+#include "Common/Helper/MFCHelper.h"
+#include "Common/Helper/GDIHelper.h"
+#include "Core/System/ISystem.h"
 
-#include <Core/Log/Log.h>
+#include "Core/Log/Log.h"
 
+#include "Core/System/GlobalEnviroment.h"
 
-#include "Resource.h"
 
 
 //////////////////////////////////////////////////////////////////////////
@@ -78,4 +91,4 @@
 #define WM_UPDATE_IMAGE			( WM_USER + 2 )
 #define WM_SET_CL_PROGRAM		( WM_USER + 3 )
 #define WM_STATUS_BAR_UPDATE	( WM_USER + 4 )
-#define WM_ENQUEU_TASK			( WM_USER + 5 )
+#define WM_ADD_CL_DEVICE		( WM_USER + 5 )

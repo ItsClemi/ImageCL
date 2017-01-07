@@ -21,6 +21,8 @@ BEGIN_MESSAGE_MAP( CImagePane, CDockablePane )
 	ON_WM_CONTEXTMENU( )
 
 	ON_COMMAND( ID_IMAGE_OPEN, &CImagePane::OnImageOpen )
+	ON_COMMAND( ID_IMAGE_SAVE, &CImagePane::OnImageSave )
+	ON_COMMAND( ID_IMAGE_SWITCH, &CImagePane::OnImageSwitch )
 
 	ON_COMMAND_PTR( WM_UPDATE_IMAGE, &CImagePane::OnUpdateImage )
 END_MESSAGE_MAP( );
@@ -28,12 +30,10 @@ END_MESSAGE_MAP( );
 
 
 CImagePane::CImagePane( )
-{
-}
+{ }
 
 CImagePane::~CImagePane( )
-{
-}
+{ }
 
 int CImagePane::OnCreate( LPCREATESTRUCT lpCreateStruct )
 {
@@ -56,7 +56,7 @@ int CImagePane::OnCreate( LPCREATESTRUCT lpCreateStruct )
 	{
 		return -1;
 	}
-	
+
 	return 0;
 }
 
@@ -100,49 +100,67 @@ void CImagePane::OnContextMenu( CWnd* pWnd, CPoint point )
 
 void CImagePane::OnImageOpen( )
 {
+ 	CFileDialog	dlg(
+ 		TRUE,
+ 		L"image",
+ 		L"",
+ 		OFN_FILEMUSTEXIST | OFN_PATHMUSTEXIST,
+ 		L"Image|*.bmp; *.jpeg; *.jpg; *.png; *.tiff||"
+ 	);
+ 
+ 
+ 	if( dlg.DoModal( ) == IDOK )
+ 	{
+ 		auto szPath = std::make_shared< std::wstring >( dlg.GetPathName( ) );
+ 
+ 		auto pTarget = m_pImageView->GetRenderTarget( );
+ 
+ 		Concurrency::create_task( [ = ] {
+ 			auto pBitmap = new CD2DBitmap( nullptr, szPath->c_str( ) );
+ 
+ 			HRESULT hr = pBitmap->Create( pTarget );
+ 			if( SUCCEEDED( hr ) )
+ 			{
+				LogSuccess( L"Image: %s loaded!", szPath->c_str( ) );
+ 				PostCommandMessage( WM_UPDATE_IMAGE, pBitmap );
+ 			}
+ 			else
+ 			{
+ 				LogError( L"Failed to load image %s HRESULT: 0x%08x",
+ 					szPath->c_str( ),
+ 					hr
+ 				);
+ 			}
+ 		} );
+ 	}
+
+	
+}
+
+void CImagePane::OnImageSave( )
+{
 	CFileDialog	dlg(
-		TRUE,
+		FALSE,
 		L"image",
 		L"",
 		OFN_FILEMUSTEXIST | OFN_PATHMUSTEXIST,
-		L"Image Files|*.bmp; *.gif; *.jpeg; *.jpg; *.png; *.tiff||"
+		L"Image|*.bmp; *.jpeg; *.jpg; *.png; *.tiff||"
 	);
 
 	if( dlg.DoModal( ) == IDOK )
 	{
-		auto szPath = std::make_shared< std::wstring >( dlg.GetPathName( ) );
-		auto pCursor = std::make_shared< CWaitCursor >( );
 
-		Concurrency::create_task( [ szPath, pCursor ] {
-			auto pBmp = Gdiplus::Bitmap::FromFile( szPath->c_str( ), FALSE );
-
-			auto status = pBmp->GetLastStatus( );
-
-			if( status == Gdiplus::Status::Ok )
-			{
-				LogSuccess( L"Successfully loaded image %s", szPath->c_str( ) );
-
-				PostCommandMessage( WM_UPDATE_IMAGE, pBmp );
-			}
-			else
-			{
-				LogError( L"Failed to load image %s GdiResult: %s(%d)",
-					szPath->c_str( ),
-					Gdiplus::GdiStatusToString( status ),
-					status
-				);
-			}
-
-			pCursor->Restore( );
-		} );
 	}
+}
+
+void CImagePane::OnImageSwitch( )
+{
+
 }
 
 void CImagePane::OnUpdateImage( void* ptr )
 {
-	auto pImage = reinterpret_cast< Bitmap* >( ptr );
-
-	//Invalidate( );
+	m_pImageView->UpdateImage( reinterpret_cast< CD2DBitmap* >( ptr ) );
 }
 
 

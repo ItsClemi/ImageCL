@@ -47,6 +47,12 @@
     <Filter Include="Common\Resource Files\Kernel Templates">
       <UniqueIdentifier>{c4c5883b-a5a1-4148-a05f-62edd94bd1e7}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Core\System">
+      <UniqueIdentifier>{eefdfc65-bae2-45d5-82b9-f179ab98f6f0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Common\Resource Files\Kernels">
+      <UniqueIdentifier>{ea0b80bd-8a6a-4d34-aad2-bec17c7761a6}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
@@ -113,6 +119,18 @@
     <ClInclude Include="Window\Frame\View\ImageView.h">
       <Filter>Window\Frame\View</Filter>
     </ClInclude>
+    <ClInclude Include="Core\System\GlobalEnviroment.h">
+      <Filter>Core\System</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\Log\LogQueue.h">
+      <Filter>Core\Log</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\System\ISystem.h">
+      <Filter>Core\System</Filter>
+    </ClInclude>
+    <ClInclude Include="Window\Dialog\DeviceStatsDialog.h">
+      <Filter>Window\Dialog</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -160,6 +178,15 @@
     </ClCompile>
     <ClCompile Include="Window\Frame\View\ImageView.cpp">
       <Filter>Window\Frame\View</Filter>
+    </ClCompile>
+    <ClCompile Include="Core\System\GlobalEnviroment.cpp">
+      <Filter>Core\System</Filter>
+    </ClCompile>
+    <ClCompile Include="Core\Log\LogQueue.cpp">
+      <Filter>Core\Log</Filter>
+    </ClCompile>
+    <ClCompile Include="Window\Dialog\DeviceStatsDialog.cpp">
+      <Filter>Window\Dialog</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -217,6 +244,9 @@
   <ItemGroup>
     <None Include="res\ImageCL.rc2">
       <Filter>Common\Resource Files</Filter>
+    </None>
+    <None Include="res\Kernels\Histogram.cl">
+      <Filter>Common\Resource Files\Kernels</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>

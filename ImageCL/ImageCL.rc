@@ -30,6 +30,8 @@ LANGUAGE LANG_GERMAN, SUBLANG_GERMAN
 
 IDR_CODE_TEMPLATE_EMPTY TEXT                    "res\\tpl_empty.txt"
 
+IDR_CL_HISTOGRAM        TEXT                    "res\\Kernels\\Histogram.cl"
+
 #endif    // German (Germany) resources
 /////////////////////////////////////////////////////////////////////////////
 
@@ -144,7 +146,7 @@ BEGIN
     BUTTON      ID_FILE_OPEN
     BUTTON      ID_FILE_SAVE
     SEPARATOR
-    BUTTON      ID_RUN_CODE
+    BUTTON      ID_RUN_KERNEL
     BUTTON      ID_SELECT_PROCESSOR
 END
 
@@ -167,6 +169,7 @@ BEGIN
     POPUP "&File"
     BEGIN
         MENUITEM "&New\tCtrl+N",                ID_FILE_NEW
+        MENUITEM "New From Sample",             ID_FILE_NEW_FROM_SAMPLE
         MENUITEM "&Open...\tCtrl+O",            ID_FILE_OPEN
         MENUITEM "&Save\tCtrl+S",               ID_FILE_SAVE
         MENUITEM "Save &As...",                 ID_FILE_SAVE_AS
@@ -192,10 +195,14 @@ BEGIN
     END
     POPUP "&View"
     BEGIN
-        MENUITEM "S&plit",                      ID_WINDOW_SPLIT
-        MENUITEM SEPARATOR
         MENUITEM "Output Pane",                 ID_VIEW_OUTPUTPANE
         MENUITEM "Histogram",                   ID_VIEW_HISTOGRAM
+    END
+    POPUP "Tools"
+    BEGIN
+        MENUITEM "Device Stats",                ID_TOOLS_DEVICESTATS
+        MENUITEM SEPARATOR
+        MENUITEM "Options...",                  ID_TOOLS_OPTIONS
     END
     POPUP "&Help"
     BEGIN
@@ -219,27 +226,12 @@ BEGIN
     BEGIN
         MENUITEM "&Copy",                       ID_EDIT_COPY
         MENUITEM "&Clear",                      ID_EDIT_CLEAR
-        MENUITEM SEPARATOR
-        MENUITEM "&Hide",                       ID_VIEW_OUTPUTWND
     END
 END
 
 IDR_HELP_MENU MENU
 BEGIN
     MENUITEM "&About ImageCL...",           ID_APP_ABOUT
-END
-
-IDR_IMAGE_VIEW MENU
-BEGIN
-    POPUP "Image"
-    BEGIN
-        MENUITEM "Load Image",                  ID_IMAGE_LOADIMAGE
-        MENUITEM "Save Image",                  ID_IMAGE_SAVEIMAGE
-    END
-    POPUP "View"
-    BEGIN
-        MENUITEM "View Rendered",               ID_VIEW_VIEWRENDERED, CHECKED
-    END
 END
 
 
@@ -271,17 +263,18 @@ END
 // Dialog
 //
 
-IDD_ABOUTBOX DIALOGEX 0, 0, 287, 171
-STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | DS_CENTER | WS_POPUP | WS_CAPTION | WS_SYSMENU
+IDD_ABOUTBOX DIALOGEX 0, 0, 287, 184
+STYLE DS_SETFONT | DS_FIXEDSYS | DS_CENTER | WS_POPUP | WS_CAPTION | WS_SYSMENU | WS_THICKFRAME
 CAPTION "About ImageCL"
 FONT 8, "MS Shell Dlg", 0, 0, 0x1
 BEGIN
-    ICON            IDR_MAINFRAME,IDC_STATIC,258,12,20,20
-    DEFPUSHBUTTON   "OK",IDOK,228,150,50,14,WS_GROUP
-    CONTROL         "",IDC_RICHEDIT21,"RichEdit20W",WS_BORDER | WS_VSCROLL | WS_HSCROLL | WS_TABSTOP | 0x884,6,48,270,96
-    LTEXT           "Third-party Software",IDC_STATIC,7,35,66,8
-    LTEXT           "ImageCL",IDC_STATIC,7,12,29,8
-    CONTROL         "github.com",IDC_MFCLINK2,"MfcLink",WS_TABSTOP,7,150,177,14
+    ICON            IDR_MAINFRAME,IDC_STATIC,258,12,14,13
+    DEFPUSHBUTTON   "OK",IDOK,228,163,50,14,WS_GROUP
+    CONTROL         "",IDC_ABOUT_TPS,"RichEdit20W",WS_BORDER | WS_VSCROLL | WS_HSCROLL | WS_TABSTOP | 0x884,6,61,270,96
+    LTEXT           "Third-party Software",IDC_STATIC,7,48,66,8
+    LTEXT           "ImageCL",IDC_STATIC,6,12,29,8
+    CONTROL         "github.com",IDC_MFCLINK2,"MfcLink",WS_TABSTOP,7,163,177,14
+    LTEXT           "Build:",IDC_BUILD_INFO,6,30,240,8
 END
 
 IDD_DIALOG1 DIALOGEX 0, 0, 310, 176
@@ -292,6 +285,32 @@ BEGIN
     DEFPUSHBUTTON   "OK",IDOK,199,155,50,14
     PUSHBUTTON      "Cancel",IDCANCEL,253,155,50,14
     CONTROL         "",IDC_COMBOBOXEX1,"ComboBoxEx32",CBS_DROPDOWN | CBS_SORT | WS_VSCROLL | WS_TABSTOP,88,59,153,30
+END
+
+IDD_DEVICE_STATS DIALOGEX 0, 0, 466, 224
+STYLE DS_SETFONT | DS_FIXEDSYS | DS_CENTER | WS_POPUP | WS_CAPTION | WS_SYSMENU | WS_THICKFRAME
+CAPTION "Device Stats"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,408,202,50,14
+    EDITTEXT        IDC_DEVICE_NAME,252,18,156,12,ES_AUTOHSCROLL | ES_READONLY | NOT WS_BORDER
+    LISTBOX         IDC_DEVICE_LIST,6,17,132,199,LBS_NOINTEGRALHEIGHT | WS_VSCROLL | WS_TABSTOP
+    EDITTEXT        IDC_DEVICE_TYPE,408,18,48,12,ES_AUTOHSCROLL | ES_READONLY | NOT WS_BORDER
+    EDITTEXT        IDC_DEVICE_VENDOR,252,36,210,12,ES_AUTOHSCROLL | ES_READONLY | NOT WS_BORDER
+    LTEXT           "Devices:",IDC_STATIC,6,6,132,8
+    CONTROL         "",IDC_STATIC,"Static",SS_ETCHEDHORZ,150,60,312,1
+    LISTBOX         IDC_DEVICE_EXTENSIONS,150,162,246,54,LBS_SORT | LBS_NOINTEGRALHEIGHT | WS_VSCROLL | WS_TABSTOP
+    LTEXT           "Compute Units(Max):",IDC_STATIC,150,128,72,12
+    EDITTEXT        IDC_DEVICE_COMPUTE_UNITS,252,128,204,12,ES_AUTOHSCROLL | ES_READONLY | NOT WS_BORDER
+    LTEXT           "Device Name:",IDC_STATIC,150,18,45,12
+    LTEXT           "Global Memory:",IDC_STATIC,150,72,51,12
+    EDITTEXT        IDC_DEVICE_GLOBAL_MEMORY,252,72,204,12,ES_AUTOHSCROLL | ES_READONLY | NOT WS_BORDER
+    LTEXT           "Local Memory:",IDC_STATIC,150,90,47,14
+    EDITTEXT        IDC_DEVICE_LOCAL_MEMORY,252,90,204,14,ES_AUTOHSCROLL | ES_READONLY | NOT WS_BORDER
+    LTEXT           "Work Groups(Max)",IDC_STATIC,150,108,60,14
+    EDITTEXT        IDC_DEVICE_WORK_GROUPS,252,108,204,14,ES_AUTOHSCROLL | ES_READONLY | NOT WS_BORDER
+    LTEXT           "Device Extensions",IDC_STATIC,150,150,57,8
+    LTEXT           "Vendor:",IDC_STATIC,150,36,48,12
 END
 
 
@@ -347,7 +366,7 @@ BEGIN
         LEFTMARGIN, 7
         RIGHTMARGIN, 280
         TOPMARGIN, 7
-        BOTTOMMARGIN, 164
+        BOTTOMMARGIN, 177
     END
 
     IDD_DIALOG1, DIALOG
@@ -356,6 +375,14 @@ BEGIN
         RIGHTMARGIN, 303
         TOPMARGIN, 7
         BOTTOMMARGIN, 169
+    END
+
+    IDD_DEVICE_STATS, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 459
+        TOPMARGIN, 6
+        BOTTOMMARGIN, 217
     END
 END
 #endif    // APSTUDIO_INVOKED
@@ -368,12 +395,43 @@ END
 
 IDD_ABOUTBOX AFX_DIALOG_LAYOUT
 BEGIN
-    0
+    0,
+    100, 0, 0, 0,
+    100, 100, 0, 0,
+    0, 0, 100, 100,
+    0, 0, 0, 0,
+    0, 0, 0, 0,
+    0, 100, 0, 0,
+    0, 0, 0, 0
 END
 
 IDD_DIALOG1 AFX_DIALOG_LAYOUT
 BEGIN
     0
+END
+
+IDD_DEVICE_STATS AFX_DIALOG_LAYOUT
+BEGIN
+    0,
+    100, 100, 0, 0,
+    100, 0, 0, 0,
+    0, 0, 50, 100,
+    100, 0, 100, 0,
+    100, 0, 100, 0,
+    0, 0, 0, 0,
+    100, 0, 100, 0,
+    0, 0, 0, 0,
+    0, 0, 0, 0,
+    0, 0, 0, 0,
+    0, 0, 0, 0,
+    0, 0, 0, 0,
+    0, 0, 0, 0,
+    0, 0, 0, 0,
+    0, 0, 0, 0,
+    0, 0, 0, 0,
+    0, 0, 0, 0,
+    0, 0, 0, 0,
+    0, 0, 0, 0
 END
 
 
@@ -407,7 +465,7 @@ END
 
 STRINGTABLE
 BEGIN
-    IDR_MAINFRAME           "ImageCL\n\nImageCL\n\n\nImageCL.Document\nImageCL.Document"
+    IDR_MAINFRAME           "ImageCL\n\nImageCL\nOpenCL Kernel(*.cl)\n.cl\nImageCL Kernel\nImageCL Kernel"
 END
 
 STRINGTABLE
@@ -537,6 +595,7 @@ BEGIN
     ID_IMAGE_OPEN           "Open Image"
     ID_IMAGE_SAVE           "Save Image"
     ID_IMAGE_SWITCH         "Switch to Image"
+    ID_FILE_NEW_FROM_SAMPLE "Create a new document\nNew"
 END
 
 STRINGTABLE

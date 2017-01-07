@@ -1,17 +1,15 @@
 #pragma once
 
-#include <Resource.h>
-
 
 class CAboutDialog : public CDialogEx
 {
-	enum { IDD = IDD_ABOUTBOX };
-
 public:
 	CAboutDialog( );
 
 protected:
-	virtual void DoDataExchange( CDataExchange* pDX );   
+	virtual BOOL OnInitDialog( ) override;
+
+	virtual void DoDataExchange( CDataExchange* pDX ) override;
 
 														  
 protected:

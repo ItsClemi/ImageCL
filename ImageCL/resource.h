@@ -48,12 +48,31 @@
 #define IDR_TEXT_EDIT_TOOLBAR           315
 #define IDR_CODE_VIEW                   315
 #define IDR_IMAGE_VIEW_TOOLBAR          319
-#define IDR_IMAGE_VIEW                  321
 #define IDR_CODE_TEMPLATE_EMPTY         326
 #define IDD_DIALOG1                     328
+#define IDD_DEVICE_STATS                330
 #define IDC_RICHEDIT21                  1000
+#define IDC_ABOUT_TPS                   1000
 #define IDC_MFCLINK2                    1003
 #define IDC_COMBOBOXEX1                 1005
+#define IDC_BUILD_INFO                  1006
+#define IDC_DEVICE_NAME                 1015
+#define IDC_LIST2                       1016
+#define IDC_DEVICE_LIST                 1016
+#define IDC_DEVICE_TYPE                 1017
+#define IDC_DEVICE_VENDOR               1018
+#define IDC_EDIT2                       1019
+#define IDC_DEVICE_GLOBAL_MEMORY        1019
+#define IDC_EDIT3                       1020
+#define IDC_DEVICE_LOCAL_MEMORY         1020
+#define IDC_EDIT4                       1021
+#define IDC_DEVICE_WORK_GROUPS          1021
+#define IDC_EDIT5                       1022
+#define IDC_EDIT6                       1023
+#define IDR_CL_HISTOGRAM                1024
+#define IDC_LIST1                       1025
+#define IDC_DEVICE_EXTENSIONS           1025
+#define IDC_DEVICE_COMPUTE_UNITS        1026
 #define ID_CLEAR_OUTPUT                 32771
 #define ID_BUTTON32772                  32772
 #define ID_BUTTON32773                  32773
@@ -61,6 +80,7 @@
 #define ID_BUTTON32776                  32776
 #define ID_BUTTON32777                  32777
 #define ID_RUN_CODE                     32777
+#define ID_RUN_KERNEL                   32777
 #define ID_BUTTON32778                  32778
 #define ID_BUTTON32779                  32779
 #define ID_BUTTON32780                  32780
@@ -68,11 +88,8 @@
 #define ID_BUTTON32782                  32782
 #define ID_BUTTON32783                  32783
 #define ID_IMAGE_OPEN                   32784
-#define ID_IMAGE_LOADIMAGE              32784
 #define ID_IMAGE_SAVE                   32785
-#define ID_IMAGE_SAVEIMAGE              32785
 #define ID_IMAGE_SWITCH                 32786
-#define ID_VIEW_VIEWRENDERED            32786
 #define ID_IMAGE_LOADIMAGE32787         32787
 #define ID_IMAGE_SAVEIMAGE32788         32788
 #define ID_VIEW_HISTOGRAM               32789
@@ -80,14 +97,19 @@
 #define ID_IMAGE_LOADIMAGE32791         32791
 #define ID_IMAGE_SAVEIMAGE32792         32792
 #define ID_SELECT_PROCESSOR             32794
+#define ID_TOOLS_OPTIONS                32795
+#define ID_FILE_NEWFROMSAMPLE           32796
+#define ID_FILE_NEW_FROM_SAMPLE         32797
+#define ID_TOOLS_DEVICESTATS            32798
+#define ID_TOOLS_                       32799
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        330
-#define _APS_NEXT_COMMAND_VALUE         32795
-#define _APS_NEXT_CONTROL_VALUE         1006
+#define _APS_NEXT_RESOURCE_VALUE        334
+#define _APS_NEXT_COMMAND_VALUE         32800
+#define _APS_NEXT_CONTROL_VALUE         1027
 #define _APS_NEXT_SYMED_VALUE           310
 #endif
 #endif

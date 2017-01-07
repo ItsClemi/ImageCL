@@ -1,6 +1,19 @@
 #include "stdafx.h"
 #include "CLManager.h"
 
+#include "Core/TaskWorker.h"
+
+using namespace std;
+
+#ifdef _DEBUG
+#define new DEBUG_NEW
+#undef THIS_FILE
+
+static char THIS_FILE[ ] = __FILE__;
+#endif
+
+
+
 CCLManager::CCLManager( )
 {
 
@@ -8,45 +21,74 @@ CCLManager::CCLManager( )
 
 CCLManager::~CCLManager( )
 {
+	for( auto i : m_vecDevices )
+	{
+		SafeDelete( i );
+	}
 
+	for( auto i : m_vecPlatforms )
+	{
+		SafeDelete( i );
+	}
+
+	m_vecDevices.clear( );
+	m_vecPlatforms.clear( );
 }
 
-bool CCLManager::Initialize( )
+void CCLManager::InitializeAsync( )
 {
-	cl_int status;
+	Concurrency::create_task( [ & ] {
+		LogStatusBar( L"Scanning OpenCL Devices..." );
 
-	LogInfo( L"Scanning OpenCL devices!" );
+		try
+		{
+			vector< cl::Platform > vecPlatforms;
+			cl::Platform::get( &vecPlatforms );
 
-	std::vector< cl::Platform > vecPlatforms;
-	status = cl::Platform::get( &vecPlatforms );
+			size_t nId = 0;
+			for( auto i : vecPlatforms )
+			{
+				auto pPlatform = new CCLPlatform( i );
 
-	cl_context_properties properties[ ] = { CL_CONTEXT_PLATFORM, ( cl_context_properties )( vecPlatforms[ 0 ] )( ), 0 };
+				i.getDevices( CL_DEVICE_TYPE_ALL, &pPlatform->m_vecDevices );
 
-	cl::Context context( CL_DEVICE_TYPE_CPU | CL_DEVICE_TYPE_GPU, properties );
+				for( auto it : pPlatform->m_vecDevices )
+				{
+					m_vecDevices.push_back( new CCLDevice( it, pPlatform, nId++ ) );
+				}
 
-	auto deviecs = context.getInfo< CL_CONTEXT_DEVICES >( );
+				m_vecPlatforms.push_back( pPlatform );
+			}
 
-	Concurrency::create_task( [ ] {
-		Sleep( 2500 );
+			m_bInitialized = true;
+		}
+		catch( const cl::Error& err )
+		{
+			LogError( L"OpenCL startup failed! %s", StringToWstring( err.what( ) ) );
+		}
+	} ).then( [ ] {
 
-		AfxGetApp( )->GetMainWnd( )->PostMessageW( WM_COMMAND_REFLECT, WM_STATUS_BAR_UPDATE, reinterpret_cast< LPARAM >( L"asdasd TEESSASD" ) );
+		PostCommandMessage( WM_ADD_CL_DEVICE, nullptr );
 
+		LogStatusBar( L"Done!" );
 	} );
-
-
-
-	return true;
 }
 
-void CCLManager::InitializeOpenCLAsync( )
-{
-	//Concurrency::create_task( [ & ] {
 
-	//} ).then( [ ]( ) {
+// 	cl_context_properties properties[ ] = { CL_CONTEXT_PLATFORM, ( cl_context_properties )( vecPlatforms[ 0 ] )( ), 0 };
+// 
+// 	cl::Context context( CL_DEVICE_TYPE_CPU | CL_DEVICE_TYPE_GPU, properties );
+// 
+// 	auto vecDevices = context.getInfo< CL_CONTEXT_DEVICES >( );
+// 
+// 	
+// 	for( auto i : vecDevices )
+// 	{
+// 		
+// 
+// 	}
 
-	//} );
 
-}
 
 /*
 const char* LoadTemplateCode( )

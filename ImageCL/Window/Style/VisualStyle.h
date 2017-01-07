@@ -10,11 +10,7 @@ public:
 
 
 
-
-
 	virtual void OnDrawMiniFrameBorder( CDC* pDC, CPaneFrameWnd* pFrameWnd, CRect rectBorder, CRect rectBorderSize ) override;
-
-
 
 
 public:

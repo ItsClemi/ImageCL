@@ -35,6 +35,9 @@ private:
 	afx_msg void OnContextMenu( CWnd* pWnd, CPoint point );
 
 	afx_msg void OnImageOpen( );
+	afx_msg void OnImageSave( );
+	afx_msg void OnImageSwitch( );
+
 	afx_msg void OnUpdateImage( void* ptr );
 
 	DECLARE_MESSAGE_MAP( );
@@ -42,15 +45,6 @@ private:
 
 private:
 	CImageRenderViewToolbar		m_wndToolBar;
-	
 	CImageView*					m_pImageView;
-
-
-
-
-	Gdiplus::RectF				m_rcDrawArea;
-	Gdiplus::PointF				m_ptCenter;
-
-	Gdiplus::Bitmap*			m_pImage = nullptr;
 
 };

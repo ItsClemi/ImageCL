@@ -12,8 +12,12 @@ public:
 	CCodeView( );
 	virtual ~CCodeView( );
 
+
 protected:
 	virtual void OnDraw( CDC* pDC ) override;
+
+public:
+	virtual void Serialize( CArchive& ar ) override;
 
 
 private:
@@ -44,6 +48,12 @@ public:
 	{
 		return reinterpret_cast< CCodeDoc* >( m_pDocument );
 	}
+
+	inline CScintillaCtrl& GetEditCtrl( )
+	{
+		return m_wndEdit;
+	}
+
 
 private:
 	CScintillaCtrl			m_wndEdit;

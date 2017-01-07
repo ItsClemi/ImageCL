@@ -1,10 +1,13 @@
 #include "stdafx.h"
-#include "App.h"
-
 #include "MainFrame.h"
+
+#include "App.h"
 
 #include <Window/Frame/View/CodeView.h>
 #include <Window/Style/VisualStyle.h>
+
+#include "Window/Dialog/DeviceStatsDialog.h"
+
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -14,12 +17,15 @@ IMPLEMENT_DYNCREATE( CMainFrame, CMDIFrameWndEx )
 
 BEGIN_MESSAGE_MAP( CMainFrame, CMDIFrameWndEx )
 	ON_WM_CREATE( )
-	ON_WM_SIZE( )
 	ON_WM_SETTINGCHANGE( )
 
+	ON_COMMAND( ID_TOOLS_DEVICESTATS, &CMainFrame::OnDeviceStats )
 	ON_COMMAND( ID_VIEW_OUTPUTPANE, &CMainFrame::OnShowOutputPane )
 
+	ON_COMMAND( ID_RUN_KERNEL, &CMainFrame::OnRunKernel )
+
 	ON_COMMAND_PTR( WM_STATUS_BAR_UPDATE, &CMainFrame::OnStatusBarUpdate )
+	ON_COMMAND_PTR( WM_ADD_CL_DEVICE, &CMainFrame::OnAddCLDevice )
 
 END_MESSAGE_MAP( )
 
@@ -75,6 +81,7 @@ int CMainFrame::OnCreate( LPCREATESTRUCT lpCreateStruct )
 	CRect rect;
 	m_wndCodeBar.GetItemRect( nIndex, &rect );
 	rect.top = 1;
+	rect.right = 900;
 	rect.bottom = rect.top + 250;
 	if( !m_comboBox.Create( CBS_DROPDOWNLIST | CBS_SORT | WS_VISIBLE |
 		WS_TABSTOP | WS_VSCROLL | WS_CHILD, rect, &m_wndCodeBar, ID_SELECT_PROCESSOR ) )
@@ -82,9 +89,6 @@ int CMainFrame::OnCreate( LPCREATESTRUCT lpCreateStruct )
 		TRACE( _T( "Failed to create combo-box\n" ) );
 		return FALSE;
 	}
-	m_comboBox.AddString( L"CPU - Fx 8150" );
-	m_comboBox.AddString( L"GPU - GTX 980ti" );
-
 
 	if( !m_wndStatusBar.Create( this ) )
 	{
@@ -106,7 +110,7 @@ int CMainFrame::OnCreate( LPCREATESTRUCT lpCreateStruct )
 
 
 	CMFCVisualManager::SetDefaultManager( RUNTIME_CLASS( CVisualStyle ) );
-	CMFCVisualManagerOffice2007::SetStyle( CMFCVisualManagerOffice2007::Office2007_ObsidianBlack );
+	CVisualStyle::SetStyle( CMFCVisualManagerOffice2007::Office2007_ObsidianBlack );
 	CDockingManager::SetDockingMode( DT_SMART );
 
 	EnableAutoHidePanes( CBRS_ALIGN_ANY );
@@ -137,7 +141,6 @@ BOOL CMainFrame::PreCreateWindow( CREATESTRUCT& cs )
 
 BOOL CMainFrame::OnWndMsg( UINT message, WPARAM wParam, LPARAM lParam, LRESULT* pResult )
 {
-	//> Forwards messages to panes
 	if( message == WM_COMMAND_REFLECT )
 	{
 		UINT nCode = static_cast< UINT >( wParam );
@@ -169,18 +172,6 @@ BOOL CMainFrame::OnWndMsg( UINT message, WPARAM wParam, LPARAM lParam, LRESULT* 
 
 	return CMDIFrameWndEx::OnWndMsg( message, wParam, lParam, pResult );
 }
-
-#ifdef _DEBUG
-void CMainFrame::AssertValid( ) const
-{
-	CMDIFrameWndEx::AssertValid( );
-}
-
-void CMainFrame::Dump( CDumpContext& dc ) const
-{
-	CMDIFrameWndEx::Dump( dc );
-}
-#endif //_DEBUG
 
 BOOL CMainFrame::CreateDockingWindows( )
 {
@@ -237,7 +228,20 @@ BOOL CMainFrame::CreateDockingWindows( )
 void CMainFrame::OnSettingChange( UINT uFlags, LPCTSTR lpszSection )
 {
 	CMDIFrameWndEx::OnSettingChange( uFlags, lpszSection );
-	//m_wndOutput.UpdateFonts( );
+}
+
+void CMainFrame::OnDeviceStats( )
+{
+	if( !gEnv->pClManger->IsInitialized( ) )
+	{
+		LogError( L"Device initialization process needs to be finished!" );
+	}
+	else
+	{
+		CDeviceStatsDialog dlg;
+
+		dlg.DoModal( );
+	}
 }
 
 void CMainFrame::OnShowOutputPane( )
@@ -248,25 +252,29 @@ void CMainFrame::OnShowOutputPane( )
 	}
 }
 
-void CMainFrame::OnStatusBarUpdate( void* ptr )
+void CMainFrame::OnRunKernel( )
 {
-	const auto szText = reinterpret_cast< wchar_t* >( ptr );
 
-	m_wndStatusBar.SetPaneText( 0, szText, TRUE );
 }
 
-void CMainFrame::OnSize( UINT nType, int cx, int cy )
+void CMainFrame::OnStatusBarUpdate( void* ptr )
 {
-	CMDIFrameWndEx::OnSize( nType, cx, cy );
+	auto pLog = reinterpret_cast< SLogEntry* >( ptr );
 
+	m_wndStatusBar.SetPaneText( 0, pLog->m_szMessage, TRUE );
 
+	SafeDelete( pLog );
+}
 
-	// 	if( m_bSplitterInitialized && nType != SIZE_MINIMIZED )
-	// 	{
-	// 		m_wndSplitter.SetRowInfo( 0, cy, 0 );
-	// 		m_wndSplitter.SetColumnInfo( 0, cx / 2, 50 );
-	// 		m_wndSplitter.SetColumnInfo( 1, cx / 2, 50 );
-	// 
-	// 		m_wndSplitter.RecalcLayout( );
-	// 	}
+void CMainFrame::OnAddCLDevice( void* ptr )
+{
+	gEnv->pClManger->ForDevices( [ & ]( const CCLDevice* pDevice ) { 
+		std::wstringstream ws;
+		{
+			ws << pDevice->GetTypeString( ) << L" - " << pDevice->GetName( ) << L" ( " << pDevice->GetParentPlatform( )->GetVendor( ) << L" )";
+		}
+
+		m_comboBox.AddString( ws.str( ).c_str( ) );
+	} );
+
 }

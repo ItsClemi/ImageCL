@@ -9,22 +9,22 @@
 
 #include "Window/Dialog/AboutDialog.h"
 
-#include "Core/TaskWorker.h"
+#include "Window/Style/VisualStyle.h"
+
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #endif
 
 
-
-
 BEGIN_MESSAGE_MAP( CApp, CWinAppEx )
-	ON_COMMAND( ID_APP_ABOUT, &CApp::OnAppAbout )
-
-	ON_COMMAND( ID_FILE_NEW, &CApp::OnFileNew )
+	ON_COMMAND( ID_FILE_NEW, &CWinAppEx::OnFileNew )
 	ON_COMMAND( ID_FILE_OPEN, &CApp::OnFileOpen )
+
+	ON_COMMAND( ID_APP_ABOUT, &CApp::OnAppAbout )
 END_MESSAGE_MAP( )
 
+CApp gApp;
 
 CApp::CApp( )
 {
@@ -110,12 +110,12 @@ BOOL CApp::InitInstance( )
 	m_pMainWnd->UpdateWindow( );
 	m_pMainWnd->DragAcceptFiles( );
 
-	m_pClManager->InitializeOpenCLAsync( );	
-
 	if( !IsWindows8OrGreater( ) )
 	{
-		LogInfo( L"Warning: Old Windows! Some things might not work!" );
+		LogInfo( L"Warning: old windows version detected! things might not work correctly!" );
 	}
+
+	gEnv->pClManger->InitializeAsync( );
 
 	return TRUE;
 }
@@ -138,37 +138,38 @@ void CApp::LoadCustomState( )
 void CApp::SaveCustomState( )
 { }
 
+BOOL CApp::OnIdle( LONG lCount )
+{
+	if( !CWinAppEx::OnIdle( lCount ) )
+	{
+		return FALSE;
+	}
+
+	gEnv->pLogQueue->Process( );
+
+	return TRUE;
+}
+
 
 void CApp::OnFileNew( )
-{
-	//auto pFrame = DYNAMIC_DOWNCAST( CMainFrame, m_pMainWnd );
-	
+{	
 	CWinAppEx::OnFileNew( );
-
 }
 
 void CApp::OnFileOpen( )
 {
-	CFileDialog	dlg(
-		TRUE,
-		L"OpenCL Files",
-		L"",
-		OFN_FILEMUSTEXIST | OFN_PATHMUSTEXIST,
-		L"OpenCL Kernel|*.cl||"
-	);
-
-	if( dlg.DoModal( ) == IDOK )
-	{
-		auto szPath = std::make_shared< std::wstring >( dlg.GetPathName( ) );
-
-
-
-		//AfxGetMainWnd( )->PostMessage( );
-
-
-
-		//AfxGetMainWnd()->SendMessage()
-	}
+ 	CFileDialog	dlg(
+ 		TRUE,
+ 		L"OpenCL Files",
+ 		L"",
+ 		OFN_FILEMUSTEXIST | OFN_PATHMUSTEXIST,
+ 		L"OpenCL Kernel|*.cl||"
+ 	);
+ 
+ 	if( dlg.DoModal( ) == IDOK )
+ 	{ 
+		OpenDocumentFile( dlg.GetPathName( ) );
+  	}
 }
 
 void CApp::OnAppAbout( )
@@ -178,7 +179,15 @@ void CApp::OnAppAbout( )
 }
 
 
-CApp gApp;
+CVisualStyle* CApp::GetVisualStyle( )
+{
+	return DYNAMIC_DOWNCAST( CVisualStyle, CMFCVisualManager::GetInstance( ) );
+}
+
+
+
+
+
 
 
 

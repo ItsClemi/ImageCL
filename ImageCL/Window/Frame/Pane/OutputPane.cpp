@@ -17,6 +17,8 @@ BEGIN_MESSAGE_MAP( COutputPane, CDockablePane )
 	ON_WM_CONTEXTMENU( )
 
 	ON_COMMAND( ID_CLEAR_OUTPUT, &COutputPane::OnClearOutput )
+	ON_COMMAND( ID_EDIT_COPY, &COutputPane::OnCopyOutput )
+	ON_COMMAND( ID_EDIT_CLEAR, &COutputPane::OnClearOutput )
 
 	ON_COMMAND_PTR( WM_ADD_OUTPUT, &COutputPane::OnAddOutput )
 
@@ -36,9 +38,6 @@ int COutputPane::OnCreate( LPCREATESTRUCT lpCreateStruct )
 		return -1;
 	}
 
-	CRect rcWindow;
-	GetClientRect( &rcWindow );
-
 	if( !m_wndToolBar.Create( this, AFX_DEFAULT_TOOLBAR_STYLE, IDR_OUTPUT_TOOLBAR )  ||
 		!m_wndToolBar.LoadToolBar( IDR_OUTPUT_TOOLBAR, 0, 0, TRUE ) 
 		)
@@ -51,7 +50,7 @@ int COutputPane::OnCreate( LPCREATESTRUCT lpCreateStruct )
 	int cyToolbar = m_wndToolBar.CalcFixedLayout( FALSE, TRUE ).cy;
 	if( !m_wndOutput.Create(
 		WS_CHILD | WS_VISIBLE | ES_MULTILINE | WS_HSCROLL | WS_VSCROLL | ES_NOOLEDRAGDROP | ES_READONLY,
-		{ 0, cyToolbar + 5, rcWindow.Width(), rcWindow.Height() - cyToolbar },
+		CRect( ),
 		this,
 		AFX_IDW_PANE_FIRST
 	) )
@@ -60,7 +59,6 @@ int COutputPane::OnCreate( LPCREATESTRUCT lpCreateStruct )
 	}
 
 	m_wndOutput.SetBackgroundColor( FALSE, RGB( 37, 37, 37 ) );
-	
 
 	return 0;
 }
@@ -69,13 +67,10 @@ void COutputPane::OnSize( UINT nType, int cx, int cy )
 {
 	CDockablePane::OnSize( nType, cx, cy );
 
-	CRect rcWindow;
-	GetClientRect( &rcWindow );
-
-	int cyToolbar = m_wndToolBar.CalcFixedLayout( FALSE, TRUE ).cy;
-
-	m_wndToolBar.SetWindowPos( nullptr, 0, 0, cx, cyToolbar, SWP_NOACTIVATE | SWP_NOZORDER );
-	m_wndOutput.SetWindowPos( nullptr, 0, cyToolbar, cx, cy - cyToolbar, SWP_NOACTIVATE | SWP_NOZORDER );
+ 	int cyToolbar = m_wndToolBar.CalcFixedLayout( FALSE, TRUE ).cy;
+ 
+ 	m_wndToolBar.SetWindowPos( nullptr, 0, 0, cx, cyToolbar, SWP_NOACTIVATE | SWP_NOZORDER );
+ 	m_wndOutput.SetWindowPos( nullptr, 0, cyToolbar, cx, cy - cyToolbar, SWP_NOACTIVATE | SWP_NOZORDER );
 }
 
 void COutputPane::OnContextMenu( CWnd* pWnd, CPoint point )
@@ -114,6 +109,11 @@ void COutputPane::OnClearOutput( )
 		m_wndOutput.Clear( );
 	}
 	m_wndOutput.SetReadOnly( TRUE );
+}
+
+void COutputPane::OnCopyOutput( )
+{
+	m_wndOutput.Copy( );
 }
 
 void COutputPane::OnAddOutput( void* ptr )

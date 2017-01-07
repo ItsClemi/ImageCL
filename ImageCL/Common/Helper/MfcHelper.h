@@ -44,3 +44,8 @@ inline int RichEditGetVisibleLines( CRichEditCtrl* pCtrl )
 		(memberFxn)) },
 
 #endif
+
+inline int AfxMessageBox( std::wstring& szMessage )
+{
+	return AfxMessageBox( szMessage.c_str( ) );
+}

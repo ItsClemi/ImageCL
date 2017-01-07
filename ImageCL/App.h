@@ -1,15 +1,7 @@
 #pragma once
 
-#ifndef __AFXWIN_H__
-#error "include 'stdafx.h' before including this file for PCH"
-#endif
 
-#include "resource.h"       
-
-#include "Core/OpenCL/CLManager.h"
-
-
-
+class CVisualStyle;
 class CApp : public CWinAppEx
 {
 public:
@@ -24,6 +16,9 @@ private:
 	virtual void SaveCustomState( ) override;
 
 
+	virtual BOOL OnIdle( LONG lCount ) override;
+
+
 private:
 	afx_msg void OnFileNew( );
 	afx_msg void OnFileOpen( );
@@ -34,11 +29,13 @@ private:
 
 public:
 
+	CVisualStyle* GetVisualStyle( );
+
 
 private:
 	ULONG_PTR	m_gdiToken;
 
-	std::unique_ptr< CCLManager >		m_pClManager = std::make_unique< CCLManager >( );
+
 
 };
 
