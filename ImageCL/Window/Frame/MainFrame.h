@@ -2,6 +2,7 @@
 
 #include "Window/Frame/Pane/OutputPane.h"
 #include "Window/Frame/Pane/ImagePane.h"
+#include "Window/Frame/Pane/HistogramPane.h"
 
 
 
@@ -30,20 +31,18 @@ protected:
 
 	afx_msg void OnDeviceStats( );
 	afx_msg void OnShowOutputPane( );
-	
+	afx_msg void OnShowHistogramPane( );
+
 	afx_msg void OnRunKernel( );
-	
-	afx_msg void OnStatusBarUpdate( void* ptr );
-	afx_msg void OnAddCLDevice( void* ptr );
-	
+
 
 	DECLARE_MESSAGE_MAP( )
 
 
 protected:
 	CMFCMenuBar			m_wndMenuBar;
-	CMFCToolBar			m_wndCodeBar;
-	CComboBox			m_comboBox;
+	CMFCToolBar			m_wndToolBar;
+	CComboBox			m_wndDevice;
 	
 
 	CMFCStatusBar		m_wndStatusBar;
@@ -53,6 +52,7 @@ protected:
 
 	COutputPane			m_wndOutput;
 	CImagePane			m_wndImage;
+	CHistogramPane		m_wndHistogram;
 
 
 };

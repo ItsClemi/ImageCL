@@ -1,15 +1,15 @@
 #pragma once
 
-class CDeviceStatsDialog : public CDialogEx
+class CDeviceInfoDialog : public CDialogEx
 {
 public:
-	CDeviceStatsDialog( );
+	CDeviceInfoDialog( );
 
 
 
 protected:
-	virtual BOOL OnInitDialog( ) override;
 	virtual void DoDataExchange( CDataExchange* pDX ) override;
+	virtual BOOL OnInitDialog( ) override;
 
 private:
 	afx_msg void OnChangeDevice( );
@@ -18,11 +18,11 @@ private:
 
 
 private:
-	CListBox	m_wndDeviceList;
+	CComboBox	m_wndDeviceList;
 
 	CEdit		m_wndDeviceName;
-	CEdit		m_wndDeviceType;
 	CEdit		m_wndVendor;
+	CEdit		m_wndPlatformVersion;
 
 	CEdit		m_wndComputeUnits;
 	CEdit		m_wndGlobalMemory;

@@ -3,5 +3,12 @@
 
 using namespace std;
 
+unique_ptr< SGlobalEnvironment > gEnv = make_unique< SGlobalEnvironment >( );
 
-std::unique_ptr< SGlobalEnvironment > gEnv = std::make_unique< SGlobalEnvironment >( );
+
+void InitializeSystem( )
+{
+	gEnv->pClManger = make_unique< CCLManager >( );
+	gEnv->pLogQueue = make_unique< CLogQueue >( );
+}
+

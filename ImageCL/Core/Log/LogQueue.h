@@ -1,15 +1,15 @@
 #pragma once
 
-
-class CLogQueue
+class CLogQueue : public IProcessor
 {
 public:
 	CLogQueue( );
 	~CLogQueue( );
 
-public:
-	void Process( );
 
+	virtual void OnProcess( ) override;
+
+public:
 	inline void EnqueueLog( SLogEntry* pEntry )
 	{
 		ASSERT( m_bActive );

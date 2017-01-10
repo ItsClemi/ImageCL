@@ -42,6 +42,8 @@ BOOL CApp::InitInstance( )
 
 	CWinAppEx::InitInstance( );
 
+	InitializeSystem( );
+
 	Gdiplus::GdiplusStartupInput input;
 	Gdiplus::GdiplusStartupOutput output;
 	if( Gdiplus::GdiplusStartup( &m_gdiToken, &input, &output ) != Gdiplus::Status::Ok )
@@ -77,8 +79,10 @@ BOOL CApp::InitInstance( )
 	InitTooltipManager( );
 
 	CMFCToolTipInfo ttParams;
-	ttParams.m_bVislManagerTheme = TRUE;
-	gApp.GetTooltipManager( )->SetTooltipParams( AFX_TOOLTIP_TYPE_ALL, RUNTIME_CLASS( CMFCToolTipCtrl ), &ttParams );
+	{
+		ttParams.m_bVislManagerTheme = TRUE;
+	}
+	GetTooltipManager( )->SetTooltipParams( AFX_TOOLTIP_TYPE_ALL, RUNTIME_CLASS( CMFCToolTipCtrl ), &ttParams );
 	
 	auto pDocTemplate = new CMultiDocTemplate(
 		IDR_MAINFRAME, 
@@ -115,8 +119,12 @@ BOOL CApp::InitInstance( )
 		LogInfo( L"Warning: old windows version detected! things might not work correctly!" );
 	}
 
-	gEnv->pClManger->InitializeAsync( );
 
+	RunUIThread( [ ] { 
+		printf( "asdasd LOL" );
+	
+	} );
+		
 	return TRUE;
 }
 
@@ -129,15 +137,6 @@ int CApp::ExitInstance( )
 	return CWinAppEx::ExitInstance( );
 }
 
-void CApp::PreLoadState( )
-{ }
-
-void CApp::LoadCustomState( )
-{ }
-
-void CApp::SaveCustomState( )
-{ }
-
 BOOL CApp::OnIdle( LONG lCount )
 {
 	if( !CWinAppEx::OnIdle( lCount ) )
@@ -145,16 +144,11 @@ BOOL CApp::OnIdle( LONG lCount )
 		return FALSE;
 	}
 
-	gEnv->pLogQueue->Process( );
+	gEnv->pTaskWorker->ProcessIdle( );
 
 	return TRUE;
 }
 
-
-void CApp::OnFileNew( )
-{	
-	CWinAppEx::OnFileNew( );
-}
 
 void CApp::OnFileOpen( )
 {
@@ -177,17 +171,6 @@ void CApp::OnAppAbout( )
 	CAboutDialog aboutDlg;
 	aboutDlg.DoModal( );
 }
-
-
-CVisualStyle* CApp::GetVisualStyle( )
-{
-	return DYNAMIC_DOWNCAST( CVisualStyle, CMFCVisualManager::GetInstance( ) );
-}
-
-
-
-
-
 
 
 

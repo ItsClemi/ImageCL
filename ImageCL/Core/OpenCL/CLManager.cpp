@@ -1,16 +1,18 @@
 #include "stdafx.h"
 #include "CLManager.h"
 
-#include "Core/TaskWorker.h"
-
-using namespace std;
-
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #undef THIS_FILE
 
 static char THIS_FILE[ ] = __FILE__;
 #endif
+
+
+
+using namespace std;
+using namespace Concurrency;
+
 
 
 
@@ -35,93 +37,98 @@ CCLManager::~CCLManager( )
 	m_vecPlatforms.clear( );
 }
 
-void CCLManager::InitializeAsync( )
+task< void > CCLManager::InitializeAsync( )
 {
-	Concurrency::create_task( [ & ] {
-		LogStatusBar( L"Scanning OpenCL Devices..." );
+	return create_task( [ & ] {
+		LogInfo( L"Scanning OpenCL Devices..." );
 
 		try
 		{
 			vector< cl::Platform > vecPlatforms;
 			cl::Platform::get( &vecPlatforms );
 
-			size_t nId = 0;
 			for( auto i : vecPlatforms )
 			{
-				auto pPlatform = new CCLPlatform( i );
+				SCLPlatform* pPlatform = new SCLPlatform( i );
 
-				i.getDevices( CL_DEVICE_TYPE_ALL, &pPlatform->m_vecDevices );
+				FetchPlatformInfo( pPlatform );
 
-				for( auto it : pPlatform->m_vecDevices )
+				std::vector< cl::Device > vecDevices;
+				i.getDevices( CL_DEVICE_TYPE_ALL, &vecDevices );
+
+				for( auto i : vecDevices )
 				{
-					m_vecDevices.push_back( new CCLDevice( it, pPlatform, nId++ ) );
+					SCLDevice* pDevice = new SCLDevice( pPlatform, i );
+
+					FetchDeviceInfo( pDevice );
+
+					LogInfo( L"Adding device %s", pDevice->m_szDeviceName );
+
+					m_vecDevices.push_back( pDevice );
 				}
 
 				m_vecPlatforms.push_back( pPlatform );
 			}
-
-			m_bInitialized = true;
 		}
 		catch( const cl::Error& err )
 		{
 			LogError( L"OpenCL startup failed! %s", StringToWstring( err.what( ) ) );
+			return;
 		}
-	} ).then( [ ] {
 
-		PostCommandMessage( WM_ADD_CL_DEVICE, nullptr );
-
-		LogStatusBar( L"Done!" );
+		LogSuccess( L"Found %I64d devices and %I64d Platforms!", m_vecDevices.size( ), m_vecPlatforms.size( ) );
 	} );
 }
 
-
-// 	cl_context_properties properties[ ] = { CL_CONTEXT_PLATFORM, ( cl_context_properties )( vecPlatforms[ 0 ] )( ), 0 };
-// 
-// 	cl::Context context( CL_DEVICE_TYPE_CPU | CL_DEVICE_TYPE_GPU, properties );
-// 
-// 	auto vecDevices = context.getInfo< CL_CONTEXT_DEVICES >( );
-// 
-// 	
-// 	for( auto i : vecDevices )
-// 	{
-// 		
-// 
-// 	}
-
-
-
-/*
-const char* LoadTemplateCode( )
+void CCLManager::FetchPlatformInfo( SCLPlatform* pPlatform )
 {
-	HINSTANCE hInstance = AfxGetApp( )->m_hInstance;
-	HRSRC hRes = FindResource( hInstance, MAKEINTRESOURCE( IDR_CODE_TEMPLATE_EMPTY ), L"TEXT" );
+	auto szPlatformName = pPlatform->m_clPlatform.getInfo< CL_PLATFORM_NAME >( );
+	pPlatform->m_szPlatformName = StringToWstring( szPlatformName ).c_str( );
 
-	if( hRes )
+	auto szVendor = pPlatform->m_clPlatform.getInfo< CL_PLATFORM_VENDOR >( );
+	pPlatform->m_szVendor = StringToWstring( szVendor ).c_str( );
+
+	auto szVersion = pPlatform->m_clPlatform.getInfo< CL_PLATFORM_VERSION >( );
+	RemoveWhiteSpace( szVersion );
+
+	pPlatform->m_szVersion = StringToWstring( szVersion ).c_str( );
+}
+
+void CCLManager::FetchDeviceInfo( SCLDevice* pDevice )
+{
+	pDevice->m_eType = static_cast< eDeviceType >(
+		pDevice->m_clDevice.getInfo< CL_DEVICE_TYPE >( )
+		);
+
 	{
-		HGLOBAL hLoaded = LoadResource( hInstance, hRes );
+		auto szDeviceName = pDevice->m_clDevice.getInfo< CL_DEVICE_NAME >( );
 
-		if( hLoaded )
+		RemoveWhiteSpace( szDeviceName );
+		pDevice->m_szDeviceName = StringToWstring( szDeviceName ).c_str( );
+	}
+
+	{
+		auto szExtensions = pDevice->m_clDevice.getInfo< CL_DEVICE_EXTENSIONS >( );
+		RemoveWhiteSpace( szExtensions );
+
+		wistringstream s( StringToWstring( szExtensions ) );
+		vector< wstring > vecExtensions = {
+			istream_iterator< wstring, wchar_t >{ s },
+			istream_iterator< wstring, wchar_t >{ }
+		};
+
+		for( auto i : vecExtensions )
 		{
-			void* pLocked = LockResource( hLoaded );
-
-			if( pLocked )
-			{
-				DWORD dwResourceSize = SizeofResource( hInstance, hRes );
-
-				if( dwResourceSize > 0 )
-				{
-					std::string sz(
-						static_cast< char* >( pLocked ),
-						static_cast< size_t >( dwResourceSize )
-					);
-
-					return (char*)pLocked;
-				}
-			}
+			pDevice->m_vecExtensions.push_back( i.c_str( ) );
 		}
 	}
 
-	return "";
+	{
+		pDevice->m_nComputeUnits = pDevice->m_clDevice.getInfo< CL_DEVICE_MAX_COMPUTE_UNITS >( );
+		pDevice->m_nMaxWorkGroups = pDevice->m_clDevice.getInfo< CL_DEVICE_MAX_WORK_GROUP_SIZE >( );
+		pDevice->m_nLocalMemorySize = pDevice->m_clDevice.getInfo< CL_DEVICE_LOCAL_MEM_SIZE >( );
+		pDevice->m_nGlobalMemorySize = pDevice->m_clDevice.getInfo< CL_DEVICE_GLOBAL_MEM_SIZE >( );
+		pDevice->m_bDeviceAvilable = pDevice->m_clDevice.getInfo< CL_DEVICE_AVAILABLE >( );
+		pDevice->m_bCompilerAvailable = pDevice->m_clDevice.getInfo< CL_DEVICE_COMPILER_AVAILABLE >( );
+	}
 }
-
-*/

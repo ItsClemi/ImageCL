@@ -24,8 +24,14 @@ BOOL CCodeDoc::OnNewDocument( )
 	{
 		return FALSE;
 	}
-	
-	GetView( )->GetEditCtrl( ).SetText( L"Hello World!" );
+
+
+
+	GetView( )->GetEditCtrl( ).SetText( 
+		StringToWstring( 
+			LoadTextFromResource( IDR_CODE_TEMPLATE_EMPTY ) 
+		).c_str()
+	);
 
 	return TRUE;
 }

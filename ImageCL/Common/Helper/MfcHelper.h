@@ -49,3 +49,35 @@ inline int AfxMessageBox( std::wstring& szMessage )
 {
 	return AfxMessageBox( szMessage.c_str( ) );
 }
+
+
+inline const std::string LoadTextFromResource( int nId )
+{
+	HINSTANCE hInstance = AfxGetApp( )->m_hInstance;
+	HRSRC hRes = FindResource( hInstance, MAKEINTRESOURCE( nId ), L"TEXT" );
+
+	if( hRes )
+	{
+		HGLOBAL hLoaded = LoadResource( hInstance, hRes );
+
+		if( hLoaded )
+		{
+			void* pLocked = LockResource( hLoaded );
+
+			if( pLocked )
+			{
+				DWORD dwResourceSize = SizeofResource( hInstance, hRes );
+
+				if( dwResourceSize > 0 )
+				{
+					return std::string(
+						static_cast< char* >( pLocked ),
+						static_cast< size_t >( dwResourceSize )
+					);		
+				}
+			}
+		}
+	}
+
+	return "<Error>";
+}

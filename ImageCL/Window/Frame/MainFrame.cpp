@@ -1,12 +1,10 @@
 #include "stdafx.h"
 #include "MainFrame.h"
 
-#include "App.h"
-
 #include <Window/Frame/View/CodeView.h>
 #include <Window/Style/VisualStyle.h>
 
-#include "Window/Dialog/DeviceStatsDialog.h"
+#include "Window/Dialog/DeviceInfoDialog.h"
 
 
 #ifdef _DEBUG
@@ -21,12 +19,9 @@ BEGIN_MESSAGE_MAP( CMainFrame, CMDIFrameWndEx )
 
 	ON_COMMAND( ID_TOOLS_DEVICESTATS, &CMainFrame::OnDeviceStats )
 	ON_COMMAND( ID_VIEW_OUTPUTPANE, &CMainFrame::OnShowOutputPane )
+	ON_COMMAND( ID_VIEW_HISTOGRAM, &CMainFrame::OnShowHistogramPane )
 
 	ON_COMMAND( ID_RUN_KERNEL, &CMainFrame::OnRunKernel )
-
-	ON_COMMAND_PTR( WM_STATUS_BAR_UPDATE, &CMainFrame::OnStatusBarUpdate )
-	ON_COMMAND_PTR( WM_ADD_CL_DEVICE, &CMainFrame::OnAddCLDevice )
-
 END_MESSAGE_MAP( )
 
 
@@ -47,14 +42,14 @@ int CMainFrame::OnCreate( LPCREATESTRUCT lpCreateStruct )
 	}
 
 	CMDITabInfo mdiTabParams;
-	//mdiTabParams.m_style = CMFCTabCtrl::Style::STYLE_3D_VS2005;
-	mdiTabParams.m_bActiveTabCloseButton = TRUE;
-	mdiTabParams.m_bTabIcons = FALSE;
-	mdiTabParams.m_bAutoColor = FALSE;
-	mdiTabParams.m_bDocumentMenu = TRUE;
-	mdiTabParams.m_nTabBorderSize = 0;
-	mdiTabParams.m_bFlatFrame = TRUE;
-
+	{
+		mdiTabParams.m_bActiveTabCloseButton = TRUE;
+		mdiTabParams.m_bTabIcons = FALSE;
+		mdiTabParams.m_bAutoColor = FALSE;
+		mdiTabParams.m_bDocumentMenu = TRUE;
+		mdiTabParams.m_nTabBorderSize = 0;
+		mdiTabParams.m_bFlatFrame = TRUE;
+	}
 	EnableMDITabbedGroups( TRUE, mdiTabParams );
 
 	if( !m_wndMenuBar.Create( this, AFX_DEFAULT_TOOLBAR_STYLE | CBRS_SIZE_DYNAMIC | CBRS_TOOLTIPS | CBRS_FLYBY ) ||
@@ -67,46 +62,45 @@ int CMainFrame::OnCreate( LPCREATESTRUCT lpCreateStruct )
 
 	CMFCPopupMenu::SetForceMenuFocus( FALSE );
 
-	if( !m_wndCodeBar.CreateEx( this, TBSTYLE_FLAT, WS_CHILD | WS_VISIBLE | CBRS_TOP | CBRS_TOOLTIPS | CBRS_FLYBY | CBRS_SIZE_DYNAMIC ) ||
-		!m_wndCodeBar.LoadToolBar( IDR_CODE_VIEW )
+	if( !m_wndToolBar.CreateEx( this, TBSTYLE_FLAT, WS_CHILD | WS_VISIBLE | CBRS_TOP | CBRS_TOOLTIPS | CBRS_FLYBY | CBRS_SIZE_DYNAMIC ) ||
+		!m_wndToolBar.LoadToolBar( IDR_CODE_EDIT )
 		)
 	{
 		TRACE0( "Failed to create toolbar\n" );
 		return -1;
 	}
 
-	int nIndex = m_wndCodeBar.CommandToIndex( ID_SELECT_PROCESSOR );
-	m_wndCodeBar.SetButtonInfo( nIndex, ID_SELECT_PROCESSOR, TBBS_SEPARATOR, 205 );
+	int nIndex = m_wndToolBar.CommandToIndex( ID_SELECT_PROCESSOR );
+	m_wndToolBar.SetButtonInfo( nIndex, ID_SELECT_PROCESSOR, TBBS_SEPARATOR, 205 );
 
 	CRect rect;
-	m_wndCodeBar.GetItemRect( nIndex, &rect );
+	m_wndToolBar.GetItemRect( nIndex, &rect );
 	rect.top = 1;
-	rect.right = 900;
-	rect.bottom = rect.top + 250;
-	if( !m_comboBox.Create( CBS_DROPDOWNLIST | CBS_SORT | WS_VISIBLE |
-		WS_TABSTOP | WS_VSCROLL | WS_CHILD, rect, &m_wndCodeBar, ID_SELECT_PROCESSOR ) )
+	rect.right = 400;
+	rect.bottom = rect.top + 350;
+	if( !m_wndDevice.Create( CBS_DROPDOWNLIST | CBS_SORT | WS_VISIBLE |
+		WS_TABSTOP | WS_VSCROLL | WS_CHILD, rect, &m_wndToolBar, ID_SELECT_PROCESSOR ) )
 	{
-		TRACE( _T( "Failed to create combo-box\n" ) );
+		TRACE( "Failed to create combo-box\n" );
 		return FALSE;
 	}
+	m_wndDevice.SetFont( &afxGlobalData.fontRegular );
 
-	if( !m_wndStatusBar.Create( this ) )
-	{
-		TRACE0( "Failed to create status bar\n" );
-		return -1;
-	}
 
-	static const UINT indicators[ ] = { ID_SEPARATOR, };
-	m_wndStatusBar.SetIndicators( indicators, ARRAYSIZE( indicators ) );
+ 	if( !m_wndStatusBar.Create( this ) )
+ 	{
+ 		TRACE0( "Failed to create status bar\n" );
+ 		return -1;
+ 	}
+ 
+ 	static const UINT indicators[ ] = { ID_SEPARATOR, };
+ 	m_wndStatusBar.SetIndicators( indicators, ARRAYSIZE( indicators ) );
 
 
 	EnableDocking( CBRS_ALIGN_ANY );
 
-	m_wndMenuBar.EnableDocking( CBRS_ALIGN_TOP );
-	m_wndCodeBar.EnableDocking( CBRS_ALIGN_ANY );
-
 	DockPane( &m_wndMenuBar );
-	DockPane( &m_wndCodeBar );
+	DockPane( &m_wndToolBar );
 
 
 	CMFCVisualManager::SetDefaultManager( RUNTIME_CLASS( CVisualStyle ) );
@@ -122,6 +116,55 @@ int CMainFrame::OnCreate( LPCREATESTRUCT lpCreateStruct )
 		return -1;
 	}
 
+
+ 	gEnv->pClManger->InitializeAsync( ).then( [ & ] {
+ 		RunUIThread( [ & ] 
+		{
+			for( const auto i : gEnv->pClManger->GetDevices( ) )
+ 			{
+				CString szDeviceName;
+				szDeviceName.Format( L"%s (%s)", i->m_szDeviceName, i->m_pPlatform->m_szVendor );
+ 				int nPos = m_wndDevice.AddString( szDeviceName );
+ 
+ 				m_wndDevice.SetItemDataPtr( nPos, i );
+ 			}
+
+			RunUIThread( [ & ] 
+			{ 
+				//=> Update Width
+				int nNumEntries = m_wndDevice.GetCount( );
+				int nWidth = 0;
+				CString str;
+
+				CClientDC dc( this );
+				int nSave = dc.SaveDC( );
+				dc.SelectObject( GetFont( ) );
+
+				int nScrollWidth = ::GetSystemMetrics( SM_CXVSCROLL );
+				for( int i = 0; i < nNumEntries; i++ )
+				{
+					m_wndDevice.GetLBText( i, str );
+					int nLength = dc.GetTextExtent( str ).cx + nScrollWidth;
+					nWidth = max( nWidth, nLength );
+				}
+
+				nWidth += dc.GetTextExtent( L"0" ).cx;
+
+				dc.RestoreDC( nSave );
+				m_wndDevice.SetDroppedWidth( nWidth );
+
+				int nIndex = m_wndToolBar.CommandToIndex( ID_SELECT_PROCESSOR );
+				m_wndToolBar.SetButtonInfo( nIndex, ID_SELECT_PROCESSOR, TBBS_SEPARATOR, 205 );
+
+				CRect rect;
+				m_wndToolBar.GetItemRect( nIndex, &rect );
+
+				m_wndDevice.SetWindowPos( nullptr, rect.left, rect.top, nWidth, rect.bottom, SWP_NOACTIVATE | SWP_NOZORDER );
+
+				m_wndDevice.SetCurSel( 0 );
+			} );
+ 		} );
+ 	} );
 
 
 	return 0;
@@ -155,6 +198,7 @@ BOOL CMainFrame::OnWndMsg( UINT message, WPARAM wParam, LPARAM lParam, LRESULT* 
 		{
 			auto pPane = DYNAMIC_DOWNCAST( CBasePane, list.GetNext( pos ) );
 			ASSERT_VALID( pPane );
+
 
 			if( ::IsWindow( *pPane ) &&
 				pPane->IsVisible( ) &&
@@ -207,13 +251,31 @@ BOOL CMainFrame::CreateDockingWindows( )
 		return FALSE;
 	}
 
+	if( !m_wndHistogram.Create(
+		L"Histogram",
+		this,
+		{ 0, 0, rcWindow.Width( ) / 6, 250 },
+		TRUE,
+		170,
+		WS_CHILD | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | CBRS_RIGHT | CBRS_FLOAT_MULTI
+	) )
+	{
+		TRACE0( "failed to create histogram pane" );
+		return FALSE;
+	}
+
+
 	HICON hOutputBarIcon = LoadResourceIcon( IDI_OUTPUT_WND_HC );
 
 	m_wndOutput.SetIcon( hOutputBarIcon, FALSE );
 
 
+	m_wndHistogram.EnableDocking( CBRS_ALIGN_ANY );
+	DockPane( &m_wndHistogram );
+
 	m_wndOutput.EnableDocking( CBRS_ALIGN_ANY );
 	DockPane( &m_wndOutput );
+
 
 	m_wndImage.EnableDocking( CBRS_ALIGN_ANY );
 	DockPane( &m_wndImage );
@@ -232,16 +294,9 @@ void CMainFrame::OnSettingChange( UINT uFlags, LPCTSTR lpszSection )
 
 void CMainFrame::OnDeviceStats( )
 {
-	if( !gEnv->pClManger->IsInitialized( ) )
-	{
-		LogError( L"Device initialization process needs to be finished!" );
-	}
-	else
-	{
-		CDeviceStatsDialog dlg;
+	CDeviceInfoDialog dlg;
 
-		dlg.DoModal( );
-	}
+	dlg.DoModal( );
 }
 
 void CMainFrame::OnShowOutputPane( )
@@ -252,29 +307,15 @@ void CMainFrame::OnShowOutputPane( )
 	}
 }
 
+void CMainFrame::OnShowHistogramPane( )
+{
+	if( !m_wndHistogram.IsWindowVisible( ) )
+	{
+		m_wndHistogram.ShowPane( TRUE, FALSE, FALSE );
+	}
+}
+
 void CMainFrame::OnRunKernel( )
 {
-
-}
-
-void CMainFrame::OnStatusBarUpdate( void* ptr )
-{
-	auto pLog = reinterpret_cast< SLogEntry* >( ptr );
-
-	m_wndStatusBar.SetPaneText( 0, pLog->m_szMessage, TRUE );
-
-	SafeDelete( pLog );
-}
-
-void CMainFrame::OnAddCLDevice( void* ptr )
-{
-	gEnv->pClManger->ForDevices( [ & ]( const CCLDevice* pDevice ) { 
-		std::wstringstream ws;
-		{
-			ws << pDevice->GetTypeString( ) << L" - " << pDevice->GetName( ) << L" ( " << pDevice->GetParentPlatform( )->GetVendor( ) << L" )";
-		}
-
-		m_comboBox.AddString( ws.str( ).c_str( ) );
-	} );
 
 }

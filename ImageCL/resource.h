@@ -47,6 +47,7 @@
 #define IDR_OUTPUT_TOOLBAR              310
 #define IDR_TEXT_EDIT_TOOLBAR           315
 #define IDR_CODE_VIEW                   315
+#define IDR_CODE_EDIT                   315
 #define IDR_IMAGE_VIEW_TOOLBAR          319
 #define IDR_CODE_TEMPLATE_EMPTY         326
 #define IDD_DIALOG1                     328
@@ -58,7 +59,6 @@
 #define IDC_BUILD_INFO                  1006
 #define IDC_DEVICE_NAME                 1015
 #define IDC_LIST2                       1016
-#define IDC_DEVICE_LIST                 1016
 #define IDC_DEVICE_TYPE                 1017
 #define IDC_DEVICE_VENDOR               1018
 #define IDC_EDIT2                       1019
@@ -70,9 +70,11 @@
 #define IDC_EDIT5                       1022
 #define IDC_EDIT6                       1023
 #define IDR_CL_HISTOGRAM                1024
-#define IDC_LIST1                       1025
 #define IDC_DEVICE_EXTENSIONS           1025
 #define IDC_DEVICE_COMPUTE_UNITS        1026
+#define IDC_DEVICE_LIST                 1027
+#define IDC_RUNTIME                     1028
+#define IDC_PLATFORM_VERSION            1028
 #define ID_CLEAR_OUTPUT                 32771
 #define ID_BUTTON32772                  32772
 #define ID_BUTTON32773                  32773
@@ -109,7 +111,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        334
 #define _APS_NEXT_COMMAND_VALUE         32800
-#define _APS_NEXT_CONTROL_VALUE         1027
+#define _APS_NEXT_CONTROL_VALUE         1029
 #define _APS_NEXT_SYMED_VALUE           310
 #endif
 #endif

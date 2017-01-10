@@ -15,6 +15,22 @@
 #define _AFX_ALL_WARNINGS
 #define __CL_ENABLE_EXCEPTIONS
 
+
+//////////////////////////////////////////////////////////////////////////
+//=> Messages
+
+#define WM_COMMAND_REFLECT		( WM_APP + 1 )
+
+
+#define WM_ADD_OUTPUT			( WM_USER + 1 )
+#define WM_UPDATE_IMAGE			( WM_USER + 2 )
+#define WM_SET_CL_PROGRAM		( WM_USER + 3 )
+#define WM_STATUS_BAR_UPDATE	( WM_USER + 4 )
+#define WM_ADD_CL_DEVICE		( WM_USER + 5 )
+#define WM_UPDATE_HISTOGRAM		( WM_USER + 6 )
+#define WM_RUN_LATER			( WM_USER + 7 )
+
+
 //////////////////////////////////////////////////////////////////////////
 //=> Includes
 
@@ -39,6 +55,7 @@
 #include <sstream>
 #include <algorithm>
 #include <iterator>
+#include <future>
 
 #include <ppl.h>
 #include <ppltasks.h>
@@ -59,9 +76,7 @@
 #include "Core/System/ISystem.h"
 
 #include "Core/Log/Log.h"
-
 #include "Core/System/GlobalEnviroment.h"
-
 
 
 //////////////////////////////////////////////////////////////////////////
@@ -76,19 +91,3 @@
 #elif defined _M_X64
 #pragma comment(linker,"/manifestdependency:\"type='win32' name='Microsoft.Windows.Common-Controls' version='6.0.0.0' processorArchitecture='amd64' publicKeyToken='6595b64144ccf1df' language='*'\"")
 #endif
-
-
-
-
-
-//////////////////////////////////////////////////////////////////////////
-//=> Messages
-
-#define WM_COMMAND_REFLECT		( WM_APP + 1 )
-
-
-#define WM_ADD_OUTPUT			( WM_USER + 1 )
-#define WM_UPDATE_IMAGE			( WM_USER + 2 )
-#define WM_SET_CL_PROGRAM		( WM_USER + 3 )
-#define WM_STATUS_BAR_UPDATE	( WM_USER + 4 )
-#define WM_ADD_CL_DEVICE		( WM_USER + 5 )

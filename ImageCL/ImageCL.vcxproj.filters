@@ -110,9 +110,6 @@
     <ClInclude Include="Core\OpenCL\CLProgram.h">
       <Filter>Core\OpenCL</Filter>
     </ClInclude>
-    <ClInclude Include="Core\TaskWorker.h">
-      <Filter>Core</Filter>
-    </ClInclude>
     <ClInclude Include="Window\Frame\ChildFrame.h">
       <Filter>Window\Frame</Filter>
     </ClInclude>
@@ -128,7 +125,13 @@
     <ClInclude Include="Core\System\ISystem.h">
       <Filter>Core\System</Filter>
     </ClInclude>
-    <ClInclude Include="Window\Dialog\DeviceStatsDialog.h">
+    <ClInclude Include="Window\Frame\Pane\HistogramPane.h">
+      <Filter>Window\Frame\Pane</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\System\TaskWorker.h">
+      <Filter>Core\System</Filter>
+    </ClInclude>
+    <ClInclude Include="Window\Dialog\DeviceInfoDialog.h">
       <Filter>Window\Dialog</Filter>
     </ClInclude>
   </ItemGroup>
@@ -170,9 +173,6 @@
     <ClCompile Include="Core\OpenCL\CLProgram.cpp">
       <Filter>Core\OpenCL</Filter>
     </ClCompile>
-    <ClCompile Include="Core\TaskWorker.cpp">
-      <Filter>Core</Filter>
-    </ClCompile>
     <ClCompile Include="Window\Frame\ChildFrame.cpp">
       <Filter>Window\Frame</Filter>
     </ClCompile>
@@ -185,7 +185,13 @@
     <ClCompile Include="Core\Log\LogQueue.cpp">
       <Filter>Core\Log</Filter>
     </ClCompile>
-    <ClCompile Include="Window\Dialog\DeviceStatsDialog.cpp">
+    <ClCompile Include="Window\Frame\Pane\HistogramPane.cpp">
+      <Filter>Window\Frame\Pane</Filter>
+    </ClCompile>
+    <ClCompile Include="Core\System\TaskWorker.cpp">
+      <Filter>Core\System</Filter>
+    </ClCompile>
+    <ClCompile Include="Window\Dialog\DeviceInfoDialog.cpp">
       <Filter>Window\Dialog</Filter>
     </ClCompile>
   </ItemGroup>

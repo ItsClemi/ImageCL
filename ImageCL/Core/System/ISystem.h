@@ -1,7 +1,6 @@
 #pragma once
 
-
-__interface IProcessable
+__interface IProcessor
 {
-	virtual void Process( ) = 0;
+	virtual void OnProcess( ) = 0;
 };

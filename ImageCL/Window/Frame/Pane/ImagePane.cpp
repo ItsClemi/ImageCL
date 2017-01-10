@@ -1,8 +1,6 @@
 #include "stdafx.h"
 #include "ImagePane.h"
 
-#include "Core/TaskWorker.h"
-
 
 using namespace Gdiplus;
 
@@ -122,7 +120,7 @@ void CImagePane::OnImageOpen( )
  			if( SUCCEEDED( hr ) )
  			{
 				LogSuccess( L"Image: %s loaded!", szPath->c_str( ) );
- 				PostCommandMessage( WM_UPDATE_IMAGE, pBitmap );
+ 				//PostCommandMessage( WM_UPDATE_IMAGE, pBitmap );
  			}
  			else
  			{

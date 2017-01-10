@@ -1,8 +1,6 @@
 #include "stdafx.h"
 #include "Log.h"
 
-#include "Core/TaskWorker.h"
-
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
