@@ -1,5 +1,8 @@
 #pragma once
 
+#include "Core/Direct2d/RenderImage.h"
+
+class CD2DBitmapEx;
 class CImageView : public CScrollView
 {
 	DECLARE_DYNCREATE( CImageView );
@@ -12,28 +15,23 @@ private:
 	virtual void OnDraw( CDC* pDC ) override;
 
 public:
-	void UpdateImage( CD2DBitmap* pBitmap );
-	void SafeImageToFile( const CString& szPath );
+	void UpdateImage( CD2DBitmapEx* pBitmap );
+	void SaveImageToFile( const CString& szPath );
+	void SwitchImage( );
 
 private:
 	afx_msg int OnCreate( LPCREATESTRUCT lpcs );
 	afx_msg void OnSize( UINT nType, int cx, int cy );
-	afx_msg BOOL OnEraseBkgnd( CDC* pDC );
-
 	afx_msg int OnMouseActivate( CWnd* pDesktopWnd, UINT nHitTest, UINT message );
+
+	afx_msg LRESULT OnDrawD2D( WPARAM wParam, LPARAM lParam );
 
 	DECLARE_MESSAGE_MAP( );
 
 
-public:
-	inline CHwndRenderTarget* GetRenderTarget( )
-	{
-		return &m_renderTarget;
-	}
-
 
 private:
-	CHwndRenderTarget	m_renderTarget;
-	CD2DBitmap*			m_pBitmap = nullptr;
+	CRenderImage		m_renderImage;
+	CD2DPointF			m_ptCenter;
 
 };

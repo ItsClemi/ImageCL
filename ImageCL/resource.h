@@ -73,8 +73,8 @@
 #define IDC_DEVICE_EXTENSIONS           1025
 #define IDC_DEVICE_COMPUTE_UNITS        1026
 #define IDC_DEVICE_LIST                 1027
-#define IDC_RUNTIME                     1028
 #define IDC_PLATFORM_VERSION            1028
+#define IDC_ANIMATE1                    1042
 #define ID_CLEAR_OUTPUT                 32771
 #define ID_BUTTON32772                  32772
 #define ID_BUTTON32773                  32773
@@ -104,14 +104,16 @@
 #define ID_FILE_NEW_FROM_SAMPLE         32797
 #define ID_TOOLS_DEVICESTATS            32798
 #define ID_TOOLS_                       32799
+#define ID_CL_GENERATEBINARIES          32800
+#define ID_CL_VIEWBINARYCODE            32801
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        334
-#define _APS_NEXT_COMMAND_VALUE         32800
-#define _APS_NEXT_CONTROL_VALUE         1029
+#define _APS_NEXT_RESOURCE_VALUE        336
+#define _APS_NEXT_COMMAND_VALUE         32802
+#define _APS_NEXT_CONTROL_VALUE         1043
 #define _APS_NEXT_SYMED_VALUE           310
 #endif
 #endif

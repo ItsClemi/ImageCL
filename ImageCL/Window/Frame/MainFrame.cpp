@@ -1,10 +1,14 @@
 #include "stdafx.h"
 #include "MainFrame.h"
 
-#include <Window/Frame/View/CodeView.h>
-#include <Window/Style/VisualStyle.h>
+#include "Window/Frame/View/CodeView.h"
+#include "Window/Style/VisualStyle.h"
 
 #include "Window/Dialog/DeviceInfoDialog.h"
+
+#include "Window/Frame/Doc/CodeDoc.h"
+
+#include "Core/OpenCL/CLDevice.h"
 
 
 #ifdef _DEBUG
@@ -21,7 +25,10 @@ BEGIN_MESSAGE_MAP( CMainFrame, CMDIFrameWndEx )
 	ON_COMMAND( ID_VIEW_OUTPUTPANE, &CMainFrame::OnShowOutputPane )
 	ON_COMMAND( ID_VIEW_HISTOGRAM, &CMainFrame::OnShowHistogramPane )
 
+	ON_COMMAND( ID_CL_RUNCODE, &CMainFrame::OnRunKernel )
 	ON_COMMAND( ID_RUN_KERNEL, &CMainFrame::OnRunKernel )
+
+	ON_UPDATE_COMMAND_UI( ID_RUN_KERNEL, &CMainFrame::OnUpdateRunKernel )
 END_MESSAGE_MAP( )
 
 
@@ -29,6 +36,8 @@ END_MESSAGE_MAP( )
 CMainFrame::CMainFrame( )
 {
 	EnableLoadDockState( FALSE );
+	GetDockingManager( )->DisableRestoreDockState( );
+
 }
 
 CMainFrame::~CMainFrame( )
@@ -87,14 +96,14 @@ int CMainFrame::OnCreate( LPCREATESTRUCT lpCreateStruct )
 	m_wndDevice.SetFont( &afxGlobalData.fontRegular );
 
 
- 	if( !m_wndStatusBar.Create( this ) )
- 	{
- 		TRACE0( "Failed to create status bar\n" );
- 		return -1;
- 	}
- 
- 	static const UINT indicators[ ] = { ID_SEPARATOR, };
- 	m_wndStatusBar.SetIndicators( indicators, ARRAYSIZE( indicators ) );
+	if( !m_wndStatusBar.Create( this ) )
+	{
+		TRACE0( "Failed to create status bar\n" );
+		return -1;
+	}
+
+	static const UINT indicators[ ] = { ID_SEPARATOR, };
+	m_wndStatusBar.SetIndicators( indicators, ARRAYSIZE( indicators ) );
 
 
 	EnableDocking( CBRS_ALIGN_ANY );
@@ -117,55 +126,7 @@ int CMainFrame::OnCreate( LPCREATESTRUCT lpCreateStruct )
 	}
 
 
- 	gEnv->pClManger->InitializeAsync( ).then( [ & ] {
- 		RunUIThread( [ & ] 
-		{
-			for( const auto i : gEnv->pClManger->GetDevices( ) )
- 			{
-				CString szDeviceName;
-				szDeviceName.Format( L"%s (%s)", i->m_szDeviceName, i->m_pPlatform->m_szVendor );
- 				int nPos = m_wndDevice.AddString( szDeviceName );
- 
- 				m_wndDevice.SetItemDataPtr( nPos, i );
- 			}
-
-			RunUIThread( [ & ] 
-			{ 
-				//=> Update Width
-				int nNumEntries = m_wndDevice.GetCount( );
-				int nWidth = 0;
-				CString str;
-
-				CClientDC dc( this );
-				int nSave = dc.SaveDC( );
-				dc.SelectObject( GetFont( ) );
-
-				int nScrollWidth = ::GetSystemMetrics( SM_CXVSCROLL );
-				for( int i = 0; i < nNumEntries; i++ )
-				{
-					m_wndDevice.GetLBText( i, str );
-					int nLength = dc.GetTextExtent( str ).cx + nScrollWidth;
-					nWidth = max( nWidth, nLength );
-				}
-
-				nWidth += dc.GetTextExtent( L"0" ).cx;
-
-				dc.RestoreDC( nSave );
-				m_wndDevice.SetDroppedWidth( nWidth );
-
-				int nIndex = m_wndToolBar.CommandToIndex( ID_SELECT_PROCESSOR );
-				m_wndToolBar.SetButtonInfo( nIndex, ID_SELECT_PROCESSOR, TBBS_SEPARATOR, 205 );
-
-				CRect rect;
-				m_wndToolBar.GetItemRect( nIndex, &rect );
-
-				m_wndDevice.SetWindowPos( nullptr, rect.left, rect.top, nWidth, rect.bottom, SWP_NOACTIVATE | SWP_NOZORDER );
-
-				m_wndDevice.SetCurSel( 0 );
-			} );
- 		} );
- 	} );
-
+	ScanOpenCLDevices( );
 
 	return 0;
 }
@@ -212,6 +173,26 @@ BOOL CMainFrame::OnWndMsg( UINT message, WPARAM wParam, LPARAM lParam, LRESULT* 
 
 		*pResult = 0;
 		return OnCmdMsg( nCode, CN_COMMAND, pExtra, nullptr );
+	}
+	else if( message == WM_COMMAND )
+	{
+		//Route all accelerator commands to the current focused CWnd
+		void* pExtra = reinterpret_cast< void* >( lParam );
+
+		if( HIWORD( wParam ) == 1 )
+		{
+			const auto pFocus = GetFocus( );
+
+			if( pFocus )
+			{
+				const auto pOwner = pFocus->GetOwner( );
+				if( pOwner && pOwner->OnCmdMsg( LOWORD( wParam ), CN_COMMAND, pExtra, nullptr ) )
+				{
+					*pResult = 0;
+					return TRUE;
+				}
+			}
+		}
 	}
 
 	return CMDIFrameWndEx::OnWndMsg( message, wParam, lParam, pResult );
@@ -287,6 +268,59 @@ BOOL CMainFrame::CreateDockingWindows( )
 	return TRUE;
 }
 
+void CMainFrame::ScanOpenCLDevices( )
+{
+	gEnv->pClManger->InitializeAsync( ).then( [ & ] {
+
+		RunUIThread( [ & ]
+		{
+			for( const auto i : gEnv->pClManger->GetDevices( ) )
+			{
+				CString szDeviceName;
+				szDeviceName.Format( L"%s (%s)", i->GetDeviceName( ), i->GetPlatform( )->m_szVendor );
+				int nPos = m_wndDevice.AddString( szDeviceName );
+
+				m_wndDevice.SetItemDataPtr( nPos, i );
+			}
+
+			RunUIThread( [ & ]
+			{
+				//=> Update Width
+				int nNumEntries = m_wndDevice.GetCount( );
+				int nWidth = 0;
+				CString str;
+
+
+				CDC* dc = m_wndDevice.GetDC( );
+				dc->SelectObject( m_wndDevice.GetFont( ) );
+
+				int nScrollWidth = ::GetSystemMetrics( SM_CXVSCROLL );
+				for( int i = 0; i < nNumEntries; i++ )
+				{
+					m_wndDevice.GetLBText( i, str );
+					int nLength = dc->GetTextExtent( str ).cx + nScrollWidth;
+					nWidth = max( nWidth, nLength );
+				}
+
+				nWidth += dc->GetTextExtent( L"0" ).cx;
+				m_wndDevice.SetDroppedWidth( nWidth );
+
+				int nIndex = m_wndToolBar.CommandToIndex( ID_SELECT_PROCESSOR );
+				m_wndToolBar.SetButtonInfo( nIndex, ID_SELECT_PROCESSOR, TBBS_SEPARATOR, 205 );
+
+				CRect rect;
+				m_wndToolBar.GetItemRect( nIndex, &rect );
+
+				m_wndDevice.SetWindowPos( nullptr, rect.left, rect.top, nWidth, rect.bottom, SWP_NOACTIVATE | SWP_NOZORDER );
+
+				m_wndDevice.SetCurSel( 0 );
+			} );
+		} );
+	} );
+}
+
+
+
 void CMainFrame::OnSettingChange( UINT uFlags, LPCTSTR lpszSection )
 {
 	CMDIFrameWndEx::OnSettingChange( uFlags, lpszSection );
@@ -317,5 +351,28 @@ void CMainFrame::OnShowHistogramPane( )
 
 void CMainFrame::OnRunKernel( )
 {
+	const auto pChild = MDIGetActive( );
+	const auto pDoc = pChild->GetActiveDocument( );
 
+	if( pDoc && pDoc->IsKindOf( RUNTIME_CLASS( CCodeDoc ) ) )
+	{
+		const auto pCodeDoc = DYNAMIC_DOWNCAST( CCodeDoc, pDoc );
+		auto pDevice = GetSelectedDevice( );
+
+		pDevice->BuildCode( pCodeDoc->GetCode( ) );
+	}
+}
+
+void CMainFrame::OnUpdateRunKernel( CCmdUI* pCmdUI )
+{
+	const auto pDevice = GetSelectedDevice( );
+
+	if( pDevice )
+	{
+		pCmdUI->Enable( !pDevice->IsDeviceInUse( ) );
+	}
+	else
+	{
+		pCmdUI->Enable( FALSE );
+	}
 }

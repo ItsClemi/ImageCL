@@ -38,8 +38,6 @@ private:
 	afx_msg void OnImageSave( );
 	afx_msg void OnImageSwitch( );
 
-	afx_msg void OnUpdateImage( void* ptr );
-
 	DECLARE_MESSAGE_MAP( );
 
 

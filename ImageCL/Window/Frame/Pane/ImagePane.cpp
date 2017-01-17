@@ -1,8 +1,7 @@
 #include "stdafx.h"
 #include "ImagePane.h"
 
-
-using namespace Gdiplus;
+#include "Core/Direct2d/D2DBitmapEx.h"
 
 
 #ifdef _DEBUG
@@ -22,7 +21,6 @@ BEGIN_MESSAGE_MAP( CImagePane, CDockablePane )
 	ON_COMMAND( ID_IMAGE_SAVE, &CImagePane::OnImageSave )
 	ON_COMMAND( ID_IMAGE_SWITCH, &CImagePane::OnImageSwitch )
 
-	ON_COMMAND_PTR( WM_UPDATE_IMAGE, &CImagePane::OnUpdateImage )
 END_MESSAGE_MAP( );
 
 
@@ -65,7 +63,7 @@ void CImagePane::OnSize( UINT nType, int cx, int cy )
 	int cyTlb = m_wndToolBar.CalcFixedLayout( FALSE, TRUE ).cy;
 
 	m_wndToolBar.SetWindowPos( nullptr, 0, 0, cx, cyTlb, SWP_NOACTIVATE | SWP_NOZORDER );
-	m_pImageView->SetWindowPos( nullptr, 0, cyTlb, cx, cy, SWP_NOACTIVATE | SWP_NOZORDER );
+	m_pImageView->SetWindowPos( nullptr, 0, cyTlb, cx, cy - cyTlb, SWP_NOACTIVATE | SWP_NOZORDER );
 }
 
 void CImagePane::OnContextMenu( CWnd* pWnd, CPoint point )
@@ -106,33 +104,40 @@ void CImagePane::OnImageOpen( )
  		L"Image|*.bmp; *.jpeg; *.jpg; *.png; *.tiff||"
  	);
  
- 
  	if( dlg.DoModal( ) == IDOK )
  	{
- 		auto szPath = std::make_shared< std::wstring >( dlg.GetPathName( ) );
+ 		auto szPath = std::make_shared< CString >( dlg.GetPathName( ) );
  
  		auto pTarget = m_pImageView->GetRenderTarget( );
  
- 		Concurrency::create_task( [ = ] {
- 			auto pBitmap = new CD2DBitmap( nullptr, szPath->c_str( ) );
+ 		Concurrency::create_task( [ this, szPath, pTarget ] {
+ 			auto pBitmap = new CD2DBitmapEx( *szPath );
  
  			HRESULT hr = pBitmap->Create( pTarget );
  			if( SUCCEEDED( hr ) )
  			{
-				LogSuccess( L"Image: %s loaded!", szPath->c_str( ) );
- 				//PostCommandMessage( WM_UPDATE_IMAGE, pBitmap );
+				RunUIThread( [ this, pBitmap ]
+				{ 
+					m_pImageView->UpdateImage( pBitmap );
+				} );
+
+				const auto csPixel = pBitmap->GetSize( );
+				LogSuccess( 
+					L"Image: %s loaded (%I64dx%I64d)", 
+					szPath->GetString( ), 
+					static_cast< size_t >( csPixel.width ), 
+					static_cast< size_t >(csPixel.height ) 
+				);
  			}
  			else
  			{
  				LogError( L"Failed to load image %s HRESULT: 0x%08x",
- 					szPath->c_str( ),
+ 					szPath->GetString( ),
  					hr
  				);
  			}
  		} );
- 	}
-
-	
+ 	}	
 }
 
 void CImagePane::OnImageSave( )
@@ -147,75 +152,11 @@ void CImagePane::OnImageSave( )
 
 	if( dlg.DoModal( ) == IDOK )
 	{
-
+		m_pImageView->SaveImageToFile( dlg.GetPathName( ) );
 	}
 }
 
 void CImagePane::OnImageSwitch( )
 {
-
+	m_pImageView->SwitchImage( );
 }
-
-void CImagePane::OnUpdateImage( void* ptr )
-{
-	m_pImageView->UpdateImage( reinterpret_cast< CD2DBitmap* >( ptr ) );
-}
-
-
-
-/*
-m_rcDrawArea = RectF(
-0.0f,
-static_cast< REAL >( cyTlb ),
-static_cast< REAL >( cx ),
-static_cast< REAL >( cy - cyTlb )
-);
-
-m_ptCenter = PointF(
-( m_rcDrawArea.GetLeft( ) + m_rcDrawArea.GetRight( ) ) / 2.0f,
-( m_rcDrawArea.GetTop( ) + m_rcDrawArea.GetBottom( ) ) / 2.0f
-);
-
-LogInfo( __FUNCTIONW__ );
-
-
-CPaintDC dc( this );
-
-Graphics g( dc.GetSafeHdc( ) );
-
-g.Clear( Color::MakeARGB( 255, 30, 30, 30 ) );
-
-
-auto pBrush = new Gdiplus::SolidBrush( Gdiplus::Color::Cyan );
-
-// 	auto pMat = new Gdiplus::Matrix( );
-// 	pMat->Scale( 2.0f, 2.0f );
-// 	pMat->Translate( -2.0f, -2.0f );
-//
-// 	g.SetTransform( pMat );
-// 	g.TranslateTransform( 2.0f, 2.0f );
-
-
-if( m_pImage )
-{
-REAL fSizeX = static_cast< REAL >( m_pImage->GetWidth( ) );
-REAL fSizeY = static_cast< REAL >( m_pImage->GetHeight( ) );
-
-fSizeX *= 2.0f;
-fSizeY *= 2.0f;
-
-
-RectF rcImage(
-m_ptCenter.X - ( fSizeX / 2.0f ),
-m_ptCenter.Y - ( fSizeY / 2.0f ),
-fSizeX,
-fSizeY
-);
-
-g.DrawImage( m_pImage, rcImage );
-
-LogInfo( L"Redraw!" );
-}
-
-
-*/

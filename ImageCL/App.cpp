@@ -64,7 +64,7 @@ BOOL CApp::InitInstance( )
 		return FALSE;
 	}
 
-	if( !EnableD2DSupport( D2D1_FACTORY_TYPE::D2D1_FACTORY_TYPE_MULTI_THREADED ) )
+	if( !EnableD2DSupport( D2D1_FACTORY_TYPE::D2D1_FACTORY_TYPE_SINGLE_THREADED ) )
 	{
 		AfxMessageBox( L"Failed to enable d2d" );
 		return FALSE;
@@ -77,6 +77,7 @@ BOOL CApp::InitInstance( )
 	InitContextMenuManager( );
 	InitKeyboardManager( );
 	InitTooltipManager( );
+
 
 	CMFCToolTipInfo ttParams;
 	{
@@ -118,12 +119,6 @@ BOOL CApp::InitInstance( )
 	{
 		LogInfo( L"Warning: old windows version detected! things might not work correctly!" );
 	}
-
-
-	RunUIThread( [ ] { 
-		printf( "asdasd LOL" );
-	
-	} );
 		
 	return TRUE;
 }

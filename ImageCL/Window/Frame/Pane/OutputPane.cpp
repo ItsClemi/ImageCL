@@ -16,6 +16,8 @@ BEGIN_MESSAGE_MAP( COutputPane, CDockablePane )
 	ON_WM_SIZE( )
 	ON_WM_CONTEXTMENU( )
 
+	ON_COMMAND( WM_COPY, &COutputPane::OnCopyOutput )
+
 	ON_COMMAND( ID_CLEAR_OUTPUT, &COutputPane::OnClearOutput )
 	ON_COMMAND( ID_EDIT_COPY, &COutputPane::OnCopyOutput )
 	ON_COMMAND( ID_EDIT_CLEAR, &COutputPane::OnClearOutput )
@@ -45,6 +47,7 @@ int COutputPane::OnCreate( LPCREATESTRUCT lpCreateStruct )
 		return -1;
 	}
 
+	m_wndToolBar.SetOwner( this );
 	m_wndToolBar.SetRouteCommandsViaFrame( FALSE );
 
 	int cyToolbar = m_wndToolBar.CalcFixedLayout( FALSE, TRUE ).cy;
@@ -58,6 +61,7 @@ int COutputPane::OnCreate( LPCREATESTRUCT lpCreateStruct )
 		return -1;
 	}
 
+	m_wndOutput.SetOwner( this );
 	m_wndOutput.SetBackgroundColor( FALSE, RGB( 37, 37, 37 ) );
 
 	return 0;
@@ -119,43 +123,43 @@ void COutputPane::OnCopyOutput( )
 void COutputPane::OnAddOutput( void* ptr )
 {
 	auto pInfo = reinterpret_cast< SLogEntry* >( ptr );
-	{
-		CHARFORMAT cf;
-		cf.cbSize = sizeof( CHARFORMAT );
-		cf.dwMask = CFM_COLOR;
-		cf.dwEffects = 0;
-
-		switch( pInfo->m_eType )
-		{
-			case eLogType::eError:			cf.crTextColor = RGB( 255, 0, 0 );				break;
-			case eLogType::eSuccess:		cf.crTextColor = RGB( 70, 255, 0 );				break;
-			default:						cf.crTextColor = RGB( 160, 160, 160 );			break;
-		}
-	
-		CString szMessage;
-		{
-			CTime time = pInfo->m_tm;
-		
-			szMessage += time.Format( L"<%H:%M:%S>" );
-			szMessage += " ";
-			szMessage += pInfo->m_szMessage;
-			szMessage += L"\r\n";
-		}
-
-		int nInsertionPoint = m_wndOutput.GetWindowTextLength( );
-
-		m_wndOutput.SetSel( nInsertionPoint, -1 );
-		m_wndOutput.SetSelectionCharFormat( cf );
-		m_wndOutput.ReplaceSel( szMessage );
-
-		int nVisible = RichEditGetVisibleLines( &m_wndOutput );
-
-		if( m_wndOutput.GetFocus( ) != &m_wndOutput )
-		{
-			m_wndOutput.LineScroll( INT_MAX );
-			m_wndOutput.LineScroll( 1 - nVisible );
-		}
-	}
+ 	{
+ 		CHARFORMAT cf;
+ 		cf.cbSize = sizeof( CHARFORMAT );
+ 		cf.dwMask = CFM_COLOR;
+ 		cf.dwEffects = 0;
+ 
+ 		switch( pInfo->m_eType )
+ 		{
+ 			case eLogType::eError:			cf.crTextColor = RGB( 255, 0, 0 );				break;
+ 			case eLogType::eSuccess:		cf.crTextColor = RGB( 70, 255, 0 );				break;
+ 			default:						cf.crTextColor = RGB( 160, 160, 160 );			break;
+ 		}
+ 	
+ 		CString szMessage;
+ 		{
+ 			CTime time = pInfo->m_tm;
+ 		
+ 			szMessage += time.Format( L"<%H:%M:%S>" );
+ 			szMessage += " ";
+ 			szMessage += pInfo->m_szMessage;
+ 			szMessage += L"\r\n";
+ 		}
+ 
+ 		int nInsertionPoint = m_wndOutput.GetWindowTextLength( );
+ 
+ 		m_wndOutput.SetSel( nInsertionPoint, -1 );
+ 		m_wndOutput.SetSelectionCharFormat( cf );
+ 		m_wndOutput.ReplaceSel( szMessage );
+ 
+ 		int nVisible = RichEditGetVisibleLines( &m_wndOutput );
+ 
+ 		if( m_wndOutput.GetFocus( ) != &m_wndOutput )
+ 		{
+ 			m_wndOutput.LineScroll( INT_MAX );
+ 			m_wndOutput.LineScroll( 1 - nVisible );
+ 		}
+ 	}
 
 	SafeDelete( pInfo );
 }

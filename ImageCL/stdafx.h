@@ -43,6 +43,7 @@
 #include <afxcontrolbars.h>   
 #include <VersionHelpers.h>
 #include <gdiplus.h>
+#include <math.h>
 
 #include <memory>
 #include <string>

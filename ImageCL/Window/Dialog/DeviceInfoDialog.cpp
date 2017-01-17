@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "DeviceInfoDialog.h"
 
+#include "Core/OpenCL/CLDevice.h"
 
 BEGIN_MESSAGE_MAP( CDeviceInfoDialog, CDialogEx )
 	ON_CBN_SELCHANGE( IDC_DEVICE_LIST,  &CDeviceInfoDialog::OnChangeDevice )
@@ -43,7 +44,7 @@ BOOL CDeviceInfoDialog::OnInitDialog( )
 
 	for( const auto i : gEnv->pClManger->GetDevices( ) )
 	{
-		int nPos = m_wndDeviceList.AddString( i->m_szDeviceName );
+		int nPos = m_wndDeviceList.AddString( i->GetDeviceName( ) );
 		m_wndDeviceList.SetItemDataPtr( nPos, i );
 	}
 
@@ -60,44 +61,43 @@ void CDeviceInfoDialog::OnChangeDevice( )
 
 	if( nSel != CB_ERR )
 	{
- 		const auto pDevice = reinterpret_cast< SCLDevice* >( 
+ 		const auto pDevice = reinterpret_cast< CCLDevice* >( 
  			m_wndDeviceList.GetItemDataPtr( nSel ) 
  			);
 	
 		CString szDevice;
-		szDevice.Format( L"%s (%s)", pDevice->m_szDeviceName, pDevice->GetTypeName( ) );
+		szDevice.Format( L"%s (%s)", pDevice->GetDeviceName(), pDevice->GetDeviceTypeString( ) );
 		m_wndDeviceName.SetWindowTextW( szDevice );
 
 		CString szVendor;
-		szVendor.Format( L"%s", pDevice->m_pPlatform->m_szVendor );
+		szVendor.Format( L"%s", pDevice->GetPlatform()->m_szVendor );
 		m_wndVendor.SetWindowTextW( szVendor );
 
 		CString szPlatformVersion;
-		szPlatformVersion.Format( L"%s", pDevice->m_pPlatform->m_szVersion );
+		szPlatformVersion.Format( L"%s", pDevice->GetPlatform()->m_szVersion );
 		m_wndPlatformVersion.SetWindowTextW( szPlatformVersion );
 
 		CString szMemorySize;
-		szMemorySize.Format( L"%I64d mb (%I64d bytes)", (pDevice->m_nGlobalMemorySize / 1024 ) / 1024, pDevice->m_nGlobalMemorySize  );
+		szMemorySize.Format( L"%I64d mb (%I64d bytes)", (pDevice->GetGlobalMemorySize() / 1024 ) / 1024, pDevice->GetGlobalMemorySize( ) );
 		m_wndGlobalMemory.SetWindowTextW( szMemorySize );
 
 		CString szLocalMemory;
-		szLocalMemory.Format( L"%I64d kb (%I64d bytes)", pDevice->m_nLocalMemorySize / 1024, pDevice->m_nLocalMemorySize );
+		szLocalMemory.Format( L"%I64d kb (%I64d bytes)", pDevice->GetLocalMemorySize() / 1024, pDevice->GetLocalMemorySize());
 		m_wndLocalMemory.SetWindowTextW( szLocalMemory );
 
 		CString szComputeUnits;
-		szComputeUnits.Format( L"%d", pDevice->m_nComputeUnits );
+		szComputeUnits.Format( L"%d", pDevice->GetComputeUnits() );
 		m_wndComputeUnits.SetWindowTextW( szComputeUnits );
 
 		CString szWorkGroups;
-		szWorkGroups.Format( L"%I64d", pDevice->m_nMaxWorkGroups );
+		szWorkGroups.Format( L"%I64d", pDevice->GetMaxWorkGroups() );
 		m_wndWorkGroups.SetWindowTextW( szWorkGroups );
 
 
 		m_wndDeviceExtensions.ResetContent( );
 
-		for( const auto i : pDevice->m_vecExtensions )
-		{
-			m_wndDeviceExtensions.AddString( i );
-		}
+		pDevice->ForExtensions( [ & ]( const auto szExtension ) { 
+			m_wndDeviceExtensions.AddString( szExtension );
+		} );
 	}
 }

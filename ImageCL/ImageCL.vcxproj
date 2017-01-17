@@ -68,6 +68,7 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <AdditionalLibraryDirectories>$(CUDA_PATH)\lib\x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
     <Midl>
       <MkTypLibCompatible>false</MkTypLibCompatible>
@@ -114,8 +115,12 @@
     <ClInclude Include="Common\Helper\DpiHelper.h" />
     <ClInclude Include="Common\Helper\GDIHelper.h" />
     <ClInclude Include="Common\Helper\MFCHelper.h" />
+    <ClInclude Include="Core\Direct2d\D2DBitmapEx.h" />
+    <ClInclude Include="Core\Direct2d\NoBitmap.h" />
+    <ClInclude Include="Core\Direct2d\RenderImage.h" />
     <ClInclude Include="Core\Log\Log.h" />
     <ClInclude Include="Core\Log\LogQueue.h" />
+    <ClInclude Include="Core\OpenCL\CLDevice.h" />
     <ClInclude Include="Core\OpenCL\CLManager.h" />
     <ClInclude Include="Core\OpenCL\CLProgram.h" />
     <ClInclude Include="Core\System\GlobalEnviroment.h" />
@@ -139,8 +144,12 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="App.cpp" />
+    <ClCompile Include="Core\Direct2d\D2DBitmapEx.cpp" />
+    <ClCompile Include="Core\Direct2d\NoBitmap.cpp" />
+    <ClCompile Include="Core\Direct2d\RenderImage.cpp" />
     <ClCompile Include="Core\Log\Log.cpp" />
     <ClCompile Include="Core\Log\LogQueue.cpp" />
+    <ClCompile Include="Core\OpenCL\CLDevice.cpp" />
     <ClCompile Include="Core\OpenCL\CLManager.cpp" />
     <ClCompile Include="Core\OpenCL\CLProgram.cpp" />
     <ClCompile Include="Core\System\GlobalEnviroment.cpp" />

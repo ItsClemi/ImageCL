@@ -10,7 +10,7 @@ static char THIS_FILE[ ] = __FILE__;
 #endif
 
 
-void AddLog( eLogType eType, eOutputType eOutput, const wchar_t* szFormat, va_list args )
+void AddLog( eLogType eType, const wchar_t* szFormat, va_list args )
 {
 	SLogEntry* pEntry = new SLogEntry;
 	{
@@ -21,7 +21,6 @@ void AddLog( eLogType eType, eOutputType eOutput, const wchar_t* szFormat, va_li
 
 		pEntry->m_eType = eType;
 		pEntry->m_tm = _time64( nullptr );
-		pEntry->m_eOutputType = eOutput;
 	}
 
 	gEnv->pLogQueue->EnqueueLog( pEntry );

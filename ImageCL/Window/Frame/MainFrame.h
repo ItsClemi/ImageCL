@@ -6,7 +6,7 @@
 
 
 
-
+class CCLDevice;
 class CMainFrame : public CMDIFrameWndEx
 {
 	DECLARE_DYNCREATE( CMainFrame )
@@ -19,13 +19,15 @@ private:
 	virtual BOOL PreCreateWindow( CREATESTRUCT& cs ) override;
 
 	virtual BOOL OnWndMsg( UINT message, WPARAM wParam, LPARAM lParam, LRESULT* pResult ) override;
-
-
+	
 private:
 	BOOL CreateDockingWindows( );
 
+	void ScanOpenCLDevices( );
+
 protected:
 	afx_msg int OnCreate( LPCREATESTRUCT lpCreateStruct );
+
 
 	afx_msg void OnSettingChange( UINT uFlags, LPCTSTR lpszSection );
 
@@ -34,10 +36,23 @@ protected:
 	afx_msg void OnShowHistogramPane( );
 
 	afx_msg void OnRunKernel( );
-
+	afx_msg void OnUpdateRunKernel( CCmdUI* pCmdUI );
 
 	DECLARE_MESSAGE_MAP( )
 
+public:
+	inline CCLDevice* GetSelectedDevice( )
+	{
+		int nSel = m_wndDevice.GetCurSel( );
+		if( nSel != CB_ERR )
+		{
+			return reinterpret_cast< CCLDevice* >(
+				m_wndDevice.GetItemDataPtr( nSel ) 
+				);
+		}
+
+		return nullptr;
+	}
 
 protected:
 	CMFCMenuBar			m_wndMenuBar;

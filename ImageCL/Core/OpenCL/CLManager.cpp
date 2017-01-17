@@ -1,6 +1,9 @@
 #include "stdafx.h"
 #include "CLManager.h"
 
+#include "CLDevice.h"
+
+
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #undef THIS_FILE
@@ -58,11 +61,13 @@ task< void > CCLManager::InitializeAsync( )
 
 				for( auto i : vecDevices )
 				{
-					SCLDevice* pDevice = new SCLDevice( pPlatform, i );
+					CCLDevice* pDevice = new CCLDevice( pPlatform, i );
+					{
+						pDevice->FetchDeviceInfo( );
+					}
 
-					FetchDeviceInfo( pDevice );
 
-					LogInfo( L"Adding device %s", pDevice->m_szDeviceName );
+					LogInfo( L"Adding %s device %s", pDevice->GetDeviceTypeString(), pDevice->GetDeviceName() );
 
 					m_vecDevices.push_back( pDevice );
 				}
@@ -92,43 +97,4 @@ void CCLManager::FetchPlatformInfo( SCLPlatform* pPlatform )
 	RemoveWhiteSpace( szVersion );
 
 	pPlatform->m_szVersion = StringToWstring( szVersion ).c_str( );
-}
-
-void CCLManager::FetchDeviceInfo( SCLDevice* pDevice )
-{
-	pDevice->m_eType = static_cast< eDeviceType >(
-		pDevice->m_clDevice.getInfo< CL_DEVICE_TYPE >( )
-		);
-
-	{
-		auto szDeviceName = pDevice->m_clDevice.getInfo< CL_DEVICE_NAME >( );
-
-		RemoveWhiteSpace( szDeviceName );
-		pDevice->m_szDeviceName = StringToWstring( szDeviceName ).c_str( );
-	}
-
-	{
-		auto szExtensions = pDevice->m_clDevice.getInfo< CL_DEVICE_EXTENSIONS >( );
-		RemoveWhiteSpace( szExtensions );
-
-		wistringstream s( StringToWstring( szExtensions ) );
-		vector< wstring > vecExtensions = {
-			istream_iterator< wstring, wchar_t >{ s },
-			istream_iterator< wstring, wchar_t >{ }
-		};
-
-		for( auto i : vecExtensions )
-		{
-			pDevice->m_vecExtensions.push_back( i.c_str( ) );
-		}
-	}
-
-	{
-		pDevice->m_nComputeUnits = pDevice->m_clDevice.getInfo< CL_DEVICE_MAX_COMPUTE_UNITS >( );
-		pDevice->m_nMaxWorkGroups = pDevice->m_clDevice.getInfo< CL_DEVICE_MAX_WORK_GROUP_SIZE >( );
-		pDevice->m_nLocalMemorySize = pDevice->m_clDevice.getInfo< CL_DEVICE_LOCAL_MEM_SIZE >( );
-		pDevice->m_nGlobalMemorySize = pDevice->m_clDevice.getInfo< CL_DEVICE_GLOBAL_MEM_SIZE >( );
-		pDevice->m_bDeviceAvilable = pDevice->m_clDevice.getInfo< CL_DEVICE_AVAILABLE >( );
-		pDevice->m_bCompilerAvailable = pDevice->m_clDevice.getInfo< CL_DEVICE_COMPILER_AVAILABLE >( );
-	}
 }

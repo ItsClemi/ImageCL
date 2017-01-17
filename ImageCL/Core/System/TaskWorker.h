@@ -51,6 +51,10 @@ inline void PostCommandMessage( UINT nId, T lParam )
 }
 
 
+/*
+	Runs the specified function on the UI mainframe thread.
 
-
+	Use this to updated controls from other threads. 
+	(Just like Platform.runLater() in javafx)
+*/
 void RunUIThread( std::function< void( void ) > f );

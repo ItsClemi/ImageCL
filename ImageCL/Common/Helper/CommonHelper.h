@@ -34,3 +34,13 @@ inline std::string WstringToString( const std::wstring& str )
 
 	return conv.to_bytes( str );
 }
+
+template< typename T >
+inline void SafeRelease( T** ppInterfaceToRelease )
+{
+	if( *ppInterfaceToRelease )
+	{
+		( *ppInterfaceToRelease )->Release( );
+		( *ppInterfaceToRelease ) = nullptr;
+	}
+}
